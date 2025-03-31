@@ -1,13 +1,19 @@
 {
-  "name": "mcp-demo",
+  "name": "vanta-mcp-server",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "weather": "./build/index.js"
+    "vanta-mcp-server": "./build/index.js"
   },
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\""
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "start": "yarn build && node build/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,json,md}\"",
+    "fix": "npm run format && npm run lint:fix"
   },
   "files": [
     "build"
@@ -17,7 +23,13 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^8.57.0",
     "@types/node": "^22.13.14",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
     "typescript": "^5.8.2"
   },
   "dependencies": {
