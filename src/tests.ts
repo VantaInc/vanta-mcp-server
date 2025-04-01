@@ -1,10 +1,10 @@
-import { API_BASE } from "./types.js";
+import { baseApiUrl } from "./api.js";
 import { z } from "zod";
 
 export async function getTests(
   args: z.infer<typeof GetTestsInput>
 ) {
-    const url = new URL('/v1/tests', API_BASE);
+    const url = new URL('/v1/tests', baseApiUrl());
     
     if (args.pageSize) {
         url.searchParams.append('pageSize', args.pageSize.toString());
