@@ -1,6 +1,6 @@
 import { McpServer, ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { getTestEntities, GetTestEntitiesTool, getTests, GetTestsTool } from "./operations/tests.js";
+import { deactivateTestEntity, DeactivateTestEntityTool, getTestEntities, GetTestEntitiesTool, getTests, GetTestsTool } from "./operations/tests.js";
 import { ZodRawShape } from "zod";
 import { z } from "zod";
 
@@ -21,6 +21,13 @@ server.tool(
   GetTestEntitiesTool.description,
   GetTestEntitiesTool.parameters.shape,
   getTestEntities,
+);
+
+server.tool(
+  DeactivateTestEntityTool.name,
+  DeactivateTestEntityTool.description,
+  DeactivateTestEntityTool.parameters.shape,
+  deactivateTestEntity,
 );
 
 async function main() {

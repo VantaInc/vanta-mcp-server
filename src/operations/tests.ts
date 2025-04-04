@@ -1,9 +1,8 @@
 import { baseApiUrl } from "../api.js";
 import { z } from "zod";
-import type { CallToolResult } from "@modelcontextprotocol/sdk/types.d.ts";
 import { env } from "node:process";
 import { Tool } from "../types.js";
-import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 export async function getTests(
   args: z.infer<typeof GetTestsInput>,
@@ -92,6 +91,43 @@ export async function getTestEntities(
   };
 }
 
+export async function deactivateTestEntity(
+  args: z.infer<typeof DeactivateTestEntityInput>,
+): Promise<CallToolResult> {
+  const url = new URL(`/v1/tests/${args.testId}/entities/${args.entityId}/deactivate`, baseApiUrl());
+  let headers: Record<string, string> = {};
+
+  if (env.VANTA_API_KEY != null) {
+    headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
+  }
+
+  const response = await fetch(url.toString(), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      deactivateUntil: args.deactivateUntil,
+      reason: args.deactivateReason
+    })
+  });
+
+  if (!response.ok) {
+    return {
+        content: [
+        {
+          type: "text" as const,
+          text: `Url: ${url.toString()}, Error: ${response.statusText}`,
+        },
+      ],
+    };
+  }
+
+  return {
+    content: [
+      { type: "text" as const, text: JSON.stringify(await response.json()) },
+    ],
+  };
+}
+
 const TOOL_DESCRIPTION = `Lists all tests. When using Vanta, resources are pulled in from all connected integrations.
 The automated checks running on these resources are called tests.
 
@@ -139,4 +175,17 @@ export const GetTestEntitiesTool: Tool<typeof GetTestEntitiesInput> = {
   name: "get_test_entities",
   description: `Lists all entities for a test. An entity is a resource that is being tested. Entities are only created for failing tests.`,
   parameters: GetTestEntitiesInput,
+};
+
+export const DeactivateTestEntityInput = z.object({
+  testId: z.string().describe("Lowercase with hyphens"),
+  entityId: z.string(),
+  deactivateReason: z.string().describe("Reason for deactivation."),
+  deactivateUntil: z.string().describe("Date and time to deactivate the entity until. Format: YYYY-MM-DDTHH:MM:SSZ"),
+});
+
+export const DeactivateTestEntityTool: Tool<typeof DeactivateTestEntityInput> = {
+  name: "deactivate_test_entity",
+  description: `Deactivates an entity for a test.`,
+  parameters: DeactivateTestEntityInput,
 };
