@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { GetTestsTool } from "../tests.js";
+import { GetTestsTool } from "../operations/tests.js";
 
 // Format tool for OpenAI
 const tool = {

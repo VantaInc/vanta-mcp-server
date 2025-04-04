@@ -1,6 +1,8 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { getTests, GetTestsTool } from "./tests.js";
+import { getTestEntities, GetTestEntitiesTool, getTests, GetTestsTool } from "./operations/tests.js";
+import { ZodRawShape } from "zod";
+import { z } from "zod";
 
 const server = new McpServer({
   name: "vanta-mcp",
@@ -12,6 +14,13 @@ server.tool(
   GetTestsTool.description,
   GetTestsTool.parameters.shape,
   getTests,
+);
+
+server.tool(
+  GetTestEntitiesTool.name,
+  GetTestEntitiesTool.description,
+  GetTestEntitiesTool.parameters.shape,
+  getTestEntities,
 );
 
 async function main() {

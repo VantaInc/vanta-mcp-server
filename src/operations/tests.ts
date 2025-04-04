@@ -1,8 +1,9 @@
-import { baseApiUrl } from "./api.js";
+import { baseApiUrl } from "../api.js";
 import { z } from "zod";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.d.ts";
 import { env } from "node:process";
-import { Tool } from "./types.js";
+import { Tool } from "../types.js";
+import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 
 export async function getTests(
   args: z.infer<typeof GetTestsInput>,
@@ -27,6 +28,48 @@ export async function getTests(
   if (env.VANTA_API_KEY != null) {
     headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
   }
+  const response = await fetch(url.toString(), {
+    headers,
+  });
+
+  if (!response.ok) {
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Url: ${url.toString()}, Error: ${response.statusText}`,
+        },
+      ],
+    };
+  }
+
+  return {
+    content: [
+      { type: "text" as const, text: JSON.stringify(await response.json()) },
+    ],
+  };
+}
+
+export async function getTestEntities(
+  args: z.infer<typeof GetTestEntitiesInput>,
+): Promise<CallToolResult> {
+  const url = new URL(`/v1/tests/${args.testId}/entities`, baseApiUrl());
+  if (args.pageSize !== undefined) {
+    url.searchParams.append("pageSize", args.pageSize.toString());
+  }
+  if (args.pageCursor !== undefined) {
+    url.searchParams.append("pageCursor", args.pageCursor);
+  }
+  if (args.entityStatus !== undefined) {
+    url.searchParams.append("entityStatus", args.entityStatus);
+  }
+
+  let headers: Record<string, string> = {};
+
+  if (env.VANTA_API_KEY != null) {
+    headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
+  }
+
   const response = await fetch(url.toString(), {
     headers,
   });
@@ -79,8 +122,21 @@ export const GetTestsInput = z.object({
   controlFilter: z.string().describe(CONTROL_FILTER_DESCRIPTION).optional(),
 });
 
-export const GetTestsTool: Tool = {
+export const GetTestsTool: Tool<typeof GetTestsInput> = {
   name: "get_tests",
   description: TOOL_DESCRIPTION,
   parameters: GetTestsInput,
+};
+
+const GetTestEntitiesInput = z.object({
+  testId: z.string().describe("Lowercase with hyphens"),
+  pageSize: z.number().describe("Controls the maximum number of tests returned in a single response. Allowed values: 1–100. Default is 10.").optional(),
+  pageCursor: z.string().describe("Used for pagination. Leave blank to start from the first page.").optional(),
+  entityStatus: z.string().describe("Filter by entity status. Possible values: FAILING, DEACTIVATED.").optional(),
+});
+
+export const GetTestEntitiesTool: Tool<typeof GetTestEntitiesInput> = {
+  name: "get_test_entities",
+  description: `Lists all entities for a test. An entity is a resource that is being tested. Entities are only created for failing tests.`,
+  parameters: GetTestEntitiesInput,
 };
