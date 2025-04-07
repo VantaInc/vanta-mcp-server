@@ -94,7 +94,10 @@ export async function getTestEntities(
 export async function deactivateTestEntity(
   args: z.infer<typeof DeactivateTestEntityInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/tests/${args.testId}/entities/${args.entityId}/deactivate`, baseApiUrl());
+  const url = new URL(
+    `/v1/tests/${args.testId}/entities/${args.entityId}/deactivate`,
+    baseApiUrl(),
+  );
   let headers: Record<string, string> = {};
 
   if (env.VANTA_API_KEY != null) {
@@ -106,13 +109,13 @@ export async function deactivateTestEntity(
     headers,
     body: JSON.stringify({
       deactivateUntil: args.deactivateUntil,
-      reason: args.deactivateReason
-    })
+      reason: args.deactivateReason,
+    }),
   });
 
   if (!response.ok) {
     return {
-        content: [
+      content: [
         {
           type: "text" as const,
           text: `Url: ${url.toString()}, Error: ${response.statusText}`,
@@ -166,9 +169,20 @@ export const GetTestsTool: Tool<typeof GetTestsInput> = {
 
 const GetTestEntitiesInput = z.object({
   testId: z.string().describe("Lowercase with hyphens"),
-  pageSize: z.number().describe("Controls the maximum number of tests returned in a single response. Allowed values: 1–100. Default is 10.").optional(),
-  pageCursor: z.string().describe("Used for pagination. Leave blank to start from the first page.").optional(),
-  entityStatus: z.string().describe("Filter by entity status. Possible values: FAILING, DEACTIVATED.").optional(),
+  pageSize: z
+    .number()
+    .describe(
+      "Controls the maximum number of tests returned in a single response. Allowed values: 1–100. Default is 10.",
+    )
+    .optional(),
+  pageCursor: z
+    .string()
+    .describe("Used for pagination. Leave blank to start from the first page.")
+    .optional(),
+  entityStatus: z
+    .string()
+    .describe("Filter by entity status. Possible values: FAILING, DEACTIVATED.")
+    .optional(),
 });
 
 export const GetTestEntitiesTool: Tool<typeof GetTestEntitiesInput> = {
@@ -181,11 +195,16 @@ export const DeactivateTestEntityInput = z.object({
   testId: z.string().describe("Lowercase with hyphens"),
   entityId: z.string(),
   deactivateReason: z.string().describe("Reason for deactivation."),
-  deactivateUntil: z.string().describe("Date and time to deactivate the entity until. Format: YYYY-MM-DDTHH:MM:SSZ"),
+  deactivateUntil: z
+    .string()
+    .describe(
+      "Date and time to deactivate the entity until. Format: YYYY-MM-DDTHH:MM:SSZ",
+    ),
 });
 
-export const DeactivateTestEntityTool: Tool<typeof DeactivateTestEntityInput> = {
-  name: "deactivate_test_entity",
-  description: `Deactivates an entity for a test.`,
-  parameters: DeactivateTestEntityInput,
-};
+export const DeactivateTestEntityTool: Tool<typeof DeactivateTestEntityInput> =
+  {
+    name: "deactivate_test_entity",
+    description: `Deactivates an entity for a test.`,
+    parameters: DeactivateTestEntityInput,
+  };

@@ -17,7 +17,7 @@ const tools = [
     parameters: zodToJsonSchema(DeactivateTestEntityTool.parameters),
     type: "function" as const,
     strict: false,
-  }
+  },
 ];
 
 // Test inputs

@@ -1,7 +1,22 @@
-import { McpServer, ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {
+  McpServer,
+  ToolCallback,
+} from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { deactivateTestEntity, DeactivateTestEntityTool, getTestEntities, GetTestEntitiesTool, getTests, GetTestsTool } from "./operations/tests.js";
-import { GetFrameworkControlsTool, GetFrameworksTool, getFrameworkControls, getFrameworks } from "./operations/frameworks.js";
+import {
+  deactivateTestEntity,
+  DeactivateTestEntityTool,
+  getTestEntities,
+  GetTestEntitiesTool,
+  getTests,
+  GetTestsTool,
+} from "./operations/tests.js";
+import {
+  GetFrameworkControlsTool,
+  GetFrameworksTool,
+  getFrameworkControls,
+  getFrameworks,
+} from "./operations/frameworks.js";
 
 const server = new McpServer({
   name: "vanta-mcp",
