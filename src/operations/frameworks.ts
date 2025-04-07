@@ -43,10 +43,13 @@ export async function getFrameworkControls(
     url.searchParams.append("pageCursor", args.pageCursor);
   }
 
+  let headers: Record<string, string> = {};
+
+  if (env.VANTA_API_KEY != null) {
+    headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
+  }
   const response = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${env.VANTA_API_KEY}`,
-    },
+    headers,
   });
   if (!response.ok) {
     return {
@@ -73,11 +76,13 @@ export async function getFrameworks(
   if (args.pageCursor !== undefined) {
     url.searchParams.append("pageCursor", args.pageCursor);
   }
+  let headers: Record<string, string> = {};
 
+  if (env.VANTA_API_KEY != null) {
+    headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
+  }
   const response = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${env.VANTA_API_KEY}`,
-    },
+    headers,
   });
 
   if (!response.ok) {
