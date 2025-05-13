@@ -18,16 +18,16 @@ export async function generateAnswer(
     headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
   }
   const response = await fetch(url.toString(), {
-		method: "POST",
+    method: "POST",
     headers,
     body: JSON.stringify({
       question: args.question,
     }),
   });
 
-	console.log("got back", response)
+  console.log("got back", response);
 
-	if (!response.ok) {
+  if (!response.ok) {
     return {
       content: [
         {
