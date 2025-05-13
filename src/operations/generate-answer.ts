@@ -17,6 +17,7 @@ export async function generateAnswer(
   if (env.VANTA_API_KEY != null) {
     headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
   }
+  console.log({ headers });
   const response = await fetch(url.toString(), {
     method: "POST",
     headers,
@@ -24,8 +25,6 @@ export async function generateAnswer(
       question: args.question,
     }),
   });
-
-  console.log("got back", response);
 
   if (!response.ok) {
     return {
