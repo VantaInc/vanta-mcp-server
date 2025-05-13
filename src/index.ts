@@ -14,7 +14,10 @@ import {
   getFrameworkControls,
   getFrameworks,
 } from "./operations/frameworks.js";
-import { generateAnswer, GenerateAnswerTool } from "./operations/generate-answer.js";
+import {
+  generateAnswer,
+  GenerateAnswerTool,
+} from "./operations/generate-answer.js";
 
 const server = new McpServer({
   name: "vanta-mcp",

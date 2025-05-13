@@ -17,7 +17,6 @@ export async function generateAnswer(
   if (env.VANTA_API_KEY != null) {
     headers.Authorization = `Bearer ${env.VANTA_API_KEY}`;
   }
-  console.log({ headers });
   const response = await fetch(url.toString(), {
     method: "POST",
     headers,
@@ -37,9 +36,14 @@ export async function generateAnswer(
     };
   }
 
+  const jsonResponse: unknown = await response.json();
+  const parsedResponse = GeneratedAnswerSchema.parse(jsonResponse);
   return {
     content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
+      {
+        type: "text" as const,
+        text: parsedResponse.answer?.answer ?? "No answer found",
+      },
     ],
   };
 }
@@ -52,3 +56,40 @@ export const GenerateAnswerTool: Tool<typeof GenerateAnswerInput> = {
   description: `Generate an answer to a question via RAG.`,
   parameters: GenerateAnswerInput,
 };
+
+const AnswerLibraryReferenceSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  answer: z.string(),
+  sourceUrl: z.string(),
+  sourceName: z.string(),
+  rank: z.number(),
+});
+
+const ResourceReferenceSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  sourceUrl: z.string(),
+  sourceName: z.string(),
+  rank: z.number(),
+});
+
+export enum GeneratedAnswerOrigin {
+  AI = "AI",
+  ANSWER_LIBRARY = "ANSWER_LIBRARY",
+}
+
+const AnswerSchema = z.object({
+  answer: z.string(),
+  references: z.object({
+    answerLibrary: z.array(AnswerLibraryReferenceSchema),
+    resources: z.array(ResourceReferenceSchema),
+  }),
+  origin: z.nativeEnum(GeneratedAnswerOrigin),
+});
+
+export const GeneratedAnswerSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  answer: z.nullable(AnswerSchema),
+});
