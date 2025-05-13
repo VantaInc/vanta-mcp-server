@@ -14,6 +14,7 @@ import {
   getFrameworkControls,
   getFrameworks,
 } from "./operations/frameworks.js";
+import { generateAnswer, GenerateAnswerTool } from "./operations/generate-answer.js";
 
 const server = new McpServer({
   name: "vanta-mcp",
@@ -53,6 +54,13 @@ server.tool(
   GetFrameworkControlsTool.description,
   GetFrameworkControlsTool.parameters.shape,
   getFrameworkControls,
+);
+
+server.tool(
+  GenerateAnswerTool.name,
+  GenerateAnswerTool.description,
+  GenerateAnswerTool.parameters.shape,
+  generateAnswer,
 );
 
 async function main() {

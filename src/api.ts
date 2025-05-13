@@ -3,7 +3,9 @@ type BaseApiUrl =
   | "https://api.eu.vanta.com"
   | "https://api.aus.vanta.com";
 
-export function baseApiUrl(): BaseApiUrl {
+export function baseApiUrl(): string {
+  // HACK: force MCP to run against local Vanta API.
+  return "http://127.0.0.1:10290";
   if (process.env.REGION) {
     if (process.env.REGION === "eu") {
       return "https://api.eu.vanta.com";
