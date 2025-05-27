@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Run quality checks
+        run: |
+          yarn typecheck
+          yarn lint
+          yarn format:check
+      
+      - name: Build project
+        run: yarn build
+      
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Update package.json version
+        run: |
+          yarn version --new-version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+      
+      - name: Create release notes
+        id: release_notes
+        run: |
+          if [ -f CHANGELOG.md ]; then
+            # Extract release notes from CHANGELOG.md
+            awk '/^## \[?${{ steps.version.outputs.VERSION }}\]?/{flag=1; next} /^## \[?[0-9]/{flag=0} flag' CHANGELOG.md > release_notes.txt
+          else
+            echo "Release ${{ steps.version.outputs.VERSION }}" > release_notes.txt
+            echo "" >> release_notes.txt
+            echo "See commits for details of changes in this release." >> release_notes.txt
+          fi
+      
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          body_path: release_notes.txt
+          draft: false
+          prerelease: false
