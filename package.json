@@ -1,7 +1,8 @@
 {
   "name": "vanta-mcp-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A Model Context Protocol (MCP) server providing tools for interfacing with the Vanta compliance platform API",
+  "main": "build/index.js",
   "type": "module",
   "bin": {
     "vanta-mcp-server": "./build/index.js"
@@ -9,20 +10,55 @@
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
     "start": "yarn build && node build/index.js",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "eval": "tsc && node build/eval/eval.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,json,md}\"",
-    "fix": "npm run format && npm run lint:fix"
+    "fix": "npm run format && npm run lint:fix",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "yarn build && yarn test && yarn lint"
   },
   "files": [
-    "build"
+    "build",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "vanta",
+    "mcp",
+    "model-context-protocol",
+    "compliance",
+    "security",
+    "soc2",
+    "fedramp",
+    "api",
+    "typescript",
+    "ai",
+    "llm"
+  ],
+  "author": {
+    "name": "Vanta, Inc.",
+    "email": "support@vanta.com",
+    "url": "https://vanta.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/VantaInc/vanta-mcp-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VantaInc/vanta-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VantaInc/vanta-mcp-server/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
     "@types/node": "^22.13.17",
