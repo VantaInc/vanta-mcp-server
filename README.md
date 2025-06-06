@@ -95,6 +95,8 @@ Add the server to your Cursor MCP settings:
 }
 ```
 
+If you are unfamiliar with setting up MCP servers in Cursor, [here is an example](https://docs.cursor.com/context/model-context-protocol) in the official Cursor documentation. 
+
 ### Environment Variables
 
 - `VANTA_ENV_FILE` (required): Absolute path to a file containing JSON OAuth credentials
