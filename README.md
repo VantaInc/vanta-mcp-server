@@ -46,7 +46,7 @@ A <a href="https://modelcontextprotocol.com/"> Model Context Protocol </a> serve
 
 ### Vanta OAuth Credentials
 
-1. Create OAuth credentials from the <a href="https://developer.vanta.com/docs/api-access-setup"> developer dashboard </a>
+1. Create OAuth credentials from the <a href="https://developer.vanta.com/docs/api-access-setup"> developer dashboard </a>. When creating an application and selecting the app type, make sure to select "Manage Vanta". 
 2. Save the `client_id` and `client_secret` to a env file:
    ```json
    {
