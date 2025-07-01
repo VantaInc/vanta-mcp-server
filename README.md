@@ -26,6 +26,13 @@ A <a href="https://modelcontextprotocol.com/"> Model Context Protocol </a> serve
 - Get specific tests that validate each security control
 - Understand which automated tests monitor compliance for specific controls
 
+### Document Management
+
+- Access documents associated with specific security controls for evidence tracking
+- List uploaded files and attachments for compliance documentation
+- Download specific document files with proper authentication
+- Track document upload status and file metadata for audit trails
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -41,6 +48,9 @@ A <a href="https://modelcontextprotocol.com/"> Model Context Protocol </a> serve
 | `get_framework_controls` | Get detailed security control requirements for a specific compliance framework. Returns the specific controls, their descriptions, implementation guidance, and current compliance status. Essential for understanding what security measures are required for each compliance standard.                     |
 | `get_controls`           | List all security controls across all frameworks in your Vanta account. Returns control names, descriptions, framework mappings, and current implementation status. Use this to see all available controls or to find a specific control ID for use with other tools.                                        |
 | `get_control_tests`      | Get all automated tests that validate a specific security control. Use this when you know a control ID and want to see which specific tests monitor compliance for that control. Returns test details, current status, and any failing entities for the control's tests.                                     |
+| `get_control_documents`  | List all documents associated with a specific security control. Returns document details including names, types, and upload status for evidence and documentation linked to the control.                                                                                                                    |
+| `get_document_uploads`   | List all uploaded files for a specific document. Returns file details including names, upload dates, and file IDs for files that have been uploaded to provide evidence for a document.                                                                                                                     |
+| `download_document_file` | Download a specific file from a document. Provides access to the actual file content when you know both the document ID and uploaded file ID. Returns download information and URL for authenticated access.                                                                                                |
 
 ## Configuration
 

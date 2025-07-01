@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+// Local executable wrapper for Vanta MCP Server
+import('./build/index.js'); 

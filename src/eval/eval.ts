@@ -9,6 +9,11 @@ import {
   GetControlsTool,
   GetControlTestsTool,
 } from "../operations/controls.js";
+import {
+  GetControlDocumentsTool,
+  GetDocumentUploadsTool,
+  DownloadDocumentFileTool,
+} from "../operations/documents.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -58,6 +63,30 @@ const tools = [
       name: GetControlTestsTool.name,
       description: GetControlTestsTool.description,
       parameters: zodToJsonSchema(GetControlTestsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetControlDocumentsTool.name,
+      description: GetControlDocumentsTool.description,
+      parameters: zodToJsonSchema(GetControlDocumentsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDocumentUploadsTool.name,
+      description: GetDocumentUploadsTool.description,
+      parameters: zodToJsonSchema(GetDocumentUploadsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: DownloadDocumentFileTool.name,
+      description: DownloadDocumentFileTool.description,
+      parameters: zodToJsonSchema(DownloadDocumentFileTool.parameters),
     },
   },
 ];

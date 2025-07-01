@@ -140,3 +140,4 @@ build/
 
 # Claude Code generated files
 CLAUDE.md
+.vanta_env

@@ -13,6 +13,7 @@
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
     "start": "yarn build && node build/index.js",
+    "local-vanta-mcp": "yarn build && node build/index.js",
     "eval": "tsc && node build/eval/eval.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
