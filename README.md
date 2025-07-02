@@ -67,6 +67,19 @@ A <a href="https://modelcontextprotocol.com/"> Model Context Protocol </a> serve
 
 > **Note:** Vanta currently only allows a single active access_token per Application today. [More info here](https://developer.vanta.com/docs/api-access-setup#authentication-and-token-retrieval)
 
+### Usage locally
+
+as this is a fork, you need to build the server and use it from local:
+```json
+"localVanta": {
+      "command": "/path_to/vanta-mcp-server/local-vanta-mcp",
+      "env": {
+        "VANTA_ENV_FILE": "/path_to/.vanta_env"
+      }
+    },
+```
+
+
 ### Usage with Claude Desktop
 
 Add the server to your `claude_desktop_config.json`:
