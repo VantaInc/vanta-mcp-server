@@ -20,6 +20,12 @@ import {
   getControls,
   getControlTests,
 } from "./operations/controls.js";
+import {
+  getDocuments,
+  GetDocumentsTool,
+  getDocumentControls,
+  GetDocumentControlsTool,
+} from "./operations/documents.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -69,6 +75,20 @@ server.tool(
   GetControlTestsTool.description,
   GetControlTestsTool.parameters.shape,
   getControlTests,
+);
+
+server.tool(
+  GetDocumentsTool.name,
+  GetDocumentsTool.description,
+  GetDocumentsTool.parameters.shape,
+  getDocuments,
+);
+
+server.tool(
+  GetDocumentControlsTool.name,
+  GetDocumentControlsTool.description,
+  GetDocumentControlsTool.parameters.shape,
+  getDocumentControls,
 );
 
 async function main() {
