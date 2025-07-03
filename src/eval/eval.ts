@@ -9,9 +9,9 @@ import {
   GetControlsTool,
   GetControlTestsTool,
 } from "../operations/controls.js";
-import { 
+import {
   GetDocumentsTool,
-  GetDocumentControlsTool
+  GetDocumentControlsTool,
 } from "../operations/documents.js";
 
 // Format all tools for OpenAI
@@ -64,7 +64,7 @@ const tools = [
       parameters: zodToJsonSchema(GetControlTestsTool.parameters),
     },
   },
-    {
+  {
     type: "function" as const,
     function: {
       name: GetDocumentsTool.name,
@@ -72,7 +72,7 @@ const tools = [
       parameters: zodToJsonSchema(GetDocumentsTool.parameters),
     },
   },
-      {
+  {
     type: "function" as const,
     function: {
       name: GetDocumentControlsTool.name,

@@ -14,7 +14,7 @@ export async function getDocuments(
   }
   if (args.pageCursor !== undefined) {
     url.searchParams.append("pageCursor", args.pageCursor);
-  }  
+  }
   if (args.frameworkMatchesAny !== undefined) {
     url.searchParams.append("frameworkMatchesAny", args.frameworkMatchesAny);
   }
@@ -45,7 +45,10 @@ export async function getDocuments(
 export async function getDocumentControls(
   args: z.infer<typeof GetDocumentControlsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/documents/${args.documentId}/controls`, baseApiUrl());
+  const url = new URL(
+    `/v1/documents/${args.documentId}/controls`,
+    baseApiUrl(),
+  );
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
   }
@@ -86,9 +89,18 @@ const FRAMEWORK_FILTER_DESCRIPTION = `Filter by framework. Non-exhaustive exampl
 
 export const GetDocumentsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe("Used for pagination. Leave blank to start from the first page.").optional(),
-  statusMatchesAny: z.string().describe(DOCUMENT_STATUS_FILTER_DESCRIPTION).optional(),
-  frameworkMatchesAny: z.string().describe(FRAMEWORK_FILTER_DESCRIPTION).optional(),
+  pageCursor: z
+    .string()
+    .describe("Used for pagination. Leave blank to start from the first page.")
+    .optional(),
+  statusMatchesAny: z
+    .string()
+    .describe(DOCUMENT_STATUS_FILTER_DESCRIPTION)
+    .optional(),
+  frameworkMatchesAny: z
+    .string()
+    .describe(FRAMEWORK_FILTER_DESCRIPTION)
+    .optional(),
 });
 
 export const GetDocumentsTool: Tool<typeof GetDocumentsInput> = {
@@ -100,7 +112,10 @@ export const GetDocumentsTool: Tool<typeof GetDocumentsInput> = {
 export const GetDocumentControlsInput = z.object({
   documentId: z.string().describe("Lowercase with hyphens"),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe("Used for pagination. Leave blank to start from the first page.").optional(),
+  pageCursor: z
+    .string()
+    .describe("Used for pagination. Leave blank to start from the first page.")
+    .optional(),
 });
 
 export const GetDocumentControlsTool: Tool<typeof GetDocumentControlsInput> = {
