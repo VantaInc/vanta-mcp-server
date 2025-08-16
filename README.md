@@ -26,6 +26,12 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Get specific tests that validate each security control
 - Understand which automated tests monitor compliance for specific controls
 
+### Risk Scenario Management
+
+- Get all the risk scenarios you are managing in your current risk register.
+- Returns details about each risk scenario's status, inherent & residual risk score, treatment plan, and more.
+- Filterable by risk category (Access Control, Cryptography, Privacy, and many others).
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -41,6 +47,7 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_framework_controls` | Get detailed security control requirements for a specific compliance framework. Returns the specific controls, their descriptions, implementation guidance, and current compliance status. Essential for understanding what security measures are required for each compliance standard.                     |
 | `get_controls`           | List all security controls across all frameworks in your Vanta account. Returns control names, descriptions, framework mappings, and current implementation status. Use this to see all available controls or to find a specific control ID for use with other tools.                                        |
 | `get_control_tests`      | Get all automated tests that validate a specific security control. Use this when you know a control ID and want to see which specific tests monitor compliance for that control. Returns test details, current status, and any failing entities for the control's tests.                                     |
+| `get_risks`              | Get all the risk scenarios you are managing in your current risk register. Returns details about each risk scenario's status, inherent & residual risk score, treatment plan, and more. Filterable by risk category (Access Control, Cryptography, Privacy, and many others).                                |
 
 ## Configuration
 

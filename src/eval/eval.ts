@@ -9,6 +9,7 @@ import {
   GetControlsTool,
   GetControlTestsTool,
 } from "../operations/controls.js";
+import { GetRisksTool } from "../operations/risks.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -58,6 +59,14 @@ const tools = [
       name: GetControlTestsTool.name,
       description: GetControlTestsTool.description,
       parameters: zodToJsonSchema(GetControlTestsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetRisksTool.name,
+      description: GetRisksTool.description,
+      parameters: zodToJsonSchema(GetRisksTool.parameters),
     },
   },
 ];
