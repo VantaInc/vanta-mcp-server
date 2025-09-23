@@ -6,6 +6,7 @@ import { makeAuthenticatedRequest } from "./utils.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
+  CONTROL_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
 const GetControlsInput = z.object({
@@ -27,11 +28,7 @@ export const GetControlsTool: Tool<typeof GetControlsInput> = {
 };
 
 const GetControlTestsInput = z.object({
-  controlId: z
-    .string()
-    .describe(
-      "Control ID to get tests for, e.g. 'access-control-1' or 'data-protection-2'",
-    ),
+  controlId: z.string().describe(CONTROL_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -56,11 +53,7 @@ export const GetLibraryControlsTool: Tool<typeof GetLibraryControlsInput> = {
 };
 
 const GetControlDocumentsInput = z.object({
-  controlId: z
-    .string()
-    .describe(
-      "Control ID to get documents for, e.g. 'access-control-1' or 'data-protection-2'",
-    ),
+  controlId: z.string().describe(CONTROL_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -73,11 +66,7 @@ export const GetControlDocumentsTool: Tool<typeof GetControlDocumentsInput> = {
 };
 
 const GetControlByIdInput = z.object({
-  controlId: z
-    .string()
-    .describe(
-      "Control ID to retrieve, e.g. 'access-control-1' or 'data-protection-2'",
-    ),
+  controlId: z.string().describe(CONTROL_ID_DESCRIPTION),
 });
 
 export const GetControlByIdTool: Tool<typeof GetControlByIdInput> = {

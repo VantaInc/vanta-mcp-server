@@ -6,6 +6,7 @@ import { makeAuthenticatedRequest } from "./utils.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
+  FRAMEWORK_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
 const GetFrameworksInput = z.object({
@@ -21,7 +22,7 @@ export const GetFrameworksTool: Tool<typeof GetFrameworksInput> = {
 };
 
 const GetFrameworkControlsInput = z.object({
-  frameworkId: z.string(),
+  frameworkId: z.string().describe(FRAMEWORK_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -35,11 +36,7 @@ export const GetFrameworkControlsTool: Tool<typeof GetFrameworkControlsInput> =
   };
 
 const GetFrameworkByIdInput = z.object({
-  frameworkId: z
-    .string()
-    .describe(
-      "Framework ID to retrieve, e.g. 'soc2', 'iso27001', 'hipaa', 'gdpr'",
-    ),
+  frameworkId: z.string().describe(FRAMEWORK_ID_DESCRIPTION),
 });
 
 export const GetFrameworkByIdTool: Tool<typeof GetFrameworkByIdInput> = {

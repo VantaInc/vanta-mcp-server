@@ -6,6 +6,7 @@ import { makeAuthenticatedRequest } from "./utils.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
+  INTEGRATION_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
 const GetIntegrationsInput = z.object({
@@ -21,11 +22,7 @@ export const GetIntegrationsTool: Tool<typeof GetIntegrationsInput> = {
 };
 
 const GetIntegrationByIdInput = z.object({
-  integrationId: z
-    .string()
-    .describe(
-      "Integration ID to retrieve, e.g. 'aws', 'azure', 'gcp', or specific integration identifier",
-    ),
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
 });
 
 export const GetIntegrationByIdTool: Tool<typeof GetIntegrationByIdInput> = {
@@ -36,11 +33,7 @@ export const GetIntegrationByIdTool: Tool<typeof GetIntegrationByIdInput> = {
 };
 
 const GetIntegrationResourceKindsInput = z.object({
-  integrationId: z
-    .string()
-    .describe(
-      "Integration ID to get resource kinds for, e.g. 'aws', 'azure', 'gcp'",
-    ),
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -53,11 +46,7 @@ export const GetIntegrationResourceKindsTool: Tool<typeof GetIntegrationResource
 };
 
 const GetIntegrationResourceKindDetailsInput = z.object({
-  integrationId: z
-    .string()
-    .describe(
-      "Integration ID to get resource kind details for, e.g. 'aws', 'azure', 'gcp'",
-    ),
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
   resourceKind: z
     .string()
     .describe(
@@ -73,11 +62,7 @@ export const GetIntegrationResourceKindDetailsTool: Tool<typeof GetIntegrationRe
 };
 
 const GetIntegrationResourcesInput = z.object({
-  integrationId: z
-    .string()
-    .describe(
-      "Integration ID to get resources for, e.g. 'aws', 'azure', 'gcp'",
-    ),
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -90,11 +75,7 @@ export const GetIntegrationResourcesTool: Tool<typeof GetIntegrationResourcesInp
 };
 
 const GetIntegrationResourceByIdInput = z.object({
-  integrationId: z
-    .string()
-    .describe(
-      "Integration ID that owns the resource, e.g. 'aws', 'azure', 'gcp'",
-    ),
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
   resourceId: z
     .string()
     .describe(

@@ -6,6 +6,7 @@ import { makeAuthenticatedRequest } from "./utils.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
+  VENDOR_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
 const GetVendorsInput = z.object({
@@ -21,11 +22,7 @@ export const GetVendorsTool: Tool<typeof GetVendorsInput> = {
 };
 
 const GetVendorByIdInput = z.object({
-  vendorId: z
-    .string()
-    .describe(
-      "Vendor ID to retrieve, e.g. 'vendor-123' or specific vendor identifier",
-    ),
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
 });
 
 export const GetVendorByIdTool: Tool<typeof GetVendorByIdInput> = {
@@ -36,11 +33,7 @@ export const GetVendorByIdTool: Tool<typeof GetVendorByIdInput> = {
 };
 
 const GetVendorDocumentsInput = z.object({
-  vendorId: z
-    .string()
-    .describe(
-      "Vendor ID to get documents for, e.g. 'vendor-123' or specific vendor identifier",
-    ),
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -53,11 +46,7 @@ export const GetVendorDocumentsTool: Tool<typeof GetVendorDocumentsInput> = {
 };
 
 const GetVendorFindingsInput = z.object({
-  vendorId: z
-    .string()
-    .describe(
-      "Vendor ID to get findings for, e.g. 'vendor-123' or specific vendor identifier",
-    ),
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -70,11 +59,7 @@ export const GetVendorFindingsTool: Tool<typeof GetVendorFindingsInput> = {
 };
 
 const GetVendorSecurityReviewsInput = z.object({
-  vendorId: z
-    .string()
-    .describe(
-      "Vendor ID to get security reviews for, e.g. 'vendor-123' or specific vendor identifier",
-    ),
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
@@ -87,11 +72,7 @@ export const GetVendorSecurityReviewsTool: Tool<typeof GetVendorSecurityReviewsI
 };
 
 const GetVendorSecurityReviewByIdInput = z.object({
-  vendorId: z
-    .string()
-    .describe(
-      "Vendor ID that owns the security review, e.g. 'vendor-123'",
-    ),
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   securityReviewId: z
     .string()
     .describe(
@@ -107,11 +88,7 @@ export const GetVendorSecurityReviewByIdTool: Tool<typeof GetVendorSecurityRevie
 };
 
 const GetVendorSecurityReviewDocumentsInput = z.object({
-  vendorId: z
-    .string()
-    .describe(
-      "Vendor ID that owns the security review, e.g. 'vendor-123'",
-    ),
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   securityReviewId: z
     .string()
     .describe(
