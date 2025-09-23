@@ -75,6 +75,12 @@ import {
   downloadDocumentFile,
   DownloadDocumentFileTool,
 } from "./operations/documents.js";
+import {
+  getPolicies,
+  GetPoliciesTool,
+  getPolicyById,
+  GetPolicyByIdTool,
+} from "./operations/policies.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -306,6 +312,20 @@ server.tool(
   DownloadDocumentFileTool.description,
   DownloadDocumentFileTool.parameters.shape,
   downloadDocumentFile,
+);
+
+server.tool(
+  GetPoliciesTool.name,
+  GetPoliciesTool.description,
+  GetPoliciesTool.parameters.shape,
+  getPolicies,
+);
+
+server.tool(
+  GetPolicyByIdTool.name,
+  GetPolicyByIdTool.description,
+  GetPolicyByIdTool.parameters.shape,
+  getPolicyById,
 );
 
 async function main() {

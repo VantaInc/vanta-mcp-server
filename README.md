@@ -64,6 +64,13 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - List all files and uploads attached to documents for compliance documentation
 - Intelligently download file uploads with automatic MIME type handling - text files return readable content, binary files return metadata
 
+### Policy Management
+
+- List all policies in your Vanta account for compliance and governance management
+- Get detailed policy information including content, approval status, and compliance mappings
+- Access organizational policies for security, privacy, and operational governance
+- View policy metadata including names, types, and associated compliance frameworks
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -105,6 +112,8 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_document_links`     | List document's links. Get all external links and references associated with a specific document. Use this to access related resources, external documentation, or supplementary materials for compliance evidence.                                                                                   |
 | `get_document_uploads`   | List document's uploads. Get all files and uploads that have been attached to a specific document. Use this to see what files are available for download or review as part of compliance documentation.                                                                                               |
 | `download_document_file` | Download file for document. Intelligently retrieves file content from a document upload. For text-based files (txt, json, csv, xml, etc.), returns the readable content. For binary files (images, PDFs, etc.), returns file metadata and information. Use this to access compliance evidence and documentation content that can be analyzed. |
+| `get_policies`           | List all policies in your Vanta account. Returns policy IDs, names, types, and metadata for compliance and governance management. Use this to see all policies available for compliance frameworks and organizational governance.                                                                                         |
+| `get_policy_by_id`       | Get policy by ID. Retrieve detailed information about a specific policy when its ID is known. The ID of a policy can be found from get_policies response. Returns complete policy details including name, description, content, approval status, and compliance mappings.                                      |
 
 ## Configuration
 

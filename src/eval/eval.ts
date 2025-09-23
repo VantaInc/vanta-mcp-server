@@ -30,6 +30,10 @@ import {
   GetDocumentUploadsTool,
   DownloadDocumentFileTool,
 } from "../operations/documents.js";
+import {
+  GetPoliciesTool,
+  GetPolicyByIdTool,
+} from "../operations/policies.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -209,6 +213,22 @@ const tools = [
       parameters: zodToJsonSchema(DownloadDocumentFileTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetPoliciesTool.name,
+      description: GetPoliciesTool.description,
+      parameters: zodToJsonSchema(GetPoliciesTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetPolicyByIdTool.name,
+      description: GetPolicyByIdTool.description,
+      parameters: zodToJsonSchema(GetPolicyByIdTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -371,6 +391,18 @@ const testCases: TestCase[] = [
     expectedTool: "download_document_file",
     expectedParams: { documentId: "DOC-789", uploadedFileId: "FILE-456" },
     description: "Should call download_document_file to download specific file from document",
+  },
+  {
+    prompt: "Show me all the policies we have established for our organization.",
+    expectedTool: "get_policies",
+    expectedParams: {},
+    description: "Should call get_policies to list all organizational policies",
+  },
+  {
+    prompt: "I need to review the details of our data retention policy with ID POLICY-789.",
+    expectedTool: "get_policy_by_id",
+    expectedParams: { policyId: "POLICY-789" },
+    description: "Should call get_policy_by_id for specific policy details",
   },
   {
     prompt: "What programming tests should I write for my API?",

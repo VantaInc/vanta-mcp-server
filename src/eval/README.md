@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 25 test cases covering:
+The evaluation includes 27 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -67,6 +67,8 @@ The evaluation includes 25 test cases covering:
 - **Document Links**: `get_document_links` for external references in documents
 - **Document Uploads**: `get_document_uploads` for file uploads attached to documents
 - **Document Downloads**: `download_document_file` for intelligently downloading files (text content for readable files, metadata for binary files)
+- **Policy Listing**: `get_policies` for all organizational policies
+- **Policy Details**: `get_policy_by_id` for specific policy information
 
 ### ❌ **Negative Tests**
 
@@ -91,8 +93,8 @@ The evaluation includes 25 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 25/25 tests
-❌ Failed: 0/25 tests
+✅ Passed: 27/27 tests
+❌ Failed: 0/27 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```
