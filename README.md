@@ -78,6 +78,15 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Understand vendor relationships and account structures before converting to managed vendors
 - Streamline vendor risk assessment workflows by identifying unmanaged vendor relationships
 
+### Group & People Management
+
+- List all organizational groups for structure and access management
+- Get detailed group information including member counts and access permissions
+- View group membership to understand who has group-based access permissions
+- List all people in your organization for compliance and security management
+- Access detailed person information including roles, email addresses, and group memberships
+- Manage organizational structure and access control through comprehensive people and group data
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -123,6 +132,11 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_policy_by_id`       | Get policy by ID. Retrieve detailed information about a specific policy when its ID is known. The ID of a policy can be found from get_policies response. Returns complete policy details including name, description, content, approval status, and compliance mappings.                                      |
 | `get_discovered_vendors` | List discovered vendors in your Vanta account. Returns vendors that have been automatically discovered through integrations but may not yet be managed as official vendors. Use this to see potential vendors for risk assessment and vendor management onboarding.                                        |
 | `get_discovered_vendor_accounts` | List discovered vendor accounts in your Vanta account. Returns detailed account information for discovered vendors including integration sources and account metadata. Use this to understand vendor relationships and account structures before converting to managed vendors.                        |
+| `get_groups`             | List all groups in your Vanta account. Returns group IDs, names, descriptions, and metadata for organizational structure and access management. Use this to see all groups available for people assignment and access control.                                                                              |
+| `get_group_by_id`        | Get group by ID. Retrieve detailed information about a specific group when its ID is known. The ID of a group can be found from get_groups response. Returns complete group details including name, description, member count, and access permissions.                                                   |
+| `get_group_people`       | List people in a group. Get all people who are members of a specific group for organizational structure and access management. Use this to understand group membership and review who has group-based access permissions.                                                                                |
+| `get_people`             | List all people in your Vanta account. Returns person IDs, names, email addresses, and metadata for organizational structure and access management. Use this to see all people in your organization for compliance and security management.                                                              |
+| `get_person_by_id`       | Get person by ID. Retrieve detailed information about a specific person when their ID is known. The ID of a person can be found from get_people response. Returns complete person details including name, email, role, group memberships, and access permissions.                                      |
 
 ## Configuration
 

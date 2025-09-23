@@ -38,6 +38,15 @@ import {
   GetDiscoveredVendorsTool,
   GetDiscoveredVendorAccountsTool,
 } from "../operations/discovered-vendors.js";
+import {
+  GetGroupsTool,
+  GetGroupByIdTool,
+  GetGroupPeopleTool,
+} from "../operations/groups.js";
+import {
+  GetPeopleTool,
+  GetPersonByIdTool,
+} from "../operations/people.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -249,6 +258,46 @@ const tools = [
       parameters: zodToJsonSchema(GetDiscoveredVendorAccountsTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetGroupsTool.name,
+      description: GetGroupsTool.description,
+      parameters: zodToJsonSchema(GetGroupsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetGroupByIdTool.name,
+      description: GetGroupByIdTool.description,
+      parameters: zodToJsonSchema(GetGroupByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetGroupPeopleTool.name,
+      description: GetGroupPeopleTool.description,
+      parameters: zodToJsonSchema(GetGroupPeopleTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetPeopleTool.name,
+      description: GetPeopleTool.description,
+      parameters: zodToJsonSchema(GetPeopleTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetPersonByIdTool.name,
+      description: GetPersonByIdTool.description,
+      parameters: zodToJsonSchema(GetPersonByIdTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -435,6 +484,36 @@ const testCases: TestCase[] = [
     expectedTool: "get_discovered_vendor_accounts",
     expectedParams: {},
     description: "Should call get_discovered_vendor_accounts to get detailed vendor account information",
+  },
+  {
+    prompt: "Show me all the organizational groups we have set up for access management.",
+    expectedTool: "get_groups",
+    expectedParams: {},
+    description: "Should call get_groups to list all organizational groups",
+  },
+  {
+    prompt: "I need details about the Engineering group with ID GROUP-456.",
+    expectedTool: "get_group_by_id",
+    expectedParams: { groupId: "GROUP-456" },
+    description: "Should call get_group_by_id for specific group details",
+  },
+  {
+    prompt: "Who are all the members of the Security team group?",
+    expectedTool: "get_group_people",
+    expectedParams: { groupId: "Security team" },
+    description: "Should call get_group_people to list people in a specific group",
+  },
+  {
+    prompt: "List all people in our organization for the compliance audit.",
+    expectedTool: "get_people",
+    expectedParams: {},
+    description: "Should call get_people to list all people in the organization",
+  },
+  {
+    prompt: "Get me the details for employee PERSON-789.",
+    expectedTool: "get_person_by_id",
+    expectedParams: { personId: "PERSON-789" },
+    description: "Should call get_person_by_id for specific person details",
   },
   {
     prompt: "What programming tests should I write for my API?",

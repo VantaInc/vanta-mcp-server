@@ -87,6 +87,20 @@ import {
   getDiscoveredVendorAccounts,
   GetDiscoveredVendorAccountsTool,
 } from "./operations/discovered-vendors.js";
+import {
+  getGroups,
+  GetGroupsTool,
+  getGroupById,
+  GetGroupByIdTool,
+  getGroupPeople,
+  GetGroupPeopleTool,
+} from "./operations/groups.js";
+import {
+  getPeople,
+  GetPeopleTool,
+  getPersonById,
+  GetPersonByIdTool,
+} from "./operations/people.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -346,6 +360,41 @@ server.tool(
   GetDiscoveredVendorAccountsTool.description,
   GetDiscoveredVendorAccountsTool.parameters.shape,
   getDiscoveredVendorAccounts,
+);
+
+server.tool(
+  GetGroupsTool.name,
+  GetGroupsTool.description,
+  GetGroupsTool.parameters.shape,
+  getGroups,
+);
+
+server.tool(
+  GetGroupByIdTool.name,
+  GetGroupByIdTool.description,
+  GetGroupByIdTool.parameters.shape,
+  getGroupById,
+);
+
+server.tool(
+  GetGroupPeopleTool.name,
+  GetGroupPeopleTool.description,
+  GetGroupPeopleTool.parameters.shape,
+  getGroupPeople,
+);
+
+server.tool(
+  GetPeopleTool.name,
+  GetPeopleTool.description,
+  GetPeopleTool.parameters.shape,
+  getPeople,
+);
+
+server.tool(
+  GetPersonByIdTool.name,
+  GetPersonByIdTool.description,
+  GetPersonByIdTool.parameters.shape,
+  getPersonById,
 );
 
 async function main() {

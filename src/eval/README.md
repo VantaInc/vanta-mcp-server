@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 29 test cases covering:
+The evaluation includes 34 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -71,6 +71,11 @@ The evaluation includes 29 test cases covering:
 - **Policy Details**: `get_policy_by_id` for specific policy information
 - **Discovered Vendors**: `get_discovered_vendors` for automatically discovered vendors
 - **Discovered Vendor Accounts**: `get_discovered_vendor_accounts` for detailed vendor account information
+- **Group Listing**: `get_groups` for all organizational groups
+- **Group Details**: `get_group_by_id` for specific group information
+- **Group Membership**: `get_group_people` for people in specific groups
+- **People Listing**: `get_people` for all people in the organization
+- **Person Details**: `get_person_by_id` for specific person information
 
 ### ❌ **Negative Tests**
 
@@ -95,8 +100,8 @@ The evaluation includes 29 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 29/29 tests
-❌ Failed: 0/29 tests
+✅ Passed: 34/34 tests
+❌ Failed: 0/34 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```
