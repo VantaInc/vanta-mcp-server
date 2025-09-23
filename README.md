@@ -87,6 +87,14 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Access detailed person information including roles, email addresses, and group memberships
 - Manage organizational structure and access control through comprehensive people and group data
 
+### Vulnerability Management
+
+- Monitor all vulnerabilities detected across your infrastructure and applications
+- Access detailed vulnerability information including CVE data, severity levels, and affected assets
+- Track vulnerability remediation efforts and timelines for security management
+- Identify vulnerable assets and understand their security status
+- Prioritize security efforts based on asset vulnerability associations and risk levels
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -137,6 +145,11 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_group_people`       | List people in a group. Get all people who are members of a specific group for organizational structure and access management. Use this to understand group membership and review who has group-based access permissions.                                                                                |
 | `get_people`             | List all people in your Vanta account. Returns person IDs, names, email addresses, and metadata for organizational structure and access management. Use this to see all people in your organization for compliance and security management.                                                              |
 | `get_person_by_id`       | Get person by ID. Retrieve detailed information about a specific person when their ID is known. The ID of a person can be found from get_people response. Returns complete person details including name, email, role, group memberships, and access permissions.                                      |
+| `get_vulnerabilities`    | Get vulnerabilities in your Vanta account. Returns vulnerability IDs, CVE information, severity levels, and affected assets for security monitoring and remediation. Use this to see all vulnerabilities detected across your infrastructure and applications.                                           |
+| `get_vulnerability_by_id` | Get vulnerability by ID. Retrieve detailed information about a specific vulnerability when its ID is known. The ID of a vulnerability can be found from get_vulnerabilities response. Returns complete vulnerability details including CVE information, severity, affected assets, and remediation status. |
+| `get_vulnerability_remediations` | List vulnerability remediations in your Vanta account. Returns remediation IDs, associated vulnerabilities, remediation status, and timeline information for security management. Use this to track vulnerability remediation efforts and ensure timely resolution of security issues.           |
+| `get_vulnerable_assets`  | List assets associated with vulnerabilities in your Vanta account. Returns asset IDs, vulnerability associations, asset types, and security status for infrastructure security management. Use this to identify which assets are affected by vulnerabilities and prioritize security efforts.        |
+| `get_vulnerable_asset_by_id` | Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from get_vulnerable_assets response. Returns complete asset details including vulnerability associations, asset type, and security status. |
 
 ## Configuration
 

@@ -47,6 +47,17 @@ import {
   GetPeopleTool,
   GetPersonByIdTool,
 } from "../operations/people.js";
+import {
+  GetVulnerabilitiesTool,
+  GetVulnerabilityByIdTool,
+} from "../operations/vulnerabilities.js";
+import {
+  GetVulnerabilityRemediationsTool,
+} from "../operations/vulnerability-remediations.js";
+import {
+  GetVulnerableAssetsTool,
+  GetVulnerableAssetByIdTool,
+} from "../operations/vulnerable-assets.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -298,6 +309,46 @@ const tools = [
       parameters: zodToJsonSchema(GetPersonByIdTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVulnerabilitiesTool.name,
+      description: GetVulnerabilitiesTool.description,
+      parameters: zodToJsonSchema(GetVulnerabilitiesTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVulnerabilityByIdTool.name,
+      description: GetVulnerabilityByIdTool.description,
+      parameters: zodToJsonSchema(GetVulnerabilityByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVulnerabilityRemediationsTool.name,
+      description: GetVulnerabilityRemediationsTool.description,
+      parameters: zodToJsonSchema(GetVulnerabilityRemediationsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVulnerableAssetsTool.name,
+      description: GetVulnerableAssetsTool.description,
+      parameters: zodToJsonSchema(GetVulnerableAssetsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVulnerableAssetByIdTool.name,
+      description: GetVulnerableAssetByIdTool.description,
+      parameters: zodToJsonSchema(GetVulnerableAssetByIdTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -514,6 +565,36 @@ const testCases: TestCase[] = [
     expectedTool: "get_person_by_id",
     expectedParams: { personId: "PERSON-789" },
     description: "Should call get_person_by_id for specific person details",
+  },
+  {
+    prompt: "Show me all the security vulnerabilities detected in our infrastructure.",
+    expectedTool: "get_vulnerabilities",
+    expectedParams: {},
+    description: "Should call get_vulnerabilities to list all detected vulnerabilities",
+  },
+  {
+    prompt: "I need detailed information about vulnerability VULN-456 including its CVE data.",
+    expectedTool: "get_vulnerability_by_id",
+    expectedParams: { vulnerabilityId: "VULN-456" },
+    description: "Should call get_vulnerability_by_id for specific vulnerability details",
+  },
+  {
+    prompt: "What vulnerability remediations are currently in progress?",
+    expectedTool: "get_vulnerability_remediations",
+    expectedParams: {},
+    description: "Should call get_vulnerability_remediations to track remediation efforts",
+  },
+  {
+    prompt: "List all assets that are affected by vulnerabilities for our security review.",
+    expectedTool: "get_vulnerable_assets",
+    expectedParams: {},
+    description: "Should call get_vulnerable_assets to identify affected infrastructure",
+  },
+  {
+    prompt: "Get details about vulnerable asset ASSET-789 and its security status.",
+    expectedTool: "get_vulnerable_asset_by_id",
+    expectedParams: { vulnerableAssetId: "ASSET-789" },
+    description: "Should call get_vulnerable_asset_by_id for specific asset vulnerability details",
   },
   {
     prompt: "What programming tests should I write for my API?",

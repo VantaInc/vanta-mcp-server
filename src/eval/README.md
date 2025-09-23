@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 34 test cases covering:
+The evaluation includes 39 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -76,6 +76,11 @@ The evaluation includes 34 test cases covering:
 - **Group Membership**: `get_group_people` for people in specific groups
 - **People Listing**: `get_people` for all people in the organization
 - **Person Details**: `get_person_by_id` for specific person information
+- **Vulnerability Listing**: `get_vulnerabilities` for all detected vulnerabilities
+- **Vulnerability Details**: `get_vulnerability_by_id` for specific vulnerability information
+- **Vulnerability Remediations**: `get_vulnerability_remediations` for tracking remediation efforts
+- **Vulnerable Assets**: `get_vulnerable_assets` for assets affected by vulnerabilities
+- **Vulnerable Asset Details**: `get_vulnerable_asset_by_id` for specific asset vulnerability information
 
 ### ❌ **Negative Tests**
 
@@ -100,8 +105,8 @@ The evaluation includes 34 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 34/34 tests
-❌ Failed: 0/34 tests
+✅ Passed: 39/39 tests
+❌ Failed: 0/39 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```

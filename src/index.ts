@@ -101,6 +101,22 @@ import {
   getPersonById,
   GetPersonByIdTool,
 } from "./operations/people.js";
+import {
+  getVulnerabilities,
+  GetVulnerabilitiesTool,
+  getVulnerabilityById,
+  GetVulnerabilityByIdTool,
+} from "./operations/vulnerabilities.js";
+import {
+  getVulnerabilityRemediations,
+  GetVulnerabilityRemediationsTool,
+} from "./operations/vulnerability-remediations.js";
+import {
+  getVulnerableAssets,
+  GetVulnerableAssetsTool,
+  getVulnerableAssetById,
+  GetVulnerableAssetByIdTool,
+} from "./operations/vulnerable-assets.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -395,6 +411,41 @@ server.tool(
   GetPersonByIdTool.description,
   GetPersonByIdTool.parameters.shape,
   getPersonById,
+);
+
+server.tool(
+  GetVulnerabilitiesTool.name,
+  GetVulnerabilitiesTool.description,
+  GetVulnerabilitiesTool.parameters.shape,
+  getVulnerabilities,
+);
+
+server.tool(
+  GetVulnerabilityByIdTool.name,
+  GetVulnerabilityByIdTool.description,
+  GetVulnerabilityByIdTool.parameters.shape,
+  getVulnerabilityById,
+);
+
+server.tool(
+  GetVulnerabilityRemediationsTool.name,
+  GetVulnerabilityRemediationsTool.description,
+  GetVulnerabilityRemediationsTool.parameters.shape,
+  getVulnerabilityRemediations,
+);
+
+server.tool(
+  GetVulnerableAssetsTool.name,
+  GetVulnerableAssetsTool.description,
+  GetVulnerableAssetsTool.parameters.shape,
+  getVulnerableAssets,
+);
+
+server.tool(
+  GetVulnerableAssetByIdTool.name,
+  GetVulnerableAssetByIdTool.description,
+  GetVulnerableAssetByIdTool.parameters.shape,
+  getVulnerableAssetById,
 );
 
 async function main() {
