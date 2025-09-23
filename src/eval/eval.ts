@@ -8,6 +8,9 @@ import {
 import {
   GetControlsTool,
   GetControlTestsTool,
+  GetLibraryControlsTool,
+  GetControlDocumentsTool,
+  GetControlByIdTool,
 } from "../operations/controls.js";
 import { GetRisksTool } from "../operations/risks.js";
 
@@ -59,6 +62,30 @@ const tools = [
       name: GetControlTestsTool.name,
       description: GetControlTestsTool.description,
       parameters: zodToJsonSchema(GetControlTestsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetLibraryControlsTool.name,
+      description: GetLibraryControlsTool.description,
+      parameters: zodToJsonSchema(GetLibraryControlsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetControlDocumentsTool.name,
+      description: GetControlDocumentsTool.description,
+      parameters: zodToJsonSchema(GetControlDocumentsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetControlByIdTool.name,
+      description: GetControlByIdTool.description,
+      parameters: zodToJsonSchema(GetControlByIdTool.parameters),
     },
   },
   {
@@ -141,6 +168,24 @@ const testCases: TestCase[] = [
     expectedTool: "get_control_tests",
     expectedParams: { controlId: "access-control-1" },
     description: "Should call get_control_tests for specific control",
+  },
+  {
+    prompt: "What controls are available in the Vanta library that I can add?",
+    expectedTool: "get_library_controls",
+    expectedParams: {},
+    description: "Should call get_library_controls to list available library controls",
+  },
+  {
+    prompt: "Show me the documents for control ID access-control-1",
+    expectedTool: "get_control_documents",
+    expectedParams: { controlId: "access-control-1" },
+    description: "Should call get_control_documents for specific control",
+  },
+  {
+    prompt: "Get details for control ID data-protection-2",
+    expectedTool: "get_control_by_id",
+    expectedParams: { controlId: "data-protection-2" },
+    description: "Should call get_control_by_id for specific control details",
   },
   {
     prompt: "What programming tests should I write for my API?",

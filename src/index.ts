@@ -19,8 +19,14 @@ import {
 import {
   GetControlsTool,
   GetControlTestsTool,
+  GetLibraryControlsTool,
+  GetControlDocumentsTool,
+  GetControlByIdTool,
   getControls,
   getControlTests,
+  getLibraryControls,
+  getControlDocuments,
+  getControlById,
 } from "./operations/controls.js";
 import { getRisks, GetRisksTool } from "./operations/risks.js";
 import { initializeToken } from "./auth.js";
@@ -79,6 +85,27 @@ server.tool(
   GetControlTestsTool.description,
   GetControlTestsTool.parameters.shape,
   getControlTests,
+);
+
+server.tool(
+  GetLibraryControlsTool.name,
+  GetLibraryControlsTool.description,
+  GetLibraryControlsTool.parameters.shape,
+  getLibraryControls,
+);
+
+server.tool(
+  GetControlDocumentsTool.name,
+  GetControlDocumentsTool.description,
+  GetControlDocumentsTool.parameters.shape,
+  getControlDocuments,
+);
+
+server.tool(
+  GetControlByIdTool.name,
+  GetControlByIdTool.description,
+  GetControlByIdTool.parameters.shape,
+  getControlById,
 );
 
 server.tool(

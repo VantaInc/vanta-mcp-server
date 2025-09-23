@@ -40,19 +40,21 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 11 test cases covering:
+The evaluation includes 13 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
 - **AWS Security Review**: `get_tests` with AWS and NEEDS_ATTENTION filters
 - **SOC2 Compliance**: `get_tests` with SOC2 framework filter
 - **Entity Details**: `get_test_entities` for specific failing resources
-- **Maintenance Deactivation**: `deactivate_test_entity` for suppressing alerts
 - **Framework Listing**: `get_frameworks` for available frameworks
 - **Control Requirements**: `get_framework_controls` for specific framework details
 - **Status Percentage**: `get_frameworks` for completion percentages
 - **Control Listing**: `get_controls` for all security controls
 - **Control Tests**: `get_control_tests` for tests validating specific controls
+- **Library Controls**: `get_library_controls` for available Vanta library controls
+- **Control Documents**: `get_control_documents` for documents associated with controls
+- **Control Details**: `get_control_by_id` for specific control information
 
 ### ❌ **Negative Tests**
 
@@ -77,8 +79,8 @@ The evaluation includes 11 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 11/11 tests
-❌ Failed: 0/11 tests
+✅ Passed: 13/13 tests
+❌ Failed: 0/13 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```
