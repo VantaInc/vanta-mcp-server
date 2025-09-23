@@ -127,6 +127,32 @@ import {
   getVendorRiskAttributes,
   GetVendorRiskAttributesTool,
 } from "./operations/vendor-risk-attributes.js";
+import {
+  getTrustCenter,
+  GetTrustCenterTool,
+  getTrustCenterAccessRequests,
+  GetTrustCenterAccessRequestsTool,
+  getTrustCenterAccessRequest,
+  GetTrustCenterAccessRequestTool,
+  getTrustCenterViewerActivityEvents,
+  GetTrustCenterViewerActivityEventsTool,
+  getTrustCenterControlCategories,
+  GetTrustCenterControlCategoriesTool,
+  getTrustCenterControlCategory,
+  GetTrustCenterControlCategoryTool,
+  getTrustCenterControls,
+  GetTrustCenterControlsTool,
+  getTrustCenterControl,
+  GetTrustCenterControlTool,
+  getTrustCenterFaqs,
+  GetTrustCenterFaqsTool,
+  getTrustCenterFaq,
+  GetTrustCenterFaqTool,
+  getTrustCenterResources,
+  GetTrustCenterResourcesTool,
+  getTrustCenterDocument,
+  GetTrustCenterDocumentTool,
+} from "./operations/trust-centers.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -477,6 +503,90 @@ server.tool(
   GetVendorRiskAttributesTool.description,
   GetVendorRiskAttributesTool.parameters.shape,
   getVendorRiskAttributes,
+);
+
+server.tool(
+  GetTrustCenterTool.name,
+  GetTrustCenterTool.description,
+  GetTrustCenterTool.parameters.shape,
+  getTrustCenter,
+);
+
+server.tool(
+  GetTrustCenterAccessRequestsTool.name,
+  GetTrustCenterAccessRequestsTool.description,
+  GetTrustCenterAccessRequestsTool.parameters.shape,
+  getTrustCenterAccessRequests,
+);
+
+server.tool(
+  GetTrustCenterAccessRequestTool.name,
+  GetTrustCenterAccessRequestTool.description,
+  GetTrustCenterAccessRequestTool.parameters.shape,
+  getTrustCenterAccessRequest,
+);
+
+server.tool(
+  GetTrustCenterViewerActivityEventsTool.name,
+  GetTrustCenterViewerActivityEventsTool.description,
+  GetTrustCenterViewerActivityEventsTool.parameters.shape,
+  getTrustCenterViewerActivityEvents,
+);
+
+server.tool(
+  GetTrustCenterControlCategoriesTool.name,
+  GetTrustCenterControlCategoriesTool.description,
+  GetTrustCenterControlCategoriesTool.parameters.shape,
+  getTrustCenterControlCategories,
+);
+
+server.tool(
+  GetTrustCenterControlCategoryTool.name,
+  GetTrustCenterControlCategoryTool.description,
+  GetTrustCenterControlCategoryTool.parameters.shape,
+  getTrustCenterControlCategory,
+);
+
+server.tool(
+  GetTrustCenterControlsTool.name,
+  GetTrustCenterControlsTool.description,
+  GetTrustCenterControlsTool.parameters.shape,
+  getTrustCenterControls,
+);
+
+server.tool(
+  GetTrustCenterControlTool.name,
+  GetTrustCenterControlTool.description,
+  GetTrustCenterControlTool.parameters.shape,
+  getTrustCenterControl,
+);
+
+server.tool(
+  GetTrustCenterFaqsTool.name,
+  GetTrustCenterFaqsTool.description,
+  GetTrustCenterFaqsTool.parameters.shape,
+  getTrustCenterFaqs,
+);
+
+server.tool(
+  GetTrustCenterFaqTool.name,
+  GetTrustCenterFaqTool.description,
+  GetTrustCenterFaqTool.parameters.shape,
+  getTrustCenterFaq,
+);
+
+server.tool(
+  GetTrustCenterResourcesTool.name,
+  GetTrustCenterResourcesTool.description,
+  GetTrustCenterResourcesTool.parameters.shape,
+  getTrustCenterResources,
+);
+
+server.tool(
+  GetTrustCenterDocumentTool.name,
+  GetTrustCenterDocumentTool.description,
+  GetTrustCenterDocumentTool.parameters.shape,
+  getTrustCenterDocument,
 );
 
 async function main() {

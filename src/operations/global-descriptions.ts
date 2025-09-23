@@ -6,3 +6,6 @@ subsequent page in a paginated response. Leave blank to start from the first pag
 
 export const DOCUMENT_ID_DESCRIPTION =
   "Document ID to operate on, e.g. 'document-123' or specific document identifier";
+
+export const SLUG_ID_DESCRIPTION =
+  "Slug ID to operate on, e.g. 'my-trust-center' or specific slug identifier";

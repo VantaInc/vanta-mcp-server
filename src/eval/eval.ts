@@ -65,6 +65,20 @@ import {
 import {
   GetVendorRiskAttributesTool,
 } from "../operations/vendor-risk-attributes.js";
+import {
+  GetTrustCenterTool,
+  GetTrustCenterAccessRequestsTool,
+  GetTrustCenterAccessRequestTool,
+  GetTrustCenterViewerActivityEventsTool,
+  GetTrustCenterControlCategoriesTool,
+  GetTrustCenterControlCategoryTool,
+  GetTrustCenterControlsTool,
+  GetTrustCenterControlTool,
+  GetTrustCenterFaqsTool,
+  GetTrustCenterFaqTool,
+  GetTrustCenterResourcesTool,
+  GetTrustCenterDocumentTool,
+} from "../operations/trust-centers.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -380,6 +394,102 @@ const tools = [
       parameters: zodToJsonSchema(GetVendorRiskAttributesTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterTool.name,
+      description: GetTrustCenterTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterAccessRequestsTool.name,
+      description: GetTrustCenterAccessRequestsTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterAccessRequestsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterAccessRequestTool.name,
+      description: GetTrustCenterAccessRequestTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterAccessRequestTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterViewerActivityEventsTool.name,
+      description: GetTrustCenterViewerActivityEventsTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterViewerActivityEventsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterControlCategoriesTool.name,
+      description: GetTrustCenterControlCategoriesTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterControlCategoriesTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterControlCategoryTool.name,
+      description: GetTrustCenterControlCategoryTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterControlCategoryTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterControlsTool.name,
+      description: GetTrustCenterControlsTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterControlsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterControlTool.name,
+      description: GetTrustCenterControlTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterControlTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterFaqsTool.name,
+      description: GetTrustCenterFaqsTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterFaqsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterFaqTool.name,
+      description: GetTrustCenterFaqTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterFaqTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterResourcesTool.name,
+      description: GetTrustCenterResourcesTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterResourcesTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterDocumentTool.name,
+      description: GetTrustCenterDocumentTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterDocumentTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -644,6 +754,78 @@ const testCases: TestCase[] = [
     expectedTool: "get_vendor_risk_attributes",
     expectedParams: {},
     description: "Should call get_vendor_risk_attributes to list available risk assessment criteria",
+  },
+  {
+    prompt: "Show me the configuration and settings for our Trust Center 'acme-security'.",
+    expectedTool: "get_trust_center",
+    expectedParams: { slugId: "acme-security" },
+    description: "Should call get_trust_center to get Trust Center configuration details",
+  },
+  {
+    prompt: "List all pending access requests for our Trust Center.",
+    expectedTool: "get_trust_center_access_requests",
+    expectedParams: { slugId: "our-trust-center" },
+    description: "Should call get_trust_center_access_requests to review access requests",
+  },
+  {
+    prompt: "Get details about Trust Center access request REQ-789.",
+    expectedTool: "get_trust_center_access_request",
+    expectedParams: { slugId: "trust-center", accessRequestId: "REQ-789" },
+    description: "Should call get_trust_center_access_request for specific request details",
+  },
+  {
+    prompt: "What viewer activity has occurred on our Trust Center this month?",
+    expectedTool: "get_trust_center_viewer_activity_events",
+    expectedParams: { slugId: "our-trust-center" },
+    description: "Should call get_trust_center_viewer_activity_events to track engagement analytics",
+  },
+  {
+    prompt: "Show me all the control categories in our Trust Center.",
+    expectedTool: "get_trust_center_control_categories",
+    expectedParams: { slugId: "trust-center" },
+    description: "Should call get_trust_center_control_categories to list control organization",
+  },
+  {
+    prompt: "Get details about Trust Center control category CAT-456.",
+    expectedTool: "get_trust_center_control_category",
+    expectedParams: { slugId: "trust-center", controlCategoryId: "CAT-456" },
+    description: "Should call get_trust_center_control_category for specific category details",
+  },
+  {
+    prompt: "List all the controls published in our public Trust Center.",
+    expectedTool: "get_trust_center_controls",
+    expectedParams: { slugId: "public-trust-center" },
+    description: "Should call get_trust_center_controls to see published compliance controls",
+  },
+  {
+    prompt: "Get implementation details for Trust Center control TC-CTRL-123.",
+    expectedTool: "get_trust_center_control",
+    expectedParams: { slugId: "trust-center", trustCenterControlId: "TC-CTRL-123" },
+    description: "Should call get_trust_center_control for specific control implementation details",
+  },
+  {
+    prompt: "What FAQs are available on our Trust Center for customers?",
+    expectedTool: "get_trust_center_faqs",
+    expectedParams: { slugId: "customer-trust-center" },
+    description: "Should call get_trust_center_faqs to list customer information",
+  },
+  {
+    prompt: "Show me the details of FAQ FAQ-789 from our Trust Center.",
+    expectedTool: "get_trust_center_faq",
+    expectedParams: { slugId: "trust-center", faqId: "FAQ-789" },
+    description: "Should call get_trust_center_faq for specific FAQ content",
+  },
+  {
+    prompt: "What compliance documents and resources are available for download on our Trust Center?",
+    expectedTool: "get_trust_center_resources",
+    expectedParams: { slugId: "compliance-center" },
+    description: "Should call get_trust_center_resources to list downloadable materials",
+  },
+  {
+    prompt: "Get details about the SOC2 report document DOC-456 on our Trust Center.",
+    expectedTool: "get_trust_center_document",
+    expectedParams: { slugId: "trust-center", trustCenterDocumentId: "DOC-456" },
+    description: "Should call get_trust_center_document for specific document details",
   },
   {
     prompt: "What programming tests should I write for my API?",

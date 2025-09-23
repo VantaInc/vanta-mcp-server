@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 42 test cases covering:
+The evaluation includes 54 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -84,6 +84,18 @@ The evaluation includes 42 test cases covering:
 - **Monitored Computers**: `get_monitored_computers` for all computers being monitored for compliance
 - **Computer Details**: `get_monitored_computer_by_id` for specific computer information
 - **Vendor Risk Attributes**: `get_vendor_risk_attributes` for available risk assessment criteria
+- **Trust Center Configuration**: `get_trust_center` for Trust Center settings and branding
+- **Trust Center Access Requests**: `get_trust_center_access_requests` for managing customer access
+- **Access Request Details**: `get_trust_center_access_request` for individual request information
+- **Trust Center Analytics**: `get_trust_center_viewer_activity_events` for engagement tracking
+- **Control Categories**: `get_trust_center_control_categories` for compliance organization
+- **Category Details**: `get_trust_center_control_category` for specific category information
+- **Published Controls**: `get_trust_center_controls` for public compliance controls
+- **Control Details**: `get_trust_center_control` for specific control implementation
+- **Trust Center FAQs**: `get_trust_center_faqs` for customer information
+- **FAQ Details**: `get_trust_center_faq` for specific FAQ content
+- **Trust Center Resources**: `get_trust_center_resources` for downloadable materials
+- **Resource Documents**: `get_trust_center_document` for specific document details
 
 ### ❌ **Negative Tests**
 
@@ -108,8 +120,8 @@ The evaluation includes 42 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 42/42 tests
-❌ Failed: 0/42 tests
+✅ Passed: 54/54 tests
+❌ Failed: 0/54 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```

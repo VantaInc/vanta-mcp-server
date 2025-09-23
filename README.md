@@ -103,6 +103,17 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Understand available vendor risk attributes for comprehensive risk assessment
 - Categorize and evaluate vendor risks using standardized risk assessment criteria
 
+### Trust Center Management
+
+- Access complete Trust Center configuration, branding, and public visibility settings
+- Manage Trust Center access requests from potential customers and stakeholders
+- Track detailed viewer activity and engagement analytics across Trust Center content
+- Organize and manage control categories for clear compliance presentation
+- Publish and manage compliance controls with implementation details and evidence
+- Maintain comprehensive FAQ sections for customer transparency and communication
+- Provide downloadable resources including compliance documents and certifications
+- Enable customer self-service access to compliance and security information
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -161,6 +172,18 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_monitored_computers` | List monitored computers in your Vanta account. Returns computer IDs, hostnames, operating systems, and security status for endpoint security management. Use this to see all computers being monitored for compliance and security across your organization.                                               |
 | `get_monitored_computer_by_id` | Get monitored computer by ID. Retrieve detailed information about a specific monitored computer when its ID is known. The ID of a computer can be found from get_monitored_computers response. Returns complete computer details including hostname, OS, security status, and compliance information. |
 | `get_vendor_risk_attributes` | List vendor risk attributes in your Vanta account. Returns risk attribute IDs, names, categories, and assessment criteria for vendor risk management. Use this to understand the available risk attributes for evaluating and categorizing vendor risks across your organization.                      |
+| `get_trust_center`       | Get Trust Center information. Retrieve detailed information about a specific Trust Center including configuration, branding, and public visibility settings. Use this to access Trust Center details for compliance transparency and customer communication.                                           |
+| `get_trust_center_access_requests` | List Trust Center access requests. Get all pending and processed access requests for a specific Trust Center. Use this to manage and review who is requesting access to your Trust Center content and compliance information.                                                                     |
+| `get_trust_center_access_request` | Get Trust Center access request by ID. Retrieve detailed information about a specific access request including requester details, status, and request metadata. Use this to review individual access requests for approval or denial decisions.                                                    |
+| `get_trust_center_viewer_activity_events` | List Trust Center viewer activity events. Get all viewer activity and engagement events for a specific Trust Center including page views, document downloads, and user interactions. Use this to track Trust Center usage and engagement analytics.                                         |
+| `get_trust_center_control_categories` | List Trust Center control categories. Get all control categories configured for a specific Trust Center including category names, descriptions, and organization. Use this to understand how compliance controls are categorized and presented to Trust Center visitors.                        |
+| `get_trust_center_control_category` | Get Trust Center control category by ID. Retrieve detailed information about a specific control category including its configuration, associated controls, and display settings. Use this to access specific control category details for Trust Center management.                             |
+| `get_trust_center_controls` | List Trust Center controls. Get all compliance controls published in a specific Trust Center including control descriptions, implementation status, and evidence. Use this to see which controls are publicly visible to Trust Center visitors.                                                   |
+| `get_trust_center_control` | Get Trust Center control by ID. Retrieve detailed information about a specific control published in the Trust Center including implementation details, evidence, and compliance status. Use this to access individual control information for Trust Center transparency.                          |
+| `get_trust_center_faqs`  | List Trust Center FAQs. Get all frequently asked questions configured for a specific Trust Center including questions, answers, and organization. Use this to see what information is provided to Trust Center visitors through the FAQ section.                                                  |
+| `get_trust_center_faq`   | Get Trust Center FAQ by ID. Retrieve detailed information about a specific FAQ including the question, answer, and display settings. Use this to access individual FAQ content for Trust Center management and customer communication.                                                            |
+| `get_trust_center_resources` | List Trust Center resources. Get all resources and documents available in a specific Trust Center including compliance documents, certifications, and downloadable materials. Use this to see what resources are publicly available to Trust Center visitors.                                    |
+| `get_trust_center_document` | Get Trust Center document by ID. Retrieve detailed information about a specific document published in the Trust Center including metadata, content, and access settings. Use this to access individual document details for Trust Center content management.                                      |
 
 ## Configuration
 
