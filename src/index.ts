@@ -81,6 +81,12 @@ import {
   getPolicyById,
   GetPolicyByIdTool,
 } from "./operations/policies.js";
+import {
+  getDiscoveredVendors,
+  GetDiscoveredVendorsTool,
+  getDiscoveredVendorAccounts,
+  GetDiscoveredVendorAccountsTool,
+} from "./operations/discovered-vendors.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -326,6 +332,20 @@ server.tool(
   GetPolicyByIdTool.description,
   GetPolicyByIdTool.parameters.shape,
   getPolicyById,
+);
+
+server.tool(
+  GetDiscoveredVendorsTool.name,
+  GetDiscoveredVendorsTool.description,
+  GetDiscoveredVendorsTool.parameters.shape,
+  getDiscoveredVendors,
+);
+
+server.tool(
+  GetDiscoveredVendorAccountsTool.name,
+  GetDiscoveredVendorAccountsTool.description,
+  GetDiscoveredVendorAccountsTool.parameters.shape,
+  getDiscoveredVendorAccounts,
 );
 
 async function main() {

@@ -71,6 +71,13 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Access organizational policies for security, privacy, and operational governance
 - View policy metadata including names, types, and associated compliance frameworks
 
+### Discovered Vendor Management
+
+- List vendors automatically discovered through integrations for potential vendor onboarding
+- Access detailed account information for discovered vendors including integration sources
+- Understand vendor relationships and account structures before converting to managed vendors
+- Streamline vendor risk assessment workflows by identifying unmanaged vendor relationships
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -114,6 +121,8 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `download_document_file` | Download file for document. Intelligently retrieves file content from a document upload. For text-based files (txt, json, csv, xml, etc.), returns the readable content. For binary files (images, PDFs, etc.), returns file metadata and information. Use this to access compliance evidence and documentation content that can be analyzed. |
 | `get_policies`           | List all policies in your Vanta account. Returns policy IDs, names, types, and metadata for compliance and governance management. Use this to see all policies available for compliance frameworks and organizational governance.                                                                                         |
 | `get_policy_by_id`       | Get policy by ID. Retrieve detailed information about a specific policy when its ID is known. The ID of a policy can be found from get_policies response. Returns complete policy details including name, description, content, approval status, and compliance mappings.                                      |
+| `get_discovered_vendors` | List discovered vendors in your Vanta account. Returns vendors that have been automatically discovered through integrations but may not yet be managed as official vendors. Use this to see potential vendors for risk assessment and vendor management onboarding.                                        |
+| `get_discovered_vendor_accounts` | List discovered vendor accounts in your Vanta account. Returns detailed account information for discovered vendors including integration sources and account metadata. Use this to understand vendor relationships and account structures before converting to managed vendors.                        |
 
 ## Configuration
 

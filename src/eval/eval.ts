@@ -34,6 +34,10 @@ import {
   GetPoliciesTool,
   GetPolicyByIdTool,
 } from "../operations/policies.js";
+import {
+  GetDiscoveredVendorsTool,
+  GetDiscoveredVendorAccountsTool,
+} from "../operations/discovered-vendors.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -229,6 +233,22 @@ const tools = [
       parameters: zodToJsonSchema(GetPolicyByIdTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDiscoveredVendorsTool.name,
+      description: GetDiscoveredVendorsTool.description,
+      parameters: zodToJsonSchema(GetDiscoveredVendorsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDiscoveredVendorAccountsTool.name,
+      description: GetDiscoveredVendorAccountsTool.description,
+      parameters: zodToJsonSchema(GetDiscoveredVendorAccountsTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -403,6 +423,18 @@ const testCases: TestCase[] = [
     expectedTool: "get_policy_by_id",
     expectedParams: { policyId: "POLICY-789" },
     description: "Should call get_policy_by_id for specific policy details",
+  },
+  {
+    prompt: "Show me all the vendors that have been discovered through our integrations but aren't yet managed.",
+    expectedTool: "get_discovered_vendors",
+    expectedParams: {},
+    description: "Should call get_discovered_vendors to list automatically discovered vendors",
+  },
+  {
+    prompt: "I need detailed account information for all discovered vendor accounts from our integrations.",
+    expectedTool: "get_discovered_vendor_accounts",
+    expectedParams: {},
+    description: "Should call get_discovered_vendor_accounts to get detailed vendor account information",
   },
   {
     prompt: "What programming tests should I write for my API?",
