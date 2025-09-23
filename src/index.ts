@@ -31,6 +31,36 @@ import {
   getControlById,
 } from "./operations/controls.js";
 import { getRisks, GetRisksTool, getRiskById, GetRiskByIdTool } from "./operations/risks.js";
+import {
+  getIntegrations,
+  GetIntegrationsTool,
+  getIntegrationById,
+  GetIntegrationByIdTool,
+  getIntegrationResourceKinds,
+  GetIntegrationResourceKindsTool,
+  getIntegrationResourceKindDetails,
+  GetIntegrationResourceKindDetailsTool,
+  getIntegrationResources,
+  GetIntegrationResourcesTool,
+  getIntegrationResourceById,
+  GetIntegrationResourceByIdTool,
+} from "./operations/integrations.js";
+import {
+  getVendors,
+  GetVendorsTool,
+  getVendorById,
+  GetVendorByIdTool,
+  getVendorDocuments,
+  GetVendorDocumentsTool,
+  getVendorFindings,
+  GetVendorFindingsTool,
+  getVendorSecurityReviews,
+  GetVendorSecurityReviewsTool,
+  getVendorSecurityReviewById,
+  GetVendorSecurityReviewByIdTool,
+  getVendorSecurityReviewDocuments,
+  GetVendorSecurityReviewDocumentsTool,
+} from "./operations/vendors.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -129,6 +159,97 @@ server.tool(
   GetRiskByIdTool.description,
   GetRiskByIdTool.parameters.shape,
   getRiskById,
+);
+
+server.tool(
+  GetIntegrationsTool.name,
+  GetIntegrationsTool.description,
+  GetIntegrationsTool.parameters.shape,
+  getIntegrations,
+);
+
+server.tool(
+  GetIntegrationByIdTool.name,
+  GetIntegrationByIdTool.description,
+  GetIntegrationByIdTool.parameters.shape,
+  getIntegrationById,
+);
+
+server.tool(
+  GetIntegrationResourceKindsTool.name,
+  GetIntegrationResourceKindsTool.description,
+  GetIntegrationResourceKindsTool.parameters.shape,
+  getIntegrationResourceKinds,
+);
+
+server.tool(
+  GetIntegrationResourceKindDetailsTool.name,
+  GetIntegrationResourceKindDetailsTool.description,
+  GetIntegrationResourceKindDetailsTool.parameters.shape,
+  getIntegrationResourceKindDetails,
+);
+
+server.tool(
+  GetIntegrationResourcesTool.name,
+  GetIntegrationResourcesTool.description,
+  GetIntegrationResourcesTool.parameters.shape,
+  getIntegrationResources,
+);
+
+server.tool(
+  GetIntegrationResourceByIdTool.name,
+  GetIntegrationResourceByIdTool.description,
+  GetIntegrationResourceByIdTool.parameters.shape,
+  getIntegrationResourceById,
+);
+
+server.tool(
+  GetVendorsTool.name,
+  GetVendorsTool.description,
+  GetVendorsTool.parameters.shape,
+  getVendors,
+);
+
+server.tool(
+  GetVendorByIdTool.name,
+  GetVendorByIdTool.description,
+  GetVendorByIdTool.parameters.shape,
+  getVendorById,
+);
+
+server.tool(
+  GetVendorDocumentsTool.name,
+  GetVendorDocumentsTool.description,
+  GetVendorDocumentsTool.parameters.shape,
+  getVendorDocuments,
+);
+
+server.tool(
+  GetVendorFindingsTool.name,
+  GetVendorFindingsTool.description,
+  GetVendorFindingsTool.parameters.shape,
+  getVendorFindings,
+);
+
+server.tool(
+  GetVendorSecurityReviewsTool.name,
+  GetVendorSecurityReviewsTool.description,
+  GetVendorSecurityReviewsTool.parameters.shape,
+  getVendorSecurityReviews,
+);
+
+server.tool(
+  GetVendorSecurityReviewByIdTool.name,
+  GetVendorSecurityReviewByIdTool.description,
+  GetVendorSecurityReviewByIdTool.parameters.shape,
+  getVendorSecurityReviewById,
+);
+
+server.tool(
+  GetVendorSecurityReviewDocumentsTool.name,
+  GetVendorSecurityReviewDocumentsTool.description,
+  GetVendorSecurityReviewDocumentsTool.parameters.shape,
+  getVendorSecurityReviewDocuments,
 );
 
 async function main() {

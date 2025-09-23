@@ -32,6 +32,29 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Returns details about each risk scenario's status, inherent & residual risk score, treatment plan, and more.
 - Filterable by risk category (Access Control, Cryptography, Privacy, and many others).
 
+### Integration Management
+
+- List all connected integrations in your Vanta account (AWS, Azure, GCP, Snyk, etc.)
+- Get detailed information about specific integrations and their configurations
+- View integration resource kinds and connection status
+- Monitor which integrations are actively connected to your instance
+- List resource types (kinds) that integrations can monitor (S3Bucket, CloudwatchLogGroup, etc.)
+- Get detailed information about specific resource types and their properties
+- List all infrastructure resources discovered by integrations
+- Access detailed resource information including metadata, compliance status, and configuration
+
+### Vendor Management
+
+- List all vendors in your Vanta account for vendor risk management
+- Get detailed vendor information including contact details and website URLs
+- Access vendor risk assessment status and compliance information
+- Manage vendor relationships and due diligence tracking
+- View all documents associated with vendors for compliance purposes
+- Access security findings and risk assessment results for vendors
+- Review history of security assessments and due diligence activities
+- Get detailed information about specific vendor security reviews
+- Access supporting documentation and reports for security assessments
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -54,6 +77,19 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_control_by_id`      | Get control by an ID. Retrieve detailed information about a specific security control when its ID is known. The ID of a control can be found from get_controls or get_framework_controls responses. Returns complete control details including name, description, framework mappings, and implementation status. |
 | `get_risks`              | Get all the risk scenarios you are managing in your current risk register. Returns details about each risk scenario's status, inherent & residual risk score, treatment plan, and more. Filterable by risk category (Access Control, Cryptography, Privacy, and many others).                                |
 | `get_risk_by_id`         | Get risk scenario by ID. Retrieve detailed information about a specific risk scenario when its ID is known. The ID of a risk scenario can be found from get_risks response. Returns complete risk details including status, inherent & residual risk scores, treatment plan, and more.                      |
+| `get_integrations`       | List all connected integrations in your Vanta account. Returns integration id, display name, resource kinds supported by the integration, and how many connections exist for such integration. Use this to see all integrations connected in your Vanta instance.                                             |
+| `get_integration_by_id`  | Get integration by ID. Retrieve detailed information about a specific integration when its ID is known. The ID of an integration can be found from get_integrations response. Returns complete integration details including configuration, resource kinds, and connection status.                           |
+| `get_integration_resource_kinds` | List integration resource kinds. Lists a connected integration's resource types (kinds) such as S3Bucket, CloudwatchLogGroup, etc. Use this to see what types of resources an integration can monitor.                                                                                             |
+| `get_integration_resource_kind_details` | Get details for resource kind. Gets details for a specific resource type (kind) such as S3Bucket or CloudwatchLogGroup for a specific integration. Use this to understand what properties and metadata are available for a resource type.                                                  |
+| `get_integration_resources` | List resources. List all resources discovered by a specific integration. Use this to see all infrastructure resources that Vanta is monitoring through an integration.                                                                                                                              |
+| `get_integration_resource_by_id` | Get resource by ID. Retrieve detailed information about a specific resource discovered by an integration. Use this to get full details about infrastructure resources including metadata, compliance status, and configuration.                                                                    |
+| `get_vendors`            | List all vendors in your Vanta account. Returns vendor IDs, names, website URLs, and many other vendor attributes. Use this to see all existing vendors.                                                                                                                                                        |
+| `get_vendor_by_id`       | Get vendor by ID. Retrieve detailed information about a specific vendor when its ID is known. The ID of a vendor can be found from get_vendors response. Returns complete vendor details including name, website URLs, contact information, and risk assessment status.                                      |
+| `get_vendor_documents`   | List vendor documents. Get all documents associated with a specific vendor for compliance and risk assessment purposes. Use this to see what documentation is available for vendor due diligence.                                                                                                               |
+| `get_vendor_findings`    | List vendor findings. Get all security findings and risk assessment results for a specific vendor. Use this to understand security concerns and compliance issues related to a vendor.                                                                                                                         |
+| `get_vendor_security_reviews` | Get security reviews by vendor ID. List all security reviews conducted for a specific vendor. Use this to see the history of security assessments and due diligence activities.                                                                                                                          |
+| `get_vendor_security_review_by_id` | Get security review by ID. Retrieve detailed information about a specific security review for a vendor. Use this to get complete details about a particular security assessment including findings, status, and recommendations.                                                                        |
+| `get_vendor_security_review_documents` | Get security review documents. List all documents associated with a specific vendor security review. Use this to access supporting documentation, evidence, and reports related to a security assessment.                                                                                            |
 
 ## Configuration
 

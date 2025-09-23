@@ -14,6 +14,14 @@ import {
   GetControlByIdTool,
 } from "../operations/controls.js";
 import { GetRisksTool, GetRiskByIdTool } from "../operations/risks.js";
+import {
+  GetIntegrationsTool,
+  GetIntegrationByIdTool,
+} from "../operations/integrations.js";
+import {
+  GetVendorsTool,
+  GetVendorByIdTool,
+} from "../operations/vendors.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -111,6 +119,38 @@ const tools = [
       name: GetFrameworkByIdTool.name,
       description: GetFrameworkByIdTool.description,
       parameters: zodToJsonSchema(GetFrameworkByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetIntegrationsTool.name,
+      description: GetIntegrationsTool.description,
+      parameters: zodToJsonSchema(GetIntegrationsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetIntegrationByIdTool.name,
+      description: GetIntegrationByIdTool.description,
+      parameters: zodToJsonSchema(GetIntegrationByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVendorsTool.name,
+      description: GetVendorsTool.description,
+      parameters: zodToJsonSchema(GetVendorsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVendorByIdTool.name,
+      description: GetVendorByIdTool.description,
+      parameters: zodToJsonSchema(GetVendorByIdTool.parameters),
     },
   },
 ];
@@ -215,6 +255,30 @@ const testCases: TestCase[] = [
     expectedTool: "get_risk_by_id",
     expectedParams: { riskId: "risk-scenario-123" },
     description: "Should call get_risk_by_id for specific risk scenario details",
+  },
+  {
+    prompt: "What integrations are connected to my Vanta account?",
+    expectedTool: "get_integrations",
+    expectedParams: {},
+    description: "Should call get_integrations to list all connected integrations",
+  },
+  {
+    prompt: "Show me details for integration ID aws",
+    expectedTool: "get_integration_by_id",
+    expectedParams: { integrationId: "aws" },
+    description: "Should call get_integration_by_id for specific integration details",
+  },
+  {
+    prompt: "List all vendors in my Vanta account",
+    expectedTool: "get_vendors",
+    expectedParams: {},
+    description: "Should call get_vendors to list all vendors",
+  },
+  {
+    prompt: "Get details for vendor ID vendor-123",
+    expectedTool: "get_vendor_by_id",
+    expectedParams: { vendorId: "vendor-123" },
+    description: "Should call get_vendor_by_id for specific vendor details",
   },
   {
     prompt: "What programming tests should I write for my API?",

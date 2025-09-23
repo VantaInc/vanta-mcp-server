@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 15 test cases covering:
+The evaluation includes 19 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -57,6 +57,10 @@ The evaluation includes 15 test cases covering:
 - **Control Details**: `get_control_by_id` for specific control information
 - **Framework Details**: `get_framework_by_id` for specific framework information
 - **Risk Details**: `get_risk_by_id` for specific risk scenario information
+- **Integration Listing**: `get_integrations` for connected integrations
+- **Integration Details**: `get_integration_by_id` for specific integration information
+- **Vendor Listing**: `get_vendors` for all vendors
+- **Vendor Details**: `get_vendor_by_id` for specific vendor information
 
 ### ❌ **Negative Tests**
 
@@ -81,8 +85,8 @@ The evaluation includes 15 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 15/15 tests
-❌ Failed: 0/15 tests
+✅ Passed: 19/19 tests
+❌ Failed: 0/19 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```
