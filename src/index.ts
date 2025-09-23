@@ -117,6 +117,16 @@ import {
   getVulnerableAssetById,
   GetVulnerableAssetByIdTool,
 } from "./operations/vulnerable-assets.js";
+import {
+  getMonitoredComputers,
+  GetMonitoredComputersTool,
+  getMonitoredComputerById,
+  GetMonitoredComputerByIdTool,
+} from "./operations/monitored-computers.js";
+import {
+  getVendorRiskAttributes,
+  GetVendorRiskAttributesTool,
+} from "./operations/vendor-risk-attributes.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -446,6 +456,27 @@ server.tool(
   GetVulnerableAssetByIdTool.description,
   GetVulnerableAssetByIdTool.parameters.shape,
   getVulnerableAssetById,
+);
+
+server.tool(
+  GetMonitoredComputersTool.name,
+  GetMonitoredComputersTool.description,
+  GetMonitoredComputersTool.parameters.shape,
+  getMonitoredComputers,
+);
+
+server.tool(
+  GetMonitoredComputerByIdTool.name,
+  GetMonitoredComputerByIdTool.description,
+  GetMonitoredComputerByIdTool.parameters.shape,
+  getMonitoredComputerById,
+);
+
+server.tool(
+  GetVendorRiskAttributesTool.name,
+  GetVendorRiskAttributesTool.description,
+  GetVendorRiskAttributesTool.parameters.shape,
+  getVendorRiskAttributes,
 );
 
 async function main() {

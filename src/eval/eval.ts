@@ -58,6 +58,13 @@ import {
   GetVulnerableAssetsTool,
   GetVulnerableAssetByIdTool,
 } from "../operations/vulnerable-assets.js";
+import {
+  GetMonitoredComputersTool,
+  GetMonitoredComputerByIdTool,
+} from "../operations/monitored-computers.js";
+import {
+  GetVendorRiskAttributesTool,
+} from "../operations/vendor-risk-attributes.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -349,6 +356,30 @@ const tools = [
       parameters: zodToJsonSchema(GetVulnerableAssetByIdTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetMonitoredComputersTool.name,
+      description: GetMonitoredComputersTool.description,
+      parameters: zodToJsonSchema(GetMonitoredComputersTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetMonitoredComputerByIdTool.name,
+      description: GetMonitoredComputerByIdTool.description,
+      parameters: zodToJsonSchema(GetMonitoredComputerByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetVendorRiskAttributesTool.name,
+      description: GetVendorRiskAttributesTool.description,
+      parameters: zodToJsonSchema(GetVendorRiskAttributesTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -595,6 +626,24 @@ const testCases: TestCase[] = [
     expectedTool: "get_vulnerable_asset_by_id",
     expectedParams: { vulnerableAssetId: "ASSET-789" },
     description: "Should call get_vulnerable_asset_by_id for specific asset vulnerability details",
+  },
+  {
+    prompt: "Show me all the computers being monitored for compliance across our organization.",
+    expectedTool: "get_monitored_computers",
+    expectedParams: {},
+    description: "Should call get_monitored_computers to list all monitored computers",
+  },
+  {
+    prompt: "I need details about the monitored computer with ID COMP-456.",
+    expectedTool: "get_monitored_computer_by_id",
+    expectedParams: { computerId: "COMP-456" },
+    description: "Should call get_monitored_computer_by_id for specific computer details",
+  },
+  {
+    prompt: "What vendor risk attributes are available for evaluating our vendors?",
+    expectedTool: "get_vendor_risk_attributes",
+    expectedParams: {},
+    description: "Should call get_vendor_risk_attributes to list available risk assessment criteria",
   },
   {
     prompt: "What programming tests should I write for my API?",

@@ -95,6 +95,14 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Identify vulnerable assets and understand their security status
 - Prioritize security efforts based on asset vulnerability associations and risk levels
 
+### Endpoint & Risk Management
+
+- Monitor all computers across your organization for compliance and security
+- Access detailed computer information including hostnames, operating systems, and security status
+- Manage endpoint security and compliance across diverse computing environments
+- Understand available vendor risk attributes for comprehensive risk assessment
+- Categorize and evaluate vendor risks using standardized risk assessment criteria
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -150,6 +158,9 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_vulnerability_remediations` | List vulnerability remediations in your Vanta account. Returns remediation IDs, associated vulnerabilities, remediation status, and timeline information for security management. Use this to track vulnerability remediation efforts and ensure timely resolution of security issues.           |
 | `get_vulnerable_assets`  | List assets associated with vulnerabilities in your Vanta account. Returns asset IDs, vulnerability associations, asset types, and security status for infrastructure security management. Use this to identify which assets are affected by vulnerabilities and prioritize security efforts.        |
 | `get_vulnerable_asset_by_id` | Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from get_vulnerable_assets response. Returns complete asset details including vulnerability associations, asset type, and security status. |
+| `get_monitored_computers` | List monitored computers in your Vanta account. Returns computer IDs, hostnames, operating systems, and security status for endpoint security management. Use this to see all computers being monitored for compliance and security across your organization.                                               |
+| `get_monitored_computer_by_id` | Get monitored computer by ID. Retrieve detailed information about a specific monitored computer when its ID is known. The ID of a computer can be found from get_monitored_computers response. Returns complete computer details including hostname, OS, security status, and compliance information. |
+| `get_vendor_risk_attributes` | List vendor risk attributes in your Vanta account. Returns risk attribute IDs, names, categories, and assessment criteria for vendor risk management. Use this to understand the available risk attributes for evaluating and categorizing vendor risks across your organization.                      |
 
 ## Configuration
 

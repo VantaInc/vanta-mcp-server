@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 39 test cases covering:
+The evaluation includes 42 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -81,6 +81,9 @@ The evaluation includes 39 test cases covering:
 - **Vulnerability Remediations**: `get_vulnerability_remediations` for tracking remediation efforts
 - **Vulnerable Assets**: `get_vulnerable_assets` for assets affected by vulnerabilities
 - **Vulnerable Asset Details**: `get_vulnerable_asset_by_id` for specific asset vulnerability information
+- **Monitored Computers**: `get_monitored_computers` for all computers being monitored for compliance
+- **Computer Details**: `get_monitored_computer_by_id` for specific computer information
+- **Vendor Risk Attributes**: `get_vendor_risk_attributes` for available risk assessment criteria
 
 ### ❌ **Negative Tests**
 
@@ -105,8 +108,8 @@ The evaluation includes 39 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 39/39 tests
-❌ Failed: 0/39 tests
+✅ Passed: 42/42 tests
+❌ Failed: 0/42 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```
