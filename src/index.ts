@@ -61,6 +61,20 @@ import {
   getVendorSecurityReviewDocuments,
   GetVendorSecurityReviewDocumentsTool,
 } from "./operations/vendors.js";
+import {
+  getDocuments,
+  GetDocumentsTool,
+  getDocumentById,
+  GetDocumentByIdTool,
+  getDocumentControls,
+  GetDocumentControlsTool,
+  getDocumentLinks,
+  GetDocumentLinksTool,
+  getDocumentUploads,
+  GetDocumentUploadsTool,
+  downloadDocumentFile,
+  DownloadDocumentFileTool,
+} from "./operations/documents.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -250,6 +264,48 @@ server.tool(
   GetVendorSecurityReviewDocumentsTool.description,
   GetVendorSecurityReviewDocumentsTool.parameters.shape,
   getVendorSecurityReviewDocuments,
+);
+
+server.tool(
+  GetDocumentsTool.name,
+  GetDocumentsTool.description,
+  GetDocumentsTool.parameters.shape,
+  getDocuments,
+);
+
+server.tool(
+  GetDocumentByIdTool.name,
+  GetDocumentByIdTool.description,
+  GetDocumentByIdTool.parameters.shape,
+  getDocumentById,
+);
+
+server.tool(
+  GetDocumentControlsTool.name,
+  GetDocumentControlsTool.description,
+  GetDocumentControlsTool.parameters.shape,
+  getDocumentControls,
+);
+
+server.tool(
+  GetDocumentLinksTool.name,
+  GetDocumentLinksTool.description,
+  GetDocumentLinksTool.parameters.shape,
+  getDocumentLinks,
+);
+
+server.tool(
+  GetDocumentUploadsTool.name,
+  GetDocumentUploadsTool.description,
+  GetDocumentUploadsTool.parameters.shape,
+  getDocumentUploads,
+);
+
+server.tool(
+  DownloadDocumentFileTool.name,
+  DownloadDocumentFileTool.description,
+  DownloadDocumentFileTool.parameters.shape,
+  downloadDocumentFile,
 );
 
 async function main() {

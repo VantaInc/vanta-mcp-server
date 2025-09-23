@@ -22,6 +22,14 @@ import {
   GetVendorsTool,
   GetVendorByIdTool,
 } from "../operations/vendors.js";
+import {
+  GetDocumentsTool,
+  GetDocumentByIdTool,
+  GetDocumentControlsTool,
+  GetDocumentLinksTool,
+  GetDocumentUploadsTool,
+  DownloadDocumentFileTool,
+} from "../operations/documents.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -153,6 +161,54 @@ const tools = [
       parameters: zodToJsonSchema(GetVendorByIdTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDocumentsTool.name,
+      description: GetDocumentsTool.description,
+      parameters: zodToJsonSchema(GetDocumentsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDocumentByIdTool.name,
+      description: GetDocumentByIdTool.description,
+      parameters: zodToJsonSchema(GetDocumentByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDocumentControlsTool.name,
+      description: GetDocumentControlsTool.description,
+      parameters: zodToJsonSchema(GetDocumentControlsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDocumentLinksTool.name,
+      description: GetDocumentLinksTool.description,
+      parameters: zodToJsonSchema(GetDocumentLinksTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetDocumentUploadsTool.name,
+      description: GetDocumentUploadsTool.description,
+      parameters: zodToJsonSchema(GetDocumentUploadsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: DownloadDocumentFileTool.name,
+      description: DownloadDocumentFileTool.description,
+      parameters: zodToJsonSchema(DownloadDocumentFileTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -279,6 +335,42 @@ const testCases: TestCase[] = [
     expectedTool: "get_vendor_by_id",
     expectedParams: { vendorId: "vendor-123" },
     description: "Should call get_vendor_by_id for specific vendor details",
+  },
+  {
+    prompt: "Show me all the documents we have uploaded to Vanta for compliance purposes.",
+    expectedTool: "get_documents",
+    expectedParams: {},
+    description: "Should call get_documents to list all compliance documents",
+  },
+  {
+    prompt: "I need to see the details of document DOC-12345 including its metadata and compliance mappings.",
+    expectedTool: "get_document_by_id",
+    expectedParams: { documentId: "DOC-12345" },
+    description: "Should call get_document_by_id for specific document details",
+  },
+  {
+    prompt: "Which security controls are mapped to document DOC-789?",
+    expectedTool: "get_document_controls",
+    expectedParams: { documentId: "DOC-789" },
+    description: "Should call get_document_controls to find controls associated with document",
+  },
+  {
+    prompt: "What external links and references are attached to document POLICY-456?",
+    expectedTool: "get_document_links",
+    expectedParams: { documentId: "POLICY-456" },
+    description: "Should call get_document_links to get external references for document",
+  },
+  {
+    prompt: "List all the files uploaded to document SEC-123.",
+    expectedTool: "get_document_uploads",
+    expectedParams: { documentId: "SEC-123" },
+    description: "Should call get_document_uploads to list file uploads for document",
+  },
+  {
+    prompt: "I need to download the file with uploaded file ID FILE-456 from document DOC-789.",
+    expectedTool: "download_document_file",
+    expectedParams: { documentId: "DOC-789", uploadedFileId: "FILE-456" },
+    description: "Should call download_document_file to download specific file from document",
   },
   {
     prompt: "What programming tests should I write for my API?",

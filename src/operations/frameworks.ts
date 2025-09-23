@@ -6,7 +6,7 @@ import { makeAuthenticatedRequest } from "./utils.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
-} from "../global-descriptions.js";
+} from "./global-descriptions.js";
 
 const GetFrameworksInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),

@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 19 test cases covering:
+The evaluation includes 25 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -61,6 +61,12 @@ The evaluation includes 19 test cases covering:
 - **Integration Details**: `get_integration_by_id` for specific integration information
 - **Vendor Listing**: `get_vendors` for all vendors
 - **Vendor Details**: `get_vendor_by_id` for specific vendor information
+- **Document Listing**: `get_documents` for all compliance documents
+- **Document Details**: `get_document_by_id` for specific document information
+- **Document Controls**: `get_document_controls` for controls associated with documents
+- **Document Links**: `get_document_links` for external references in documents
+- **Document Uploads**: `get_document_uploads` for file uploads attached to documents
+- **Document Downloads**: `download_document_file` for intelligently downloading files (text content for readable files, metadata for binary files)
 
 ### ❌ **Negative Tests**
 
@@ -85,8 +91,8 @@ The evaluation includes 19 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 19/19 tests
-❌ Failed: 0/19 tests
+✅ Passed: 25/25 tests
+❌ Failed: 0/25 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```

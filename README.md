@@ -55,6 +55,15 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 - Get detailed information about specific vendor security reviews
 - Access supporting documentation and reports for security assessments
 
+### Document Management
+
+- List all documents in your Vanta account for compliance and evidence management
+- Get detailed information about specific documents including metadata and compliance mappings
+- View security controls that are mapped to or associated with documents as evidence
+- Access external links and references associated with documents
+- List all files and uploads attached to documents for compliance documentation
+- Intelligently download file uploads with automatic MIME type handling - text files return readable content, binary files return metadata
+
 ### Multi-Region Support
 
 - US, EU, and AUS regions with region-specific API endpoints
@@ -90,6 +99,12 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | `get_vendor_security_reviews` | Get security reviews by vendor ID. List all security reviews conducted for a specific vendor. Use this to see the history of security assessments and due diligence activities.                                                                                                                          |
 | `get_vendor_security_review_by_id` | Get security review by ID. Retrieve detailed information about a specific security review for a vendor. Use this to get complete details about a particular security assessment including findings, status, and recommendations.                                                                        |
 | `get_vendor_security_review_documents` | Get security review documents. List all documents associated with a specific vendor security review. Use this to access supporting documentation, evidence, and reports related to a security assessment.                                                                                            |
+| `get_documents`          | List all documents in your Vanta account. Returns document IDs, names, types, and metadata for compliance and evidence management. Use this to see all documents available for compliance frameworks and controls.                                                                                    |
+| `get_document_by_id`     | Get document by ID. Retrieve detailed information about a specific document when its ID is known. The ID of a document can be found from get_documents response. Returns complete document details including name, type, metadata, and compliance mappings.                                           |
+| `get_document_controls`  | List document's controls. Get all security controls that are mapped to or associated with a specific document. Use this to understand which compliance controls are supported by a particular document as evidence.                                                                                   |
+| `get_document_links`     | List document's links. Get all external links and references associated with a specific document. Use this to access related resources, external documentation, or supplementary materials for compliance evidence.                                                                                   |
+| `get_document_uploads`   | List document's uploads. Get all files and uploads that have been attached to a specific document. Use this to see what files are available for download or review as part of compliance documentation.                                                                                               |
+| `download_document_file` | Download file for document. Intelligently retrieves file content from a document upload. For text-based files (txt, json, csv, xml, etc.), returns the readable content. For binary files (images, PDFs, etc.), returns file metadata and information. Use this to access compliance evidence and documentation content that can be analyzed. |
 
 ## Configuration
 
