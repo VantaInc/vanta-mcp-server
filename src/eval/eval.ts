@@ -107,6 +107,12 @@ const testCases: TestCase[] = [
     description: "Should call get_test_entities for specific test details",
   },
   {
+    prompt: "Show me the details of test ID aws-security-groups-open-to-world",
+    expectedTool: "get_test_by_id",
+    expectedParams: { testId: "aws-security-groups-open-to-world" },
+    description: "Should call get_test_by_id for specific test details",
+  },
+  {
     prompt: "What compliance frameworks are we tracking?",
     expectedTool: "get_frameworks",
     expectedParams: {},

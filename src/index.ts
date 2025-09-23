@@ -7,6 +7,8 @@ import {
   GetTestEntitiesTool,
   getTests,
   GetTestsTool,
+  getTestById,
+  GetTestByIdTool,
 } from "./operations/tests.js";
 import {
   GetFrameworkControlsTool,
@@ -35,6 +37,13 @@ server.tool(
   GetTestsTool.description,
   GetTestsTool.parameters.shape,
   getTests,
+);
+
+server.tool(
+  GetTestByIdTool.name,
+  GetTestByIdTool.description,
+  GetTestByIdTool.parameters.shape,
+  getTestById,
 );
 
 server.tool(
