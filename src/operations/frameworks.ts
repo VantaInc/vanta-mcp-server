@@ -3,10 +3,14 @@ import { baseApiUrl } from "../api.js";
 import { Tool } from "../types.js";
 import { z } from "zod";
 import { makeAuthenticatedRequest } from "./utils.js";
+import {
+  PAGE_SIZE_DESCRIPTION,
+  PAGE_CURSOR_DESCRIPTION,
+} from "../global-descriptions.js";
 
 const GetFrameworksInput = z.object({
-  pageSize: z.number().optional(),
-  pageCursor: z.string().optional(),
+  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
+  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
 export const GetFrameworksTool: Tool<typeof GetFrameworksInput> = {
@@ -18,8 +22,8 @@ export const GetFrameworksTool: Tool<typeof GetFrameworksInput> = {
 
 const GetFrameworkControlsInput = z.object({
   frameworkId: z.string(),
-  pageSize: z.number().optional(),
-  pageCursor: z.string().optional(),
+  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
+  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
 export const GetFrameworkControlsTool: Tool<typeof GetFrameworkControlsInput> =
@@ -29,6 +33,21 @@ export const GetFrameworkControlsTool: Tool<typeof GetFrameworkControlsInput> =
       "Get the detailed CONTROL REQUIREMENTS for a specific framework (requires frameworkId). Use this when you need the specific control details, requirements, and implementation guidance for a known framework like 'soc2' or 'iso27001'. This returns the actual security controls and their descriptions, NOT the framework list. Use get_frameworks first if you need to see available frameworks.",
     parameters: GetFrameworkControlsInput,
   };
+
+const GetFrameworkByIdInput = z.object({
+  frameworkId: z
+    .string()
+    .describe(
+      "Framework ID to retrieve, e.g. 'soc2', 'iso27001', 'hipaa', 'gdpr'",
+    ),
+});
+
+export const GetFrameworkByIdTool: Tool<typeof GetFrameworkByIdInput> = {
+  name: "get_framework_by_id",
+  description:
+    "Get framework by ID. Retrieve detailed information about a specific compliance framework when its ID is known. The ID of a framework can be found from get_frameworks response. Returns complete framework details including name, description, completion status, progress metrics, and compliance state.",
+  parameters: GetFrameworkByIdInput,
+};
 
 export async function getFrameworkControls(
   args: z.infer<typeof GetFrameworkControlsInput>,
@@ -70,6 +89,28 @@ export async function getFrameworks(
   if (args.pageCursor !== undefined) {
     url.searchParams.append("pageCursor", args.pageCursor);
   }
+
+  const response = await makeAuthenticatedRequest(url.toString());
+
+  if (!response.ok) {
+    return {
+      content: [
+        { type: "text" as const, text: `Error: ${response.statusText}` },
+      ],
+    };
+  }
+
+  return {
+    content: [
+      { type: "text" as const, text: JSON.stringify(await response.json()) },
+    ],
+  };
+}
+
+export async function getFrameworkById(
+  args: z.infer<typeof GetFrameworkByIdInput>,
+): Promise<CallToolResult> {
+  const url = new URL(`/v1/frameworks/${args.frameworkId}`, baseApiUrl());
 
   const response = await makeAuthenticatedRequest(url.toString());
 

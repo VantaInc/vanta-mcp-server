@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 13 test cases covering:
+The evaluation includes 15 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -55,6 +55,8 @@ The evaluation includes 13 test cases covering:
 - **Library Controls**: `get_library_controls` for available Vanta library controls
 - **Control Documents**: `get_control_documents` for documents associated with controls
 - **Control Details**: `get_control_by_id` for specific control information
+- **Framework Details**: `get_framework_by_id` for specific framework information
+- **Risk Details**: `get_risk_by_id` for specific risk scenario information
 
 ### ❌ **Negative Tests**
 
@@ -79,8 +81,8 @@ The evaluation includes 13 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 13/13 tests
-❌ Failed: 0/13 tests
+✅ Passed: 15/15 tests
+❌ Failed: 0/15 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```

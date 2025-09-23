@@ -4,6 +4,7 @@ import { GetTestsTool, GetTestEntitiesTool } from "../operations/tests.js";
 import {
   GetFrameworksTool,
   GetFrameworkControlsTool,
+  GetFrameworkByIdTool,
 } from "../operations/frameworks.js";
 import {
   GetControlsTool,
@@ -12,7 +13,7 @@ import {
   GetControlDocumentsTool,
   GetControlByIdTool,
 } from "../operations/controls.js";
-import { GetRisksTool } from "../operations/risks.js";
+import { GetRisksTool, GetRiskByIdTool } from "../operations/risks.js";
 
 // Format all tools for OpenAI
 const tools = [
@@ -94,6 +95,22 @@ const tools = [
       name: GetRisksTool.name,
       description: GetRisksTool.description,
       parameters: zodToJsonSchema(GetRisksTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetRiskByIdTool.name,
+      description: GetRiskByIdTool.description,
+      parameters: zodToJsonSchema(GetRiskByIdTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetFrameworkByIdTool.name,
+      description: GetFrameworkByIdTool.description,
+      parameters: zodToJsonSchema(GetFrameworkByIdTool.parameters),
     },
   },
 ];
@@ -186,6 +203,18 @@ const testCases: TestCase[] = [
     expectedTool: "get_control_by_id",
     expectedParams: { controlId: "data-protection-2" },
     description: "Should call get_control_by_id for specific control details",
+  },
+  {
+    prompt: "Show me details for framework ID soc2",
+    expectedTool: "get_framework_by_id",
+    expectedParams: { frameworkId: "soc2" },
+    description: "Should call get_framework_by_id for specific framework details",
+  },
+  {
+    prompt: "Get details for risk scenario ID risk-scenario-123",
+    expectedTool: "get_risk_by_id",
+    expectedParams: { riskId: "risk-scenario-123" },
+    description: "Should call get_risk_by_id for specific risk scenario details",
   },
   {
     prompt: "What programming tests should I write for my API?",

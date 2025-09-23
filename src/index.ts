@@ -13,8 +13,10 @@ import {
 import {
   GetFrameworkControlsTool,
   GetFrameworksTool,
+  GetFrameworkByIdTool,
   getFrameworkControls,
   getFrameworks,
+  getFrameworkById,
 } from "./operations/frameworks.js";
 import {
   GetControlsTool,
@@ -28,7 +30,7 @@ import {
   getControlDocuments,
   getControlById,
 } from "./operations/controls.js";
-import { getRisks, GetRisksTool } from "./operations/risks.js";
+import { getRisks, GetRisksTool, getRiskById, GetRiskByIdTool } from "./operations/risks.js";
 import { initializeToken } from "./auth.js";
 
 const server = new McpServer({
@@ -74,6 +76,13 @@ server.tool(
 );
 
 server.tool(
+  GetFrameworkByIdTool.name,
+  GetFrameworkByIdTool.description,
+  GetFrameworkByIdTool.parameters.shape,
+  getFrameworkById,
+);
+
+server.tool(
   GetControlsTool.name,
   GetControlsTool.description,
   GetControlsTool.parameters.shape,
@@ -113,6 +122,13 @@ server.tool(
   GetRisksTool.description,
   GetRisksTool.parameters.shape,
   getRisks,
+);
+
+server.tool(
+  GetRiskByIdTool.name,
+  GetRiskByIdTool.description,
+  GetRiskByIdTool.parameters.shape,
+  getRiskById,
 );
 
 async function main() {
