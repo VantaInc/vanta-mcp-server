@@ -1,58 +1,62 @@
 import OpenAI from "openai";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { ListTestsTool, ListTestEntitiesTool } from "../operations/tests.js";
 import {
+  // Tests
+  ListTestsTool,
+  ListTestEntitiesTool,
+  // Frameworks
   ListFrameworksTool,
   ListFrameworkControlsTool,
   GetFrameworkTool,
-} from "../operations/frameworks.js";
-import {
+  // Controls
   ListControlsTool,
   ListControlTestsTool,
   ListLibraryControlsTool,
   ListControlDocumentsTool,
   GetControlTool,
-} from "../operations/controls.js";
-import { ListRisksTool, GetRiskTool } from "../operations/risks.js";
-import {
+  // Risks
+  ListRisksTool,
+  GetRiskTool,
+  // Integrations
   ListIntegrationsTool,
   GetIntegrationTool,
-} from "../operations/integrations.js";
-import { ListVendorsTool, GetVendorTool } from "../operations/vendors.js";
-import {
+  // Vendors
+  ListVendorsTool,
+  GetVendorTool,
+  // Documents
   ListDocumentsTool,
   GetDocumentTool,
   ListDocumentControlsTool,
   ListDocumentLinksTool,
   ListDocumentUploadsTool,
   DownloadDocumentFileTool,
-} from "../operations/documents.js";
-import { ListPoliciesTool, GetPolicyTool } from "../operations/policies.js";
-import {
+  // Policies
+  ListPoliciesTool,
+  GetPolicyTool,
+  // Discovered Vendors
   ListDiscoveredVendorsTool,
   ListDiscoveredVendorAccountsTool,
-} from "../operations/discovered-vendors.js";
-import {
+  // Groups
   ListGroupsTool,
   GetGroupTool,
   ListGroupPeopleTool,
-} from "../operations/groups.js";
-import { ListPeopleTool, GetPersonTool } from "../operations/people.js";
-import {
+  // People
+  ListPeopleTool,
+  GetPersonTool,
+  // Vulnerabilities
   ListVulnerabilitiesTool,
   GetVulnerabilityTool,
-} from "../operations/vulnerabilities.js";
-import { ListVulnerabilityRemediationsTool } from "../operations/vulnerability-remediations.js";
-import {
+  // Vulnerability Remediations
+  ListVulnerabilityRemediationsTool,
+  // Vulnerable Assets
   ListVulnerableAssetsTool,
   GetVulnerableAssetTool,
-} from "../operations/vulnerable-assets.js";
-import {
+  // Monitored Computers
   ListMonitoredComputersTool,
   GetMonitoredComputerTool,
-} from "../operations/monitored-computers.js";
-import { ListVendorRiskAttributesTool } from "../operations/vendor-risk-attributes.js";
-import {
+  // Vendor Risk Attributes
+  ListVendorRiskAttributesTool,
+  // Trust Centers
   GetTrustCenterTool,
   ListTrustCenterAccessRequestsTool,
   GetTrustCenterAccessRequestTool,
@@ -77,7 +81,7 @@ import {
   ListTrustCenterSubscriberGroupsTool,
   ListTrustCenterHistoricalAccessRequestsTool,
   ListTrustCenterSubscribersTool,
-} from "../operations/trust-centers.js";
+} from "../operations/index.js";
 
 // Format all tools for OpenAI
 const tools = [

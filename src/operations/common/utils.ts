@@ -1,11 +1,11 @@
-import { getValidToken, refreshToken } from "../auth.js";
+import { getValidToken, refreshToken } from "../../auth.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { baseApiUrl } from "../api.js";
+import { baseApiUrl } from "../../api.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
-} from "./global-descriptions.js";
+} from "./descriptions.js";
 
 export async function createAuthHeaders(): Promise<Record<string, string>> {
   const token = await getValidToken();

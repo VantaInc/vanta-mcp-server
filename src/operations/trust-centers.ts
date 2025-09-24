@@ -1,16 +1,16 @@
 // 1. Imports
-import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { Tool } from "../types.js";
-import { z } from "zod";
 import {
+  CallToolResult,
+  Tool,
+  z,
   createIdSchema,
   createIdWithPaginationSchema,
   makeGetByIdRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
-} from "./utils.js";
-import { SLUG_ID_DESCRIPTION } from "./global-descriptions.js";
+  SLUG_ID_DESCRIPTION,
+} from "./common/imports.js";
 
 // 2. Input Schemas
 const GetTrustCenterInput = createIdSchema({

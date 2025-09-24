@@ -33,8 +33,11 @@ The operations layer provides a clean, consistent interface to the Vanta API. Ea
 ```
 operations/
 ├── README.md                    # This file
-├── global-descriptions.ts       # Centralized parameter descriptions
-├── utils.ts                    # DRY utilities and common functions
+├── index.ts                    # Barrel export for all operations
+├── common/                     # Shared utilities and common files
+│   ├── descriptions.ts         # Centralized parameter descriptions
+│   ├── imports.ts             # Centralized common imports for operations
+│   └── utils.ts               # DRY utilities and common functions
 ├── controls.ts                 # Control-related operations
 ├── vendors.ts                  # Vendor-related operations
 ├── people.ts                   # People-related operations
@@ -51,7 +54,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { Tool } from "../types.js";
 import { z } from "zod";
 import { list of DRY utilities } from "./utils.js";
-import { descriptions } from "./global-descriptions.js";
+// This is now available through common-imports.js
 
 // 2. Input Schemas (using schema factories)
 const ListResourcesInput = createPaginationSchema();
@@ -109,6 +112,74 @@ export async function getControl(args: z.infer<typeof GetControlInput>): Promise
 - **Implementation functions**: `list*()`, `get*()`
 
 ## DRY Utilities
+
+### Barrel Export Pattern
+
+**Location**: `src/operations/index.ts`
+
+We use a barrel export pattern to provide a single entry point for importing all tools and utilities:
+
+```typescript
+// Single import for all operations tools
+import {
+  ListControlsTool,
+  GetControlTool,
+  ListRisksTool,
+  // ... all other tools
+} from "./operations/index.js";
+
+// Instead of multiple individual imports:
+// import { ListControlsTool } from "./operations/controls.js";
+// import { ListRisksTool } from "./operations/risks.js";
+// ... dozens more import statements
+```
+
+**Benefits:**
+
+- ✅ Single source of truth for operations exports
+- ✅ Better organization with commented sections
+- ✅ Easier refactoring and maintenance
+- ✅ Auto-completion works seamlessly
+
+### Common Imports Pattern
+
+**Location**: `src/operations/common/imports.ts`
+
+For operations files themselves, we use a common imports barrel to reduce repetitive import statements:
+
+```typescript
+// Before: Multiple separate imports in each operations file
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { Tool } from "../types.js";
+import { z } from "zod";
+import {
+  createPaginationSchema,
+  createIdSchema,
+  makePaginatedGetRequest,
+  makeGetByIdRequest,
+} from "./utils.js";
+
+// After: Single consolidated import
+import {
+  CallToolResult,
+  Tool,
+  z,
+  createPaginationSchema,
+  createIdSchema,
+  makePaginatedGetRequest,
+  makeGetByIdRequest,
+} from "./common/imports.js";
+```
+
+**Benefits:**
+
+- ✅ Reduces import clutter in operations files
+- ✅ Ensures consistency across all operations
+- ✅ Single source of truth for common dependencies
+- ✅ Easier to add new common utilities
+- ✅ Better maintainability when dependencies change
+
+### Utility Functions
 
 The `utils.ts` file provides reusable utilities to eliminate code duplication:
 
@@ -229,15 +300,18 @@ export async function listResourceDetails(
 
 ```typescript
 // src/operations/new-resource.ts
-import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { Tool } from "../types.js";
-import { z } from "zod";
 import {
+  CallToolResult,
+  Tool,
+  z,
   createPaginationSchema,
   createIdSchema,
   makePaginatedGetRequest,
   makeGetByIdRequest,
-} from "./utils.js";
+} from "./common/imports.js";
+
+// All utilities, descriptions, and core imports are now available
+// through the common/imports.js barrel export (located in common/ subdirectory)
 
 // Define schemas
 const ListNewResourcesInput = createPaginationSchema();
@@ -281,7 +355,27 @@ export default {
 };
 ```
 
-### Step 2: Verify Registry Export
+### Step 2: Add to Barrel Export
+
+Update `src/operations/index.ts` to include your new operations file:
+
+```typescript
+// Add your new operations file to the barrel export
+export * from "./tests.js";
+export * from "./frameworks.js";
+export * from "./controls.js";
+// ... existing exports ...
+export * from "./new-resource.js"; // ← Add this line
+
+// Common utilities and shared resources
+export * from "./common/utils.js";
+export * from "./common/descriptions.js";
+export * from "./common/imports.js";
+```
+
+This ensures your tools are available through the centralized import pattern.
+
+### Step 3: Verify Registry Export
 
 Ensure your operations file includes the required registry export:
 
@@ -298,14 +392,15 @@ export default {
 
 **That's it!** Your tools will be automatically registered when the server starts. No changes to `index.ts` are needed.
 
-### Step 3: Add to eval.ts
+### Step 4: Add to eval.ts
 
 ```typescript
-// Import tools
+// Import tools from barrel export
 import {
+  // ... existing tools
   ListNewResourcesTool,
   GetNewResourceTool,
-} from "../operations/new-resource.js";
+} from "../operations/index.js";
 
 // Add to tools array
 const tools = [
@@ -322,7 +417,7 @@ const tools = [
 ];
 ```
 
-### Step 4: Update README.md
+### Step 5: Update README.md
 
 Add the new operations to the main project README.md.
 
@@ -365,7 +460,7 @@ const GetControlInput = z.object({
 
 ```typescript
 // ✅ Good - Uses centralized description
-import { CONTROL_ID_DESCRIPTION } from "./global-descriptions.js";
+import { CONTROL_ID_DESCRIPTION } from "./common/imports.js";
 const schema = createIdSchema("controlId", CONTROL_ID_DESCRIPTION);
 
 // ❌ Bad - Hardcoded description
@@ -577,6 +672,31 @@ import { registerAllOperations } from "./registry.js";
 await registerAllOperations(server);
 // ✅ Automatically registers all tools from all operations files
 ```
+
+---
+
+### Common Files Organization
+
+The operations directory uses a clean separation between individual operations and shared infrastructure:
+
+**Operations Files** (at root level):
+
+- Individual operation files (`controls.ts`, `vendors.ts`, `people.ts`, etc.)
+- Each implements tools for a specific Vanta API resource
+- Clean, focused implementation with consistent patterns
+
+**Common Infrastructure** (in `common/` subdirectory):
+
+- **`descriptions.ts`**: Centralized parameter descriptions for consistency
+- **`imports.ts`**: Common imports barrel to reduce import boilerplate
+- **`utils.ts`**: DRY utilities including schema factories and request handlers
+
+**Coordination Files**:
+
+- **`index.ts`**: Barrel export providing access to all operations from a single import
+- **`README.md`**: Architecture documentation (this file)
+
+This structure provides excellent visual separation between business logic (operations) and infrastructure (common utilities).
 
 ---
 

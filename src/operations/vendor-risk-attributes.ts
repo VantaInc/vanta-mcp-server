@@ -1,8 +1,11 @@
 // 1. Imports
-import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { Tool } from "../types.js";
-import { z } from "zod";
-import { createPaginationSchema, makePaginatedGetRequest } from "./utils.js";
+import {
+  CallToolResult,
+  Tool,
+  z,
+  createPaginationSchema,
+  makePaginatedGetRequest,
+} from "./common/imports.js";
 
 // 2. Input Schemas
 const ListVendorRiskAttributesInput = createPaginationSchema();

@@ -1,8 +1,8 @@
 // 1. Imports
-import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { Tool } from "../types.js";
-import { z } from "zod";
 import {
+  CallToolResult,
+  Tool,
+  z,
   createPaginationSchema,
   createIdSchema,
   createIdWithPaginationSchema,
@@ -11,8 +11,8 @@ import {
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
-} from "./utils.js";
-import { VENDOR_ID_DESCRIPTION } from "./global-descriptions.js";
+  VENDOR_ID_DESCRIPTION,
+} from "./common/imports.js";
 
 // 2. Input Schemas
 const ListVendorsInput = createPaginationSchema();

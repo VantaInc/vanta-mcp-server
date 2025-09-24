@@ -439,6 +439,57 @@ Now you can configure Claude Desktop or Cursor to use the built executable:
 }
 ```
 
+## Development
+
+This server is built with TypeScript and includes the following development tools:
+
+- **TypeScript**: For type safety and better development experience
+- **ESLint**: For code quality and consistency
+- **Automated Tool Registry**: Zero-maintenance tool registration system
+- **DRY Utilities**: Centralized utilities to reduce code duplication
+
+### Project Structure
+
+```
+vanta-mcp-server/
+├── src/
+│   ├── operations/              # MCP tool implementations
+│   │   ├── index.ts            # Barrel export for all operations
+│   │   ├── common/             # Shared utilities and infrastructure
+│   │   │   ├── descriptions.ts # Centralized parameter descriptions
+│   │   │   ├── imports.ts      # Common imports barrel for operations
+│   │   │   └── utils.ts        # DRY utilities and request handlers
+│   │   ├── controls.ts         # Control-related operations
+│   │   ├── vendors.ts          # Vendor-related operations
+│   │   ├── people.ts           # People-related operations
+│   │   ├── documents.ts        # Document-related operations
+│   │   ├── frameworks.ts       # Framework-related operations
+│   │   ├── risks.ts            # Risk scenario operations
+│   │   ├── tests.ts            # Test-related operations
+│   │   ├── trust-centers.ts    # Trust Center operations
+│   │   └── ...                 # Other resource operations (17 total)
+│   ├── eval/                   # Evaluation and testing framework
+│   │   ├── eval.ts            # LLM evaluation test cases
+│   │   └── README.md          # Evaluation documentation
+│   ├── api.ts                  # Base API configuration
+│   ├── auth.ts                 # Authentication handling
+│   ├── index.ts                # Main server entry point
+│   ├── registry.ts             # Automated tool registration
+│   └── types.ts                # Type definitions
+├── build/                      # Compiled JavaScript output
+└── README.md                   # This file
+```
+
+### Architecture Highlights
+
+- **Clean Organization**: Operations files are cleanly separated from infrastructure code
+- **Common Subdirectory**: All shared utilities, imports, and descriptions are organized in `operations/common/`
+- **Automated Registry**: New tools are automatically discovered and registered without manual configuration
+- **DRY Principles**: Extensive code reuse through centralized utilities and schema factories
+- **Type Safety**: Full TypeScript coverage with comprehensive type definitions
+
+For detailed architecture documentation, see [`src/operations/README.md`](src/operations/README.md).
+
 ## Debugging
 
 You can use the MCP Inspector to debug the server:
