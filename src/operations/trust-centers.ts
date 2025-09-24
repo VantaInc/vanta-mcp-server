@@ -91,6 +91,91 @@ const GetTrustCenterDocumentInput = z.object({
     ),
 });
 
+const GetTrustCenterResourceMediaInput = z.object({
+  slugId: z.string().describe(SLUG_ID_DESCRIPTION),
+  resourceId: z
+    .string()
+    .describe(
+      "Trust Center document/resource ID to download media for, e.g. 'tc-doc-123' or specific Trust Center document identifier",
+    ),
+});
+
+const ListTrustCenterSubprocessorsInput = createIdWithPaginationSchema({
+  paramName: "slugId",
+  description: SLUG_ID_DESCRIPTION,
+});
+
+const GetTrustCenterSubprocessorInput = z.object({
+  slugId: z.string().describe(SLUG_ID_DESCRIPTION),
+  subprocessorId: z
+    .string()
+    .describe(
+      "Subprocessor ID to retrieve, e.g. 'subprocessor-123' or specific subprocessor identifier",
+    ),
+});
+
+const ListTrustCenterUpdatesInput = createIdWithPaginationSchema({
+  paramName: "slugId",
+  description: SLUG_ID_DESCRIPTION,
+});
+
+const GetTrustCenterUpdateInput = z.object({
+  slugId: z.string().describe(SLUG_ID_DESCRIPTION),
+  updateId: z
+    .string()
+    .describe(
+      "Update ID to retrieve, e.g. 'update-123' or specific update identifier",
+    ),
+});
+
+const ListTrustCenterViewersInput = createIdWithPaginationSchema({
+  paramName: "slugId",
+  description: SLUG_ID_DESCRIPTION,
+});
+
+const GetTrustCenterViewerInput = z.object({
+  slugId: z.string().describe(SLUG_ID_DESCRIPTION),
+  viewerId: z
+    .string()
+    .describe(
+      "Viewer ID to retrieve, e.g. 'viewer-123' or specific viewer identifier",
+    ),
+});
+
+const GetTrustCenterSubscriberInput = z.object({
+  slugId: z.string().describe(SLUG_ID_DESCRIPTION),
+  subscriberId: z
+    .string()
+    .describe(
+      "Subscriber ID to retrieve, e.g. 'subscriber-123' or specific subscriber identifier",
+    ),
+});
+
+const GetTrustCenterSubscriberGroupInput = z.object({
+  slugId: z.string().describe(SLUG_ID_DESCRIPTION),
+  subscriberGroupId: z
+    .string()
+    .describe(
+      "Subscriber group ID to retrieve, e.g. 'group-123' or specific subscriber group identifier",
+    ),
+});
+
+const ListTrustCenterSubscriberGroupsInput = createIdWithPaginationSchema({
+  paramName: "slugId",
+  description: SLUG_ID_DESCRIPTION,
+});
+
+const ListTrustCenterHistoricalAccessRequestsInput =
+  createIdWithPaginationSchema({
+    paramName: "slugId",
+    description: SLUG_ID_DESCRIPTION,
+  });
+
+const ListTrustCenterSubscribersInput = createIdWithPaginationSchema({
+  paramName: "slugId",
+  description: SLUG_ID_DESCRIPTION,
+});
+
 // 3. Tool Definitions
 export const GetTrustCenterTool: Tool<typeof GetTrustCenterInput> = {
   name: "get_trust_center",
@@ -192,6 +277,112 @@ export const GetTrustCenterDocumentTool: Tool<
   description:
     "Get Trust Center document by ID. Retrieve detailed information about a specific document available in a Trust Center. Use this to access compliance certifications, policies, and other public-facing documentation.",
   parameters: GetTrustCenterDocumentInput,
+};
+
+export const GetTrustCenterResourceMediaTool: Tool<
+  typeof GetTrustCenterResourceMediaInput
+> = {
+  name: "get_trust_center_resource_media",
+  description:
+    "Download Trust Center document media. Get the actual uploaded document/media file for a Trust Center resource. Use this to download compliance documents, certifications, and other materials for review or audit purposes.",
+  parameters: GetTrustCenterResourceMediaInput,
+};
+
+export const ListTrustCenterSubprocessorsTool: Tool<
+  typeof ListTrustCenterSubprocessorsInput
+> = {
+  name: "list_trust_center_subprocessors",
+  description:
+    "List Trust Center subprocessors. Get all subprocessors displayed in a specific Trust Center. Use this to see third-party service providers and their compliance information for transparency.",
+  parameters: ListTrustCenterSubprocessorsInput,
+};
+
+export const GetTrustCenterSubprocessorTool: Tool<
+  typeof GetTrustCenterSubprocessorInput
+> = {
+  name: "get_trust_center_subprocessor",
+  description:
+    "Get Trust Center subprocessor by ID. Retrieve detailed information about a specific subprocessor including compliance details, certifications, and data processing information.",
+  parameters: GetTrustCenterSubprocessorInput,
+};
+
+export const ListTrustCenterUpdatesTool: Tool<
+  typeof ListTrustCenterUpdatesInput
+> = {
+  name: "list_trust_center_updates",
+  description:
+    "List Trust Center updates. Get all updates and announcements published in a specific Trust Center. Use this to see compliance status changes, security updates, and important notifications.",
+  parameters: ListTrustCenterUpdatesInput,
+};
+
+export const GetTrustCenterUpdateTool: Tool<typeof GetTrustCenterUpdateInput> =
+  {
+    name: "get_trust_center_update",
+    description:
+      "Get Trust Center update by ID. Retrieve detailed information about a specific update including content, publication date, and impact on compliance status.",
+    parameters: GetTrustCenterUpdateInput,
+  };
+
+export const ListTrustCenterViewersTool: Tool<
+  typeof ListTrustCenterViewersInput
+> = {
+  name: "list_trust_center_viewers",
+  description:
+    "List Trust Center viewers. Get all users who have access to view a specific Trust Center. Use this for access management and audit purposes.",
+  parameters: ListTrustCenterViewersInput,
+};
+
+export const GetTrustCenterViewerTool: Tool<typeof GetTrustCenterViewerInput> =
+  {
+    name: "get_trust_center_viewer",
+    description:
+      "Get Trust Center viewer by ID. Retrieve detailed information about a specific viewer including access permissions, activity history, and contact information.",
+    parameters: GetTrustCenterViewerInput,
+  };
+
+export const GetTrustCenterSubscriberTool: Tool<
+  typeof GetTrustCenterSubscriberInput
+> = {
+  name: "get_trust_center_subscriber",
+  description:
+    "Get Trust Center subscriber by ID. Retrieve detailed information about a specific subscriber including subscription preferences and notification settings.",
+  parameters: GetTrustCenterSubscriberInput,
+};
+
+export const GetTrustCenterSubscriberGroupTool: Tool<
+  typeof GetTrustCenterSubscriberGroupInput
+> = {
+  name: "get_trust_center_subscriber_group",
+  description:
+    "Get Trust Center subscriber group by ID. Retrieve detailed information about a specific subscriber group including members and notification preferences.",
+  parameters: GetTrustCenterSubscriberGroupInput,
+};
+
+export const ListTrustCenterSubscriberGroupsTool: Tool<
+  typeof ListTrustCenterSubscriberGroupsInput
+> = {
+  name: "list_trust_center_subscriber_groups",
+  description:
+    "List Trust Center subscriber groups. Get all subscriber groups configured for a specific Trust Center. Use this to manage notification groups and communication preferences.",
+  parameters: ListTrustCenterSubscriberGroupsInput,
+};
+
+export const ListTrustCenterHistoricalAccessRequestsTool: Tool<
+  typeof ListTrustCenterHistoricalAccessRequestsInput
+> = {
+  name: "list_trust_center_historical_access_requests",
+  description:
+    "List Trust Center historical access requests. Get all past access requests for a specific Trust Center including approved, denied, and expired requests for audit and compliance tracking.",
+  parameters: ListTrustCenterHistoricalAccessRequestsInput,
+};
+
+export const ListTrustCenterSubscribersTool: Tool<
+  typeof ListTrustCenterSubscribersInput
+> = {
+  name: "list_trust_center_subscribers",
+  description:
+    "List Trust Center subscribers. Get all subscribers to a specific Trust Center for update notifications and communication management.",
+  parameters: ListTrustCenterSubscribersInput,
 };
 
 // 4. Implementation Functions
@@ -306,6 +497,132 @@ export async function getTrustCenterDocument(
 ): Promise<CallToolResult> {
   const url = buildUrl(
     `/v1/trust-centers/${String(args.slugId)}/resources/${String(args.resourceId)}`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function getTrustCenterResourceMedia(
+  args: z.infer<typeof GetTrustCenterResourceMediaInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/trust-centers/${String(args.slugId)}/resources/${String(args.resourceId)}/media`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function listTrustCenterSubprocessors(
+  args: z.infer<typeof ListTrustCenterSubprocessorsInput>,
+): Promise<CallToolResult> {
+  const { slugId, ...params } = args;
+  const url = buildUrl(
+    `/v1/trust-centers/${String(slugId)}/subprocessors`,
+    params,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function getTrustCenterSubprocessor(
+  args: z.infer<typeof GetTrustCenterSubprocessorInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/trust-centers/${String(args.slugId)}/subprocessors/${String(args.subprocessorId)}`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function listTrustCenterUpdates(
+  args: z.infer<typeof ListTrustCenterUpdatesInput>,
+): Promise<CallToolResult> {
+  const { slugId, ...params } = args;
+  const url = buildUrl(`/v1/trust-centers/${String(slugId)}/updates`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function getTrustCenterUpdate(
+  args: z.infer<typeof GetTrustCenterUpdateInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/trust-centers/${String(args.slugId)}/updates/${String(args.updateId)}`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function listTrustCenterViewers(
+  args: z.infer<typeof ListTrustCenterViewersInput>,
+): Promise<CallToolResult> {
+  const { slugId, ...params } = args;
+  const url = buildUrl(`/v1/trust-centers/${String(slugId)}/viewers`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function getTrustCenterViewer(
+  args: z.infer<typeof GetTrustCenterViewerInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/trust-centers/${String(args.slugId)}/viewers/${String(args.viewerId)}`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function getTrustCenterSubscriber(
+  args: z.infer<typeof GetTrustCenterSubscriberInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/trust-centers/${String(args.slugId)}/subscribers/${String(args.subscriberId)}`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function getTrustCenterSubscriberGroup(
+  args: z.infer<typeof GetTrustCenterSubscriberGroupInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/trust-centers/${String(args.slugId)}/subscriber-groups/${String(args.subscriberGroupId)}`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function listTrustCenterSubscriberGroups(
+  args: z.infer<typeof ListTrustCenterSubscriberGroupsInput>,
+): Promise<CallToolResult> {
+  const { slugId, ...params } = args;
+  const url = buildUrl(
+    `/v1/trust-centers/${String(slugId)}/subscriber-groups`,
+    params,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function listTrustCenterHistoricalAccessRequests(
+  args: z.infer<typeof ListTrustCenterHistoricalAccessRequestsInput>,
+): Promise<CallToolResult> {
+  const { slugId, ...params } = args;
+  const url = buildUrl(
+    `/v1/trust-centers/${String(slugId)}/access-requests/historical`,
+    params,
+  );
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
+
+export async function listTrustCenterSubscribers(
+  args: z.infer<typeof ListTrustCenterSubscribersInput>,
+): Promise<CallToolResult> {
+  const { slugId, ...params } = args;
+  const url = buildUrl(
+    `/v1/trust-centers/${String(slugId)}/subscribers`,
+    params,
   );
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);

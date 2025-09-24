@@ -40,7 +40,7 @@ OPENAI_API_KEY="your_openai_api_key_here" node build/eval/eval.js
 
 ## Test Cases
 
-The evaluation includes 54 test cases covering:
+The evaluation includes 66 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
@@ -120,8 +120,8 @@ The evaluation includes 54 test cases covering:
 
 📊 Final Results
 ================
-✅ Passed: 54/54 tests
-❌ Failed: 0/54 tests
+✅ Passed: 66/66 tests
+❌ Failed: 0/66 tests
 📈 Success Rate: 100%
 🎉 All tests passed! Tool calling behavior is working correctly.
 ```

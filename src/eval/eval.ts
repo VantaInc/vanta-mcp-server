@@ -65,6 +65,18 @@ import {
   GetTrustCenterFaqTool,
   ListTrustCenterResourcesTool,
   GetTrustCenterDocumentTool,
+  GetTrustCenterResourceMediaTool,
+  ListTrustCenterSubprocessorsTool,
+  GetTrustCenterSubprocessorTool,
+  ListTrustCenterUpdatesTool,
+  GetTrustCenterUpdateTool,
+  ListTrustCenterViewersTool,
+  GetTrustCenterViewerTool,
+  GetTrustCenterSubscriberTool,
+  GetTrustCenterSubscriberGroupTool,
+  ListTrustCenterSubscriberGroupsTool,
+  ListTrustCenterHistoricalAccessRequestsTool,
+  ListTrustCenterSubscribersTool,
 } from "../operations/trust-centers.js";
 
 // Format all tools for OpenAI
@@ -481,6 +493,106 @@ const tools = [
       parameters: zodToJsonSchema(GetTrustCenterDocumentTool.parameters),
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterResourceMediaTool.name,
+      description: GetTrustCenterResourceMediaTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterResourceMediaTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: ListTrustCenterSubprocessorsTool.name,
+      description: ListTrustCenterSubprocessorsTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterSubprocessorsTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterSubprocessorTool.name,
+      description: GetTrustCenterSubprocessorTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterSubprocessorTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: ListTrustCenterUpdatesTool.name,
+      description: ListTrustCenterUpdatesTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterUpdatesTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterUpdateTool.name,
+      description: GetTrustCenterUpdateTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterUpdateTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: ListTrustCenterViewersTool.name,
+      description: ListTrustCenterViewersTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterViewersTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterViewerTool.name,
+      description: GetTrustCenterViewerTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterViewerTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterSubscriberTool.name,
+      description: GetTrustCenterSubscriberTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterSubscriberTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: GetTrustCenterSubscriberGroupTool.name,
+      description: GetTrustCenterSubscriberGroupTool.description,
+      parameters: zodToJsonSchema(GetTrustCenterSubscriberGroupTool.parameters),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: ListTrustCenterSubscriberGroupsTool.name,
+      description: ListTrustCenterSubscriberGroupsTool.description,
+      parameters: zodToJsonSchema(
+        ListTrustCenterSubscriberGroupsTool.parameters,
+      ),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: ListTrustCenterHistoricalAccessRequestsTool.name,
+      description: ListTrustCenterHistoricalAccessRequestsTool.description,
+      parameters: zodToJsonSchema(
+        ListTrustCenterHistoricalAccessRequestsTool.parameters,
+      ),
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: ListTrustCenterSubscribersTool.name,
+      description: ListTrustCenterSubscribersTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterSubscribersTool.parameters),
+    },
+  },
 ];
 
 // Test cases with expected tool calls
@@ -869,10 +981,99 @@ const testCases: TestCase[] = [
     expectedTool: "get_trust_center_document",
     expectedParams: {
       slugId: "trust-center",
-      trustCenterDocumentId: "DOC-456",
+      resourceId: "DOC-456",
     },
     description:
       "Should call get_trust_center_document for specific document details",
+  },
+  {
+    prompt:
+      "Download the actual compliance certificate file CERT-123 from our Trust Center.",
+    expectedTool: "get_trust_center_resource_media",
+    expectedParams: { slugId: "trust-center", resourceId: "CERT-123" },
+    description:
+      "Should call get_trust_center_resource_media to download document media",
+  },
+  {
+    prompt:
+      "List all subprocessors displayed on our Trust Center for customer transparency.",
+    expectedTool: "list_trust_center_subprocessors",
+    expectedParams: { slugId: "customer-trust-center" },
+    description:
+      "Should call list_trust_center_subprocessors to list third-party service providers",
+  },
+  {
+    prompt:
+      "Get details about subprocessor SUBPROC-789 listed on our Trust Center.",
+    expectedTool: "get_trust_center_subprocessor",
+    expectedParams: { slugId: "trust-center", subprocessorId: "SUBPROC-789" },
+    description:
+      "Should call get_trust_center_subprocessor for specific subprocessor information",
+  },
+  {
+    prompt:
+      "Show me all the recent updates and announcements on our Trust Center.",
+    expectedTool: "list_trust_center_updates",
+    expectedParams: { slugId: "company-trust-center" },
+    description:
+      "Should call list_trust_center_updates to see compliance notifications",
+  },
+  {
+    prompt:
+      "Get the details of Trust Center update UPDATE-456 about SOC2 compliance.",
+    expectedTool: "get_trust_center_update",
+    expectedParams: { slugId: "trust-center", updateId: "UPDATE-456" },
+    description:
+      "Should call get_trust_center_update for specific update content",
+  },
+  {
+    prompt: "Who has access to view our Trust Center? List all viewers.",
+    expectedTool: "list_trust_center_viewers",
+    expectedParams: { slugId: "private-trust-center" },
+    description: "Should call list_trust_center_viewers for access management",
+  },
+  {
+    prompt: "Get access details for Trust Center viewer USER-123.",
+    expectedTool: "get_trust_center_viewer",
+    expectedParams: { slugId: "trust-center", viewerId: "USER-123" },
+    description:
+      "Should call get_trust_center_viewer for specific viewer information",
+  },
+  {
+    prompt: "Get notification preferences for Trust Center subscriber SUB-789.",
+    expectedTool: "get_trust_center_subscriber",
+    expectedParams: { slugId: "trust-center", subscriberId: "SUB-789" },
+    description:
+      "Should call get_trust_center_subscriber for subscriber settings",
+  },
+  {
+    prompt: "Show me details about Trust Center subscriber group GROUP-456.",
+    expectedTool: "get_trust_center_subscriber_group",
+    expectedParams: { slugId: "trust-center", subscriberGroupId: "GROUP-456" },
+    description:
+      "Should call get_trust_center_subscriber_group for group information",
+  },
+  {
+    prompt: "List all notification groups configured for our Trust Center.",
+    expectedTool: "list_trust_center_subscriber_groups",
+    expectedParams: { slugId: "notification-center" },
+    description:
+      "Should call list_trust_center_subscriber_groups for group management",
+  },
+  {
+    prompt:
+      "Show me all historical access requests for our Trust Center from last year.",
+    expectedTool: "list_trust_center_historical_access_requests",
+    expectedParams: { slugId: "audit-trust-center" },
+    description:
+      "Should call list_trust_center_historical_access_requests for audit tracking",
+  },
+  {
+    prompt: "List everyone subscribed to updates from our Trust Center.",
+    expectedTool: "list_trust_center_subscribers",
+    expectedParams: { slugId: "update-center" },
+    description:
+      "Should call list_trust_center_subscribers for communication management",
   },
   {
     prompt: "What programming tests should I write for my API?",

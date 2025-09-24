@@ -157,6 +157,30 @@ import {
   ListTrustCenterResourcesTool,
   getTrustCenterDocument,
   GetTrustCenterDocumentTool,
+  getTrustCenterResourceMedia,
+  GetTrustCenterResourceMediaTool,
+  listTrustCenterSubprocessors,
+  ListTrustCenterSubprocessorsTool,
+  getTrustCenterSubprocessor,
+  GetTrustCenterSubprocessorTool,
+  listTrustCenterUpdates,
+  ListTrustCenterUpdatesTool,
+  getTrustCenterUpdate,
+  GetTrustCenterUpdateTool,
+  listTrustCenterViewers,
+  ListTrustCenterViewersTool,
+  getTrustCenterViewer,
+  GetTrustCenterViewerTool,
+  getTrustCenterSubscriber,
+  GetTrustCenterSubscriberTool,
+  getTrustCenterSubscriberGroup,
+  GetTrustCenterSubscriberGroupTool,
+  listTrustCenterSubscriberGroups,
+  ListTrustCenterSubscriberGroupsTool,
+  listTrustCenterHistoricalAccessRequests,
+  ListTrustCenterHistoricalAccessRequestsTool,
+  listTrustCenterSubscribers,
+  ListTrustCenterSubscribersTool,
 } from "./operations/trust-centers.js";
 import { initializeToken } from "./auth.js";
 
@@ -592,6 +616,90 @@ server.tool(
   GetTrustCenterDocumentTool.description,
   GetTrustCenterDocumentTool.parameters.shape,
   getTrustCenterDocument,
+);
+
+server.tool(
+  GetTrustCenterResourceMediaTool.name,
+  GetTrustCenterResourceMediaTool.description,
+  GetTrustCenterResourceMediaTool.parameters.shape,
+  getTrustCenterResourceMedia,
+);
+
+server.tool(
+  ListTrustCenterSubprocessorsTool.name,
+  ListTrustCenterSubprocessorsTool.description,
+  ListTrustCenterSubprocessorsTool.parameters.shape,
+  listTrustCenterSubprocessors,
+);
+
+server.tool(
+  GetTrustCenterSubprocessorTool.name,
+  GetTrustCenterSubprocessorTool.description,
+  GetTrustCenterSubprocessorTool.parameters.shape,
+  getTrustCenterSubprocessor,
+);
+
+server.tool(
+  ListTrustCenterUpdatesTool.name,
+  ListTrustCenterUpdatesTool.description,
+  ListTrustCenterUpdatesTool.parameters.shape,
+  listTrustCenterUpdates,
+);
+
+server.tool(
+  GetTrustCenterUpdateTool.name,
+  GetTrustCenterUpdateTool.description,
+  GetTrustCenterUpdateTool.parameters.shape,
+  getTrustCenterUpdate,
+);
+
+server.tool(
+  ListTrustCenterViewersTool.name,
+  ListTrustCenterViewersTool.description,
+  ListTrustCenterViewersTool.parameters.shape,
+  listTrustCenterViewers,
+);
+
+server.tool(
+  GetTrustCenterViewerTool.name,
+  GetTrustCenterViewerTool.description,
+  GetTrustCenterViewerTool.parameters.shape,
+  getTrustCenterViewer,
+);
+
+server.tool(
+  GetTrustCenterSubscriberTool.name,
+  GetTrustCenterSubscriberTool.description,
+  GetTrustCenterSubscriberTool.parameters.shape,
+  getTrustCenterSubscriber,
+);
+
+server.tool(
+  GetTrustCenterSubscriberGroupTool.name,
+  GetTrustCenterSubscriberGroupTool.description,
+  GetTrustCenterSubscriberGroupTool.parameters.shape,
+  getTrustCenterSubscriberGroup,
+);
+
+server.tool(
+  ListTrustCenterSubscriberGroupsTool.name,
+  ListTrustCenterSubscriberGroupsTool.description,
+  ListTrustCenterSubscriberGroupsTool.parameters.shape,
+  listTrustCenterSubscriberGroups,
+);
+
+server.tool(
+  ListTrustCenterHistoricalAccessRequestsTool.name,
+  ListTrustCenterHistoricalAccessRequestsTool.description,
+  ListTrustCenterHistoricalAccessRequestsTool.parameters.shape,
+  listTrustCenterHistoricalAccessRequests,
+);
+
+server.tool(
+  ListTrustCenterSubscribersTool.name,
+  ListTrustCenterSubscribersTool.description,
+  ListTrustCenterSubscribersTool.parameters.shape,
+  listTrustCenterSubscribers,
 );
 
 async function main() {
