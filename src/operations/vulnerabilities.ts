@@ -28,12 +28,13 @@ const GetVulnerabilityByIdInput = z.object({
     ),
 });
 
-export const GetVulnerabilityByIdTool: Tool<typeof GetVulnerabilityByIdInput> = {
-  name: "get_vulnerability_by_id",
-  description:
-    "Get vulnerability by ID. Retrieve detailed information about a specific vulnerability when its ID is known. The ID of a vulnerability can be found from get_vulnerabilities response. Returns complete vulnerability details including CVE information, severity, affected assets, and remediation status.",
-  parameters: GetVulnerabilityByIdInput,
-};
+export const GetVulnerabilityByIdTool: Tool<typeof GetVulnerabilityByIdInput> =
+  {
+    name: "get_vulnerability_by_id",
+    description:
+      "Get vulnerability by ID. Retrieve detailed information about a specific vulnerability when its ID is known. The ID of a vulnerability can be found from get_vulnerabilities response. Returns complete vulnerability details including CVE information, severity, affected assets, and remediation status.",
+    parameters: GetVulnerabilityByIdInput,
+  };
 
 export async function getVulnerabilities(
   args: z.infer<typeof GetVulnerabilitiesInput>,
@@ -70,7 +71,10 @@ export async function getVulnerabilities(
 export async function getVulnerabilityById(
   args: z.infer<typeof GetVulnerabilityByIdInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/vulnerabilities/${args.vulnerabilityId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/vulnerabilities/${args.vulnerabilityId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 

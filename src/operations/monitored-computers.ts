@@ -13,7 +13,9 @@ const GetMonitoredComputersInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetMonitoredComputersTool: Tool<typeof GetMonitoredComputersInput> = {
+export const GetMonitoredComputersTool: Tool<
+  typeof GetMonitoredComputersInput
+> = {
   name: "get_monitored_computers",
   description:
     "List monitored computers in your Vanta account. Returns computer IDs, hostnames, operating systems, and security status for endpoint security management. Use this to see all computers being monitored for compliance and security across your organization.",
@@ -28,7 +30,9 @@ const GetMonitoredComputerByIdInput = z.object({
     ),
 });
 
-export const GetMonitoredComputerByIdTool: Tool<typeof GetMonitoredComputerByIdInput> = {
+export const GetMonitoredComputerByIdTool: Tool<
+  typeof GetMonitoredComputerByIdInput
+> = {
   name: "get_monitored_computer_by_id",
   description:
     "Get monitored computer by ID. Retrieve detailed information about a specific monitored computer when its ID is known. The ID of a computer can be found from get_monitored_computers response. Returns complete computer details including hostname, OS, security status, and compliance information.",
@@ -70,7 +74,10 @@ export async function getMonitoredComputers(
 export async function getMonitoredComputerById(
   args: z.infer<typeof GetMonitoredComputerByIdInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/monitored-computers/${args.computerId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/monitored-computers/${args.computerId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 

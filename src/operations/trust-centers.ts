@@ -26,7 +26,9 @@ const GetTrustCenterAccessRequestsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetTrustCenterAccessRequestsTool: Tool<typeof GetTrustCenterAccessRequestsInput> = {
+export const GetTrustCenterAccessRequestsTool: Tool<
+  typeof GetTrustCenterAccessRequestsInput
+> = {
   name: "get_trust_center_access_requests",
   description:
     "List Trust Center access requests. Get all pending and processed access requests for a specific Trust Center. Use this to manage and review who is requesting access to your Trust Center content and compliance information.",
@@ -42,7 +44,9 @@ const GetTrustCenterAccessRequestInput = z.object({
     ),
 });
 
-export const GetTrustCenterAccessRequestTool: Tool<typeof GetTrustCenterAccessRequestInput> = {
+export const GetTrustCenterAccessRequestTool: Tool<
+  typeof GetTrustCenterAccessRequestInput
+> = {
   name: "get_trust_center_access_request",
   description:
     "Get Trust Center access request by ID. Retrieve detailed information about a specific access request including requester details, status, and request metadata. Use this to review individual access requests for approval or denial decisions.",
@@ -55,7 +59,9 @@ const GetTrustCenterViewerActivityEventsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetTrustCenterViewerActivityEventsTool: Tool<typeof GetTrustCenterViewerActivityEventsInput> = {
+export const GetTrustCenterViewerActivityEventsTool: Tool<
+  typeof GetTrustCenterViewerActivityEventsInput
+> = {
   name: "get_trust_center_viewer_activity_events",
   description:
     "List Trust Center viewer activity events. Get all viewer activity and engagement events for a specific Trust Center including page views, document downloads, and user interactions. Use this to track Trust Center usage and engagement analytics.",
@@ -68,7 +74,9 @@ const GetTrustCenterControlCategoriesInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetTrustCenterControlCategoriesTool: Tool<typeof GetTrustCenterControlCategoriesInput> = {
+export const GetTrustCenterControlCategoriesTool: Tool<
+  typeof GetTrustCenterControlCategoriesInput
+> = {
   name: "get_trust_center_control_categories",
   description:
     "List Trust Center control categories. Get all control categories configured for a specific Trust Center including category names, descriptions, and organization. Use this to understand how compliance controls are categorized and presented to Trust Center visitors.",
@@ -84,7 +92,9 @@ const GetTrustCenterControlCategoryInput = z.object({
     ),
 });
 
-export const GetTrustCenterControlCategoryTool: Tool<typeof GetTrustCenterControlCategoryInput> = {
+export const GetTrustCenterControlCategoryTool: Tool<
+  typeof GetTrustCenterControlCategoryInput
+> = {
   name: "get_trust_center_control_category",
   description:
     "Get Trust Center control category by ID. Retrieve detailed information about a specific control category including its configuration, associated controls, and display settings. Use this to access specific control category details for Trust Center management.",
@@ -97,7 +107,9 @@ const GetTrustCenterControlsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetTrustCenterControlsTool: Tool<typeof GetTrustCenterControlsInput> = {
+export const GetTrustCenterControlsTool: Tool<
+  typeof GetTrustCenterControlsInput
+> = {
   name: "get_trust_center_controls",
   description:
     "List Trust Center controls. Get all compliance controls published in a specific Trust Center including control descriptions, implementation status, and evidence. Use this to see which controls are publicly visible to Trust Center visitors.",
@@ -113,7 +125,9 @@ const GetTrustCenterControlInput = z.object({
     ),
 });
 
-export const GetTrustCenterControlTool: Tool<typeof GetTrustCenterControlInput> = {
+export const GetTrustCenterControlTool: Tool<
+  typeof GetTrustCenterControlInput
+> = {
   name: "get_trust_center_control",
   description:
     "Get Trust Center control by ID. Retrieve detailed information about a specific control published in the Trust Center including implementation details, evidence, and compliance status. Use this to access individual control information for Trust Center transparency.",
@@ -137,9 +151,7 @@ const GetTrustCenterFaqInput = z.object({
   slugId: z.string().describe(SLUG_ID_DESCRIPTION),
   faqId: z
     .string()
-    .describe(
-      "FAQ ID to retrieve, e.g. 'faq-123' or specific FAQ identifier",
-    ),
+    .describe("FAQ ID to retrieve, e.g. 'faq-123' or specific FAQ identifier"),
 });
 
 export const GetTrustCenterFaqTool: Tool<typeof GetTrustCenterFaqInput> = {
@@ -155,7 +167,9 @@ const GetTrustCenterResourcesInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetTrustCenterResourcesTool: Tool<typeof GetTrustCenterResourcesInput> = {
+export const GetTrustCenterResourcesTool: Tool<
+  typeof GetTrustCenterResourcesInput
+> = {
   name: "get_trust_center_resources",
   description:
     "List Trust Center resources. Get all resources and documents available in a specific Trust Center including compliance documents, certifications, and downloadable materials. Use this to see what resources are publicly available to Trust Center visitors.",
@@ -171,7 +185,9 @@ const GetTrustCenterDocumentInput = z.object({
     ),
 });
 
-export const GetTrustCenterDocumentTool: Tool<typeof GetTrustCenterDocumentInput> = {
+export const GetTrustCenterDocumentTool: Tool<
+  typeof GetTrustCenterDocumentInput
+> = {
   name: "get_trust_center_document",
   description:
     "Get Trust Center document by ID. Retrieve detailed information about a specific document published in the Trust Center including metadata, content, and access settings. Use this to access individual document details for Trust Center content management.",
@@ -207,7 +223,10 @@ export async function getTrustCenter(
 export async function getTrustCenterAccessRequests(
   args: z.infer<typeof GetTrustCenterAccessRequestsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/access-requests`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/access-requests`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -239,7 +258,10 @@ export async function getTrustCenterAccessRequests(
 export async function getTrustCenterAccessRequest(
   args: z.infer<typeof GetTrustCenterAccessRequestInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/access-requests/${args.accessRequestId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/access-requests/${args.accessRequestId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -264,7 +286,10 @@ export async function getTrustCenterAccessRequest(
 export async function getTrustCenterViewerActivityEvents(
   args: z.infer<typeof GetTrustCenterViewerActivityEventsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/viewer-activity-events`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/viewer-activity-events`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -296,7 +321,10 @@ export async function getTrustCenterViewerActivityEvents(
 export async function getTrustCenterControlCategories(
   args: z.infer<typeof GetTrustCenterControlCategoriesInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/control-categories`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/control-categories`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -328,7 +356,10 @@ export async function getTrustCenterControlCategories(
 export async function getTrustCenterControlCategory(
   args: z.infer<typeof GetTrustCenterControlCategoryInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/control-categories/${args.controlCategoryId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/control-categories/${args.controlCategoryId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -353,7 +384,10 @@ export async function getTrustCenterControlCategory(
 export async function getTrustCenterControls(
   args: z.infer<typeof GetTrustCenterControlsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/controls`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/controls`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -385,7 +419,10 @@ export async function getTrustCenterControls(
 export async function getTrustCenterControl(
   args: z.infer<typeof GetTrustCenterControlInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/controls/${args.trustCenterControlId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/controls/${args.trustCenterControlId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -442,7 +479,10 @@ export async function getTrustCenterFaqs(
 export async function getTrustCenterFaq(
   args: z.infer<typeof GetTrustCenterFaqInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/faqs/${args.faqId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/faqs/${args.faqId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -467,7 +507,10 @@ export async function getTrustCenterFaq(
 export async function getTrustCenterResources(
   args: z.infer<typeof GetTrustCenterResourcesInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/resources`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/resources`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -499,7 +542,10 @@ export async function getTrustCenterResources(
 export async function getTrustCenterDocument(
   args: z.infer<typeof GetTrustCenterDocumentInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/trust-centers/${args.slugId}/documents/${args.trustCenterDocumentId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/trust-centers/${args.slugId}/documents/${args.trustCenterDocumentId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 

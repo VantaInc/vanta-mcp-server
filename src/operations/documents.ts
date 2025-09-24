@@ -80,12 +80,13 @@ const DownloadDocumentFileInput = z.object({
     ),
 });
 
-export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> = {
-  name: "download_document_file",
-  description:
-    "Download file for document. Intelligently retrieves file content from a document upload. For text-based files (txt, json, csv, xml, etc.), returns the readable content. For binary files (images, PDFs, etc.), returns file metadata and information. Use this to access compliance evidence and documentation content that can be analyzed.",
-  parameters: DownloadDocumentFileInput,
-};
+export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> =
+  {
+    name: "download_document_file",
+    description:
+      "Download file for document. Intelligently retrieves file content from a document upload. For text-based files (txt, json, csv, xml, etc.), returns the readable content. For binary files (images, PDFs, etc.), returns file metadata and information. Use this to access compliance evidence and documentation content that can be analyzed.",
+    parameters: DownloadDocumentFileInput,
+  };
 
 export async function getDocuments(
   args: z.infer<typeof GetDocumentsInput>,
@@ -147,7 +148,10 @@ export async function getDocumentById(
 export async function getDocumentControls(
   args: z.infer<typeof GetDocumentControlsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/documents/${args.documentId}/controls`, baseApiUrl());
+  const url = new URL(
+    `/v1/documents/${args.documentId}/controls`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -243,7 +247,10 @@ export async function getDocumentUploads(
 export async function downloadDocumentFile(
   args: z.infer<typeof DownloadDocumentFileInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/documents/${args.documentId}/uploads/${args.uploadedFileId}/media`, baseApiUrl());
+  const url = new URL(
+    `/v1/documents/${args.documentId}/uploads/${args.uploadedFileId}/media`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -259,16 +266,19 @@ export async function downloadDocumentFile(
   }
 
   // Get the content type from the response headers
-  const contentType = response.headers.get('content-type') || 'application/octet-stream';
-  const contentLength = response.headers.get('content-length');
-  
+  const contentType =
+    response.headers.get("content-type") || "application/octet-stream";
+  const contentLength = response.headers.get("content-length");
+
   // Handle text-based MIME types - return content that LLMs can process
-  if (contentType.startsWith('text/') || 
-      contentType.includes('application/json') ||
-      contentType.includes('application/xml') ||
-      contentType.includes('application/javascript') ||
-      contentType.includes('application/csv') ||
-      contentType.includes('text/csv')) {
+  if (
+    contentType.startsWith("text/") ||
+    contentType.includes("application/json") ||
+    contentType.includes("application/xml") ||
+    contentType.includes("application/javascript") ||
+    contentType.includes("application/csv") ||
+    contentType.includes("text/csv")
+  ) {
     try {
       const textContent = await response.text();
       return {
@@ -298,11 +308,11 @@ export async function downloadDocumentFile(
         type: "text" as const,
         text: `Binary File Information:
 MIME Type: ${contentType}
-Content Length: ${contentLength ? `${contentLength} bytes` : 'Unknown'}
+Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}
 Document ID: ${args.documentId}
 Uploaded File ID: ${args.uploadedFileId}
 
-Note: This is a binary file (${contentType.split('/')[0]} format) that cannot be displayed as text. Use get_document_uploads to see file metadata, or access the file directly through the Vanta web interface for viewing.`,
+Note: This is a binary file (${contentType.split("/")[0]} format) that cannot be displayed as text. Use get_document_uploads to see file metadata, or access the file directly through the Vanta web interface for viewing.`,
       },
     ],
   };

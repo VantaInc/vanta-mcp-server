@@ -30,7 +30,12 @@ import {
   getControlDocuments,
   getControlById,
 } from "./operations/controls.js";
-import { getRisks, GetRisksTool, getRiskById, GetRiskByIdTool } from "./operations/risks.js";
+import {
+  getRisks,
+  GetRisksTool,
+  getRiskById,
+  GetRiskByIdTool,
+} from "./operations/risks.js";
 import {
   getIntegrations,
   GetIntegrationsTool,

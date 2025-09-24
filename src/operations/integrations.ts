@@ -38,7 +38,9 @@ const GetIntegrationResourceKindsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetIntegrationResourceKindsTool: Tool<typeof GetIntegrationResourceKindsInput> = {
+export const GetIntegrationResourceKindsTool: Tool<
+  typeof GetIntegrationResourceKindsInput
+> = {
   name: "get_integration_resource_kinds",
   description:
     "List integration resource kinds. Lists a connected integration's resource types (kinds) such as S3Bucket, CloudwatchLogGroup, etc. Use this to see what types of resources an integration can monitor.",
@@ -54,7 +56,9 @@ const GetIntegrationResourceKindDetailsInput = z.object({
     ),
 });
 
-export const GetIntegrationResourceKindDetailsTool: Tool<typeof GetIntegrationResourceKindDetailsInput> = {
+export const GetIntegrationResourceKindDetailsTool: Tool<
+  typeof GetIntegrationResourceKindDetailsInput
+> = {
   name: "get_integration_resource_kind_details",
   description:
     "Get details for resource kind. Gets details for a specific resource type (kind) such as S3Bucket or CloudwatchLogGroup for a specific integration. Use this to understand what properties and metadata are available for a resource type.",
@@ -67,7 +71,9 @@ const GetIntegrationResourcesInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetIntegrationResourcesTool: Tool<typeof GetIntegrationResourcesInput> = {
+export const GetIntegrationResourcesTool: Tool<
+  typeof GetIntegrationResourcesInput
+> = {
   name: "get_integration_resources",
   description:
     "List resources. List all resources discovered by a specific integration. Use this to see all infrastructure resources that Vanta is monitoring through an integration.",
@@ -83,7 +89,9 @@ const GetIntegrationResourceByIdInput = z.object({
     ),
 });
 
-export const GetIntegrationResourceByIdTool: Tool<typeof GetIntegrationResourceByIdInput> = {
+export const GetIntegrationResourceByIdTool: Tool<
+  typeof GetIntegrationResourceByIdInput
+> = {
   name: "get_integration_resource_by_id",
   description:
     "Get resource by ID. Retrieve detailed information about a specific resource discovered by an integration. Use this to get full details about infrastructure resources including metadata, compliance status, and configuration.",
@@ -150,7 +158,10 @@ export async function getIntegrationById(
 export async function getIntegrationResourceKinds(
   args: z.infer<typeof GetIntegrationResourceKindsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/integrations/${args.integrationId}/resource-kinds`, baseApiUrl());
+  const url = new URL(
+    `/v1/integrations/${args.integrationId}/resource-kinds`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -182,7 +193,10 @@ export async function getIntegrationResourceKinds(
 export async function getIntegrationResourceKindDetails(
   args: z.infer<typeof GetIntegrationResourceKindDetailsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/integrations/${args.integrationId}/resource-kinds/${args.resourceKind}`, baseApiUrl());
+  const url = new URL(
+    `/v1/integrations/${args.integrationId}/resource-kinds/${args.resourceKind}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -207,7 +221,10 @@ export async function getIntegrationResourceKindDetails(
 export async function getIntegrationResources(
   args: z.infer<typeof GetIntegrationResourcesInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/integrations/${args.integrationId}/resources`, baseApiUrl());
+  const url = new URL(
+    `/v1/integrations/${args.integrationId}/resources`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -239,7 +256,10 @@ export async function getIntegrationResources(
 export async function getIntegrationResourceById(
   args: z.infer<typeof GetIntegrationResourceByIdInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/integrations/${args.integrationId}/resources/${args.resourceId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/integrations/${args.integrationId}/resources/${args.resourceId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 

@@ -13,7 +13,9 @@ const GetVendorRiskAttributesInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorRiskAttributesTool: Tool<typeof GetVendorRiskAttributesInput> = {
+export const GetVendorRiskAttributesTool: Tool<
+  typeof GetVendorRiskAttributesInput
+> = {
   name: "get_vendor_risk_attributes",
   description:
     "List vendor risk attributes in your Vanta account. Returns risk attribute IDs, names, categories, and assessment criteria for vendor risk management. Use this to understand the available risk attributes for evaluating and categorizing vendor risks across your organization.",

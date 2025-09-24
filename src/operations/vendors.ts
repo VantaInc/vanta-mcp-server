@@ -64,7 +64,9 @@ const GetVendorSecurityReviewsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorSecurityReviewsTool: Tool<typeof GetVendorSecurityReviewsInput> = {
+export const GetVendorSecurityReviewsTool: Tool<
+  typeof GetVendorSecurityReviewsInput
+> = {
   name: "get_vendor_security_reviews",
   description:
     "Get security reviews by vendor ID. List all security reviews conducted for a specific vendor. Use this to see the history of security assessments and due diligence activities.",
@@ -80,7 +82,9 @@ const GetVendorSecurityReviewByIdInput = z.object({
     ),
 });
 
-export const GetVendorSecurityReviewByIdTool: Tool<typeof GetVendorSecurityReviewByIdInput> = {
+export const GetVendorSecurityReviewByIdTool: Tool<
+  typeof GetVendorSecurityReviewByIdInput
+> = {
   name: "get_vendor_security_review_by_id",
   description:
     "Get security review by ID. Retrieve detailed information about a specific security review for a vendor. Use this to get complete details about a particular security assessment including findings, status, and recommendations.",
@@ -98,7 +102,9 @@ const GetVendorSecurityReviewDocumentsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorSecurityReviewDocumentsTool: Tool<typeof GetVendorSecurityReviewDocumentsInput> = {
+export const GetVendorSecurityReviewDocumentsTool: Tool<
+  typeof GetVendorSecurityReviewDocumentsInput
+> = {
   name: "get_vendor_security_review_documents",
   description:
     "Get security review documents. List all documents associated with a specific vendor security review. Use this to access supporting documentation, evidence, and reports related to a security assessment.",
@@ -229,7 +235,10 @@ export async function getVendorFindings(
 export async function getVendorSecurityReviews(
   args: z.infer<typeof GetVendorSecurityReviewsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/vendors/${args.vendorId}/security-reviews`, baseApiUrl());
+  const url = new URL(
+    `/v1/vendors/${args.vendorId}/security-reviews`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());
@@ -261,7 +270,10 @@ export async function getVendorSecurityReviews(
 export async function getVendorSecurityReviewById(
   args: z.infer<typeof GetVendorSecurityReviewByIdInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
@@ -286,7 +298,10 @@ export async function getVendorSecurityReviewById(
 export async function getVendorSecurityReviewDocuments(
   args: z.infer<typeof GetVendorSecurityReviewDocumentsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}/documents`, baseApiUrl());
+  const url = new URL(
+    `/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}/documents`,
+    baseApiUrl(),
+  );
 
   if (args.pageSize !== undefined) {
     url.searchParams.append("pageSize", args.pageSize.toString());

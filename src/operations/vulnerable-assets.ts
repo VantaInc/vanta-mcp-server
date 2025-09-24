@@ -28,7 +28,9 @@ const GetVulnerableAssetByIdInput = z.object({
     ),
 });
 
-export const GetVulnerableAssetByIdTool: Tool<typeof GetVulnerableAssetByIdInput> = {
+export const GetVulnerableAssetByIdTool: Tool<
+  typeof GetVulnerableAssetByIdInput
+> = {
   name: "get_vulnerable_asset_by_id",
   description:
     "Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from get_vulnerable_assets response. Returns complete asset details including vulnerability associations, asset type, and security status.",
@@ -70,7 +72,10 @@ export async function getVulnerableAssets(
 export async function getVulnerableAssetById(
   args: z.infer<typeof GetVulnerableAssetByIdInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/vulnerable-assets/${args.vulnerableAssetId}`, baseApiUrl());
+  const url = new URL(
+    `/v1/vulnerable-assets/${args.vulnerableAssetId}`,
+    baseApiUrl(),
+  );
 
   const response = await makeAuthenticatedRequest(url.toString());
 
