@@ -195,3 +195,15 @@ Note: This is a binary file (${contentType.split("/")[0]} format) that cannot be
     ],
   };
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListDocumentsTool, handler: listDocuments },
+    { tool: GetDocumentTool, handler: getDocument },
+    { tool: ListDocumentControlsTool, handler: listDocumentControls },
+    { tool: ListDocumentLinksTool, handler: listDocumentLinks },
+    { tool: ListDocumentUploadsTool, handler: listDocumentUploads },
+    { tool: DownloadDocumentFileTool, handler: downloadDocumentFile },
+  ],
+};

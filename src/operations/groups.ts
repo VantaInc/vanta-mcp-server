@@ -71,3 +71,12 @@ export async function listGroupPeople(
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListGroupsTool, handler: listGroups },
+    { tool: GetGroupTool, handler: getGroup },
+    { tool: ListGroupPeopleTool, handler: listGroupPeople },
+  ],
+};

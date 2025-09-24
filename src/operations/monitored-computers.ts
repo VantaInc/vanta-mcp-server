@@ -48,3 +48,11 @@ export async function getMonitoredComputer(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/monitored-computers", args.computerId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListMonitoredComputersTool, handler: listMonitoredComputers },
+    { tool: GetMonitoredComputerTool, handler: getMonitoredComputer },
+  ],
+};

@@ -10,6 +10,7 @@ This document explains the architecture, patterns, and conventions used in the V
 - [DRY Utilities](#dry-utilities)
 - [Schema Factory Functions](#schema-factory-functions)
 - [Request Handler Utilities](#request-handler-utilities)
+- [Automated Tool Registry System](#automated-tool-registry-system)
 - [Creating New Operations](#creating-new-operations)
 - [Best Practices](#best-practices)
 - [Examples](#examples)
@@ -25,6 +26,7 @@ The operations layer provides a clean, consistent interface to the Vanta API. Ea
 3. **Type Safety**: Full TypeScript support with proper type definitions
 4. **Consistent Error Handling**: Standardized error responses across all operations
 5. **Schema Factories**: Reusable Zod schema generators for common patterns
+6. **Automated Registry**: Zero-maintenance tool registration system
 
 ## File Structure
 
@@ -68,6 +70,14 @@ export async function listResources(
 ): Promise<CallToolResult> {
   return makePaginatedGetRequest("/v1/resources", args);
 }
+
+// 5. Registry Export (REQUIRED for auto-registration)
+export default {
+  tools: [
+    { tool: ListResourcesTool, handler: listResources },
+    { tool: GetResourceTool, handler: getResource },
+  ],
+};
 ```
 
 ## Naming Conventions
@@ -259,35 +269,34 @@ export async function listNewResources(
 export async function getNewResource(
   args: z.infer<typeof GetNewResourceInput>,
 ): Promise<CallToolResult> {
-  return makeGetByIdRequest("new-resources", args.newResourceId);
+  return makeGetByIdRequest("/v1/new-resources", args.newResourceId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListNewResourcesTool, handler: listNewResources },
+    { tool: GetNewResourceTool, handler: getNewResource },
+  ],
+};
 ```
 
-### Step 2: Register in index.ts
+### Step 2: Verify Registry Export
+
+Ensure your operations file includes the required registry export:
 
 ```typescript
-// Add imports
-import {
-  ListNewResourcesTool,
-  GetNewResourceTool,
-  listNewResources,
-  getNewResource,
-} from "./operations/new-resource.js";
-
-// Register tools
-server.tool(
-  ListNewResourcesTool.name,
-  ListNewResourcesTool.description,
-  ListNewResourcesTool.parameters.shape,
-  listNewResources,
-);
-server.tool(
-  GetNewResourceTool.name,
-  GetNewResourceTool.description,
-  GetNewResourceTool.parameters.shape,
-  getNewResource,
-);
+// At the end of your operations file
+export default {
+  tools: [
+    { tool: ListNewResourcesTool, handler: listNewResources },
+    { tool: GetNewResourceTool, handler: getNewResource },
+    // Add all tools from this file here
+  ],
+};
 ```
+
+**That's it!** Your tools will be automatically registered when the server starts. No changes to `index.ts` are needed.
 
 ### Step 3: Add to eval.ts
 
@@ -486,6 +495,89 @@ export async function listVendorDocuments(
 - Add evaluation test cases for all new tools in `eval.ts`
 - Update `eval/README.md` with new test descriptions
 
+## Automated Tool Registry System
+
+### Overview
+
+The Vanta MCP Server uses an automated tool registry system that eliminates the need for manual tool registration in `index.ts`.
+
+### Key Benefits
+
+- **✅ Zero Maintenance**: Adding new tools requires no changes to `index.ts`
+- **✅ Auto-Discovery**: New operations files are automatically detected and loaded
+- **✅ Type Safety**: Full TypeScript support throughout the registration process
+- **✅ Error Prevention**: No risk of forgetting to register new tools
+- **✅ Scalability**: System grows effortlessly as you add more operations
+
+### How It Works
+
+1. **Registry Export**: Each operations file exports a `default` object with all its tools
+2. **Auto-Discovery**: `src/registry.ts` imports all operations modules dynamically
+3. **Automatic Registration**: `registerAllOperations()` registers each tool with the MCP server
+4. **Single Call**: `index.ts` simply calls `await registerAllOperations(server)`
+
+### Required Registry Export
+
+Every operations file MUST include this export at the end:
+
+```typescript
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ToolDefinition, handler: HandlerFunction },
+    { tool: AnotherTool, handler: anotherHandler },
+    // ... all tools in this file
+  ],
+};
+```
+
+**⚠️ Without this export, your tools will NOT be registered automatically!**
+
+### Adding New Tools
+
+To add a new tool to an existing operations file:
+
+1. Create your tool definition and handler function (following our patterns)
+2. Add the tool entry to the `tools` array in the default export
+3. The tool will be automatically registered on the next server restart
+
+Example:
+
+```typescript
+export default {
+  tools: [
+    { tool: ExistingTool, handler: existingHandler },
+    { tool: NewTool, handler: newHandler }, // ← Just add here!
+  ],
+};
+```
+
+### Registry Implementation
+
+The automated registry system works through a simple pattern:
+
+**Operations File Pattern:**
+
+```typescript
+// At the end of each operations file
+export default {
+  tools: [
+    { tool: ToolDefinition, handler: HandlerFunction },
+    // ... all tools in this file
+  ],
+};
+```
+
+**Main Server Registration:**
+
+```typescript
+// index.ts
+import { registerAllOperations } from "./registry.js";
+
+await registerAllOperations(server);
+// ✅ Automatically registers all tools from all operations files
+```
+
 ---
 
-This architecture provides a maintainable, consistent foundation for extending the Vanta MCP Server with new operations while ensuring code quality and developer productivity.
+This architecture provides a maintainable, consistent, and **highly scalable** foundation for extending the Vanta MCP Server with new operations while ensuring code quality and developer productivity. The automated registry system ensures that adding new functionality is effortless and error-free!

@@ -46,3 +46,11 @@ export async function getVulnerableAsset(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/vulnerable-assets", args.vulnerableAssetId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListVulnerableAssetsTool, handler: listVulnerableAssets },
+    { tool: GetVulnerableAssetTool, handler: getVulnerableAsset },
+  ],
+};

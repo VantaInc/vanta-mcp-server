@@ -23,3 +23,10 @@ export async function listVendorRiskAttributes(
 ): Promise<CallToolResult> {
   return makePaginatedGetRequest("/v1/vendor-risk-attributes", args);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListVendorRiskAttributesTool, handler: listVendorRiskAttributes },
+  ],
+};

@@ -176,3 +176,19 @@ export async function listVendorSecurityReviewDocuments(
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListVendorsTool, handler: listVendors },
+    { tool: GetVendorTool, handler: getVendor },
+    { tool: ListVendorDocumentsTool, handler: listVendorDocuments },
+    { tool: ListVendorFindingsTool, handler: listVendorFindings },
+    { tool: ListVendorSecurityReviewsTool, handler: listVendorSecurityReviews },
+    { tool: GetVendorSecurityReviewTool, handler: getVendorSecurityReview },
+    {
+      tool: ListVendorSecurityReviewDocumentsTool,
+      handler: listVendorSecurityReviewDocuments,
+    },
+  ],
+};

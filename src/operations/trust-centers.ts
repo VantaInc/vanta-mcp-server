@@ -284,7 +284,7 @@ export const GetTrustCenterResourceMediaTool: Tool<
 > = {
   name: "get_trust_center_resource_media",
   description:
-    "Download Trust Center document media. Get the actual uploaded document/media file for a Trust Center resource. Use this to download compliance documents, certifications, and other materials for review or audit purposes.",
+    "Download Trust Center document media. Get the actual uploaded document/media file for a Trust Center resource. Intelligently handles different MIME types: returns text content for readable files (text/*, JSON, XML, CSV, JavaScript) and metadata information for binary files (images, videos, PDFs, etc.). Use this to download compliance documents, certifications, and other materials for review or audit purposes.",
   parameters: GetTrustCenterResourceMediaInput,
 };
 
@@ -509,7 +509,64 @@ export async function getTrustCenterResourceMedia(
     `/v1/trust-centers/${String(args.slugId)}/resources/${String(args.resourceId)}/media`,
   );
   const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
+
+  if (!response.ok) {
+    return handleApiResponse(response);
+  }
+
+  // Get the content type from the response headers
+  const contentType =
+    response.headers.get("content-type") ?? "application/octet-stream";
+  const contentLength = response.headers.get("content-length");
+
+  // Handle text-based MIME types - return content that LLMs can process
+  if (
+    contentType.startsWith("text/") ||
+    contentType.includes("application/json") ||
+    contentType.includes("application/xml") ||
+    contentType.includes("application/javascript") ||
+    contentType.includes("application/csv") ||
+    contentType.includes("text/csv")
+  ) {
+    try {
+      const textContent = await response.text();
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `Trust Center Resource Media Content (${contentType}):\n\n${textContent}`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `Error reading text content: ${error instanceof Error ? error.message : "Unknown error"}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
+
+  // For binary files, return metadata about the file
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: `Trust Center Resource Media File Information:
+- Content Type: ${contentType}
+- Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}
+- File Type: ${contentType.startsWith("image/") ? "Image" : contentType.startsWith("video/") ? "Video" : contentType.startsWith("audio/") ? "Audio" : contentType.startsWith("application/pdf") ? "PDF Document" : "Binary File"}
+- Resource ID: ${String(args.resourceId)}
+- Trust Center: ${String(args.slugId)}
+
+Note: This is a binary file. Use appropriate tools to download and process the actual file content.`,
+      },
+    ],
+  };
 }
 
 export async function listTrustCenterSubprocessors(
@@ -627,3 +684,69 @@ export async function listTrustCenterSubscribers(
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: GetTrustCenterTool, handler: getTrustCenter },
+    {
+      tool: ListTrustCenterAccessRequestsTool,
+      handler: listTrustCenterAccessRequests,
+    },
+    {
+      tool: GetTrustCenterAccessRequestTool,
+      handler: getTrustCenterAccessRequest,
+    },
+    {
+      tool: ListTrustCenterViewerActivityEventsTool,
+      handler: listTrustCenterViewerActivityEvents,
+    },
+    {
+      tool: ListTrustCenterControlCategoriesTool,
+      handler: listTrustCenterControlCategories,
+    },
+    {
+      tool: GetTrustCenterControlCategoryTool,
+      handler: getTrustCenterControlCategory,
+    },
+    { tool: ListTrustCenterControlsTool, handler: listTrustCenterControls },
+    { tool: GetTrustCenterControlTool, handler: getTrustCenterControl },
+    { tool: ListTrustCenterFaqsTool, handler: listTrustCenterFaqs },
+    { tool: GetTrustCenterFaqTool, handler: getTrustCenterFaq },
+    { tool: ListTrustCenterResourcesTool, handler: listTrustCenterResources },
+    { tool: GetTrustCenterDocumentTool, handler: getTrustCenterDocument },
+    {
+      tool: GetTrustCenterResourceMediaTool,
+      handler: getTrustCenterResourceMedia,
+    },
+    {
+      tool: ListTrustCenterSubprocessorsTool,
+      handler: listTrustCenterSubprocessors,
+    },
+    {
+      tool: GetTrustCenterSubprocessorTool,
+      handler: getTrustCenterSubprocessor,
+    },
+    { tool: ListTrustCenterUpdatesTool, handler: listTrustCenterUpdates },
+    { tool: GetTrustCenterUpdateTool, handler: getTrustCenterUpdate },
+    { tool: ListTrustCenterViewersTool, handler: listTrustCenterViewers },
+    { tool: GetTrustCenterViewerTool, handler: getTrustCenterViewer },
+    { tool: GetTrustCenterSubscriberTool, handler: getTrustCenterSubscriber },
+    {
+      tool: GetTrustCenterSubscriberGroupTool,
+      handler: getTrustCenterSubscriberGroup,
+    },
+    {
+      tool: ListTrustCenterSubscriberGroupsTool,
+      handler: listTrustCenterSubscriberGroups,
+    },
+    {
+      tool: ListTrustCenterHistoricalAccessRequestsTool,
+      handler: listTrustCenterHistoricalAccessRequests,
+    },
+    {
+      tool: ListTrustCenterSubscribersTool,
+      handler: listTrustCenterSubscribers,
+    },
+  ],
+};

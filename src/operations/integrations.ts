@@ -166,3 +166,21 @@ export async function getIntegrationResource(
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListIntegrationsTool, handler: listIntegrations },
+    { tool: GetIntegrationTool, handler: getIntegration },
+    {
+      tool: ListIntegrationResourceKindsTool,
+      handler: listIntegrationResourceKinds,
+    },
+    {
+      tool: GetIntegrationResourceKindDetailsTool,
+      handler: getIntegrationResourceKindDetails,
+    },
+    { tool: ListIntegrationResourcesTool, handler: listIntegrationResources },
+    { tool: GetIntegrationResourceTool, handler: getIntegrationResource },
+  ],
+};

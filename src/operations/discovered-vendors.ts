@@ -57,3 +57,14 @@ export async function listDiscoveredVendorAccounts(
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListDiscoveredVendorsTool, handler: listDiscoveredVendors },
+    {
+      tool: ListDiscoveredVendorAccountsTool,
+      handler: listDiscoveredVendorAccounts,
+    },
+  ],
+};

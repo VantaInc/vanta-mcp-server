@@ -71,3 +71,12 @@ export async function getTest(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/tests", args.testId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListTestsTool, handler: listTests },
+    { tool: ListTestEntitiesTool, handler: listTestEntities },
+    { tool: GetTestTool, handler: getTest },
+  ],
+};

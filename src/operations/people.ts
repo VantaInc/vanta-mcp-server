@@ -45,3 +45,11 @@ export async function getPerson(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/people", args.personId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListPeopleTool, handler: listPeople },
+    { tool: GetPersonTool, handler: getPerson },
+  ],
+};

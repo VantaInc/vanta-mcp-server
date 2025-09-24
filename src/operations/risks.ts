@@ -51,3 +51,11 @@ export async function getRisk(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/risk-scenarios", args.riskId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListRisksTool, handler: listRisks },
+    { tool: GetRiskTool, handler: getRisk },
+  ],
+};

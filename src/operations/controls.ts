@@ -114,3 +114,14 @@ export async function getControl(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/controls", args.controlId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListControlsTool, handler: listControls },
+    { tool: ListControlTestsTool, handler: listControlTests },
+    { tool: ListLibraryControlsTool, handler: listLibraryControls },
+    { tool: ListControlDocumentsTool, handler: listControlDocuments },
+    { tool: GetControlTool, handler: getControl },
+  ],
+};

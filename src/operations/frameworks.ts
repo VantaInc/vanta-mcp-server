@@ -75,3 +75,12 @@ export async function getFramework(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/frameworks", args.frameworkId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListFrameworksTool, handler: listFrameworks },
+    { tool: ListFrameworkControlsTool, handler: listFrameworkControls },
+    { tool: GetFrameworkTool, handler: getFramework },
+  ],
+};

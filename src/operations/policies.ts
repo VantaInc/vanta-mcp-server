@@ -45,3 +45,11 @@ export async function getPolicy(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/policies", args.policyId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListPoliciesTool, handler: listPolicies },
+    { tool: GetPolicyTool, handler: getPolicy },
+  ],
+};

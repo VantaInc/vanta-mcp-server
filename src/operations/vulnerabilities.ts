@@ -45,3 +45,11 @@ export async function getVulnerability(
 ): Promise<CallToolResult> {
   return makeGetByIdRequest("/v1/vulnerabilities", args.vulnerabilityId);
 }
+
+// Registry export for automated tool registration
+export default {
+  tools: [
+    { tool: ListVulnerabilitiesTool, handler: listVulnerabilities },
+    { tool: GetVulnerabilityTool, handler: getVulnerability },
+  ],
+};
