@@ -1,98 +1,48 @@
+// 1. Imports
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { baseApiUrl } from "../api.js";
 import { Tool } from "../types.js";
 import { z } from "zod";
-import { makeAuthenticatedRequest } from "./utils.js";
 import {
-  PAGE_SIZE_DESCRIPTION,
-  PAGE_CURSOR_DESCRIPTION,
-} from "./global-descriptions.js";
+  createPaginationSchema,
+  createIdSchema,
+  makePaginatedGetRequest,
+  makeGetByIdRequest,
+} from "./utils.js";
 
-const ListVulnerableAssetsInput = z.object({
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
-});
+// 2. Input Schemas
+const ListVulnerableAssetsInput = createPaginationSchema();
 
-export const ListVulnerableAssetsTool: Tool<typeof ListVulnerableAssetsInput> = {
-  name: "list_vulnerable_assets",
+const GetVulnerableAssetInput = createIdSchema({
+  paramName: "vulnerableAssetId",
   description:
-    "List assets associated with vulnerabilities in your Vanta account. Returns asset IDs, vulnerability associations, asset types, and security status for infrastructure security management. Use this to identify which assets are affected by vulnerabilities and prioritize security efforts.",
-  parameters: ListVulnerableAssetsInput,
-};
-
-const GetVulnerableAssetInput = z.object({
-  vulnerableAssetId: z
-    .string()
-    .describe(
-      "Vulnerable asset ID to retrieve, e.g. 'asset-123' or specific vulnerable asset identifier",
-    ),
+    "Vulnerable asset ID to retrieve, e.g. 'vulnerable-asset-123' or specific asset identifier",
 });
 
-export const GetVulnerableAssetTool: Tool<
-  typeof GetVulnerableAssetInput
-> = {
+// 3. Tool Definitions
+export const ListVulnerableAssetsTool: Tool<typeof ListVulnerableAssetsInput> =
+  {
+    name: "list_vulnerable_assets",
+    description:
+      "List all vulnerable assets in your Vanta account. Returns asset IDs, hostnames, vulnerability counts, and risk scores for security monitoring. Use this to see all assets that have identified vulnerabilities requiring attention.",
+    parameters: ListVulnerableAssetsInput,
+  };
+
+export const GetVulnerableAssetTool: Tool<typeof GetVulnerableAssetInput> = {
   name: "get_vulnerable_asset",
   description:
-    "Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from get_vulnerable_assets response. Returns complete asset details including vulnerability associations, asset type, and security status.",
+    "Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from list_vulnerable_assets response. Returns complete asset details including vulnerability list, risk assessment, and remediation recommendations.",
   parameters: GetVulnerableAssetInput,
 };
 
+// 4. Implementation Functions
 export async function listVulnerableAssets(
   args: z.infer<typeof ListVulnerableAssetsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL("/v1/vulnerable-assets", baseApiUrl());
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makePaginatedGetRequest("/v1/vulnerable-assets", args);
 }
 
 export async function getVulnerableAsset(
   args: z.infer<typeof GetVulnerableAssetInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/vulnerable-assets/${args.vulnerableAssetId}`,
-    baseApiUrl(),
-  );
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makeGetByIdRequest("/v1/vulnerable-assets", args.vulnerableAssetId);
 }

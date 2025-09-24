@@ -1,69 +1,69 @@
 import OpenAI from "openai";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { GetTestsTool, GetTestEntitiesTool } from "../operations/tests.js";
+import { ListTestsTool, ListTestEntitiesTool } from "../operations/tests.js";
 import {
-  GetFrameworksTool,
-  GetFrameworkControlsTool,
-  GetFrameworkByIdTool,
+  ListFrameworksTool,
+  ListFrameworkControlsTool,
+  GetFrameworkTool,
 } from "../operations/frameworks.js";
 import {
-  GetControlsTool,
-  GetControlTestsTool,
-  GetLibraryControlsTool,
-  GetControlDocumentsTool,
-  GetControlByIdTool,
+  ListControlsTool,
+  ListControlTestsTool,
+  ListLibraryControlsTool,
+  ListControlDocumentsTool,
+  GetControlTool,
 } from "../operations/controls.js";
-import { GetRisksTool, GetRiskByIdTool } from "../operations/risks.js";
+import { ListRisksTool, GetRiskTool } from "../operations/risks.js";
 import {
-  GetIntegrationsTool,
-  GetIntegrationByIdTool,
+  ListIntegrationsTool,
+  GetIntegrationTool,
 } from "../operations/integrations.js";
-import { GetVendorsTool, GetVendorByIdTool } from "../operations/vendors.js";
+import { ListVendorsTool, GetVendorTool } from "../operations/vendors.js";
 import {
-  GetDocumentsTool,
-  GetDocumentByIdTool,
-  GetDocumentControlsTool,
-  GetDocumentLinksTool,
-  GetDocumentUploadsTool,
+  ListDocumentsTool,
+  GetDocumentTool,
+  ListDocumentControlsTool,
+  ListDocumentLinksTool,
+  ListDocumentUploadsTool,
   DownloadDocumentFileTool,
 } from "../operations/documents.js";
-import { GetPoliciesTool, GetPolicyByIdTool } from "../operations/policies.js";
+import { ListPoliciesTool, GetPolicyTool } from "../operations/policies.js";
 import {
-  GetDiscoveredVendorsTool,
-  GetDiscoveredVendorAccountsTool,
+  ListDiscoveredVendorsTool,
+  ListDiscoveredVendorAccountsTool,
 } from "../operations/discovered-vendors.js";
 import {
-  GetGroupsTool,
-  GetGroupByIdTool,
-  GetGroupPeopleTool,
+  ListGroupsTool,
+  GetGroupTool,
+  ListGroupPeopleTool,
 } from "../operations/groups.js";
-import { GetPeopleTool, GetPersonByIdTool } from "../operations/people.js";
+import { ListPeopleTool, GetPersonTool } from "../operations/people.js";
 import {
-  GetVulnerabilitiesTool,
-  GetVulnerabilityByIdTool,
+  ListVulnerabilitiesTool,
+  GetVulnerabilityTool,
 } from "../operations/vulnerabilities.js";
-import { GetVulnerabilityRemediationsTool } from "../operations/vulnerability-remediations.js";
+import { ListVulnerabilityRemediationsTool } from "../operations/vulnerability-remediations.js";
 import {
-  GetVulnerableAssetsTool,
-  GetVulnerableAssetByIdTool,
+  ListVulnerableAssetsTool,
+  GetVulnerableAssetTool,
 } from "../operations/vulnerable-assets.js";
 import {
-  GetMonitoredComputersTool,
-  GetMonitoredComputerByIdTool,
+  ListMonitoredComputersTool,
+  GetMonitoredComputerTool,
 } from "../operations/monitored-computers.js";
-import { GetVendorRiskAttributesTool } from "../operations/vendor-risk-attributes.js";
+import { ListVendorRiskAttributesTool } from "../operations/vendor-risk-attributes.js";
 import {
   GetTrustCenterTool,
-  GetTrustCenterAccessRequestsTool,
+  ListTrustCenterAccessRequestsTool,
   GetTrustCenterAccessRequestTool,
-  GetTrustCenterViewerActivityEventsTool,
-  GetTrustCenterControlCategoriesTool,
+  ListTrustCenterViewerActivityEventsTool,
+  ListTrustCenterControlCategoriesTool,
   GetTrustCenterControlCategoryTool,
-  GetTrustCenterControlsTool,
+  ListTrustCenterControlsTool,
   GetTrustCenterControlTool,
-  GetTrustCenterFaqsTool,
+  ListTrustCenterFaqsTool,
   GetTrustCenterFaqTool,
-  GetTrustCenterResourcesTool,
+  ListTrustCenterResourcesTool,
   GetTrustCenterDocumentTool,
 } from "../operations/trust-centers.js";
 
@@ -72,169 +72,169 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetTestsTool.name,
-      description: GetTestsTool.description,
-      parameters: zodToJsonSchema(GetTestsTool.parameters),
+      name: ListTestsTool.name,
+      description: ListTestsTool.description,
+      parameters: zodToJsonSchema(ListTestsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetTestEntitiesTool.name,
-      description: GetTestEntitiesTool.description,
-      parameters: zodToJsonSchema(GetTestEntitiesTool.parameters),
+      name: ListTestEntitiesTool.name,
+      description: ListTestEntitiesTool.description,
+      parameters: zodToJsonSchema(ListTestEntitiesTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetFrameworksTool.name,
-      description: GetFrameworksTool.description,
-      parameters: zodToJsonSchema(GetFrameworksTool.parameters),
+      name: ListFrameworksTool.name,
+      description: ListFrameworksTool.description,
+      parameters: zodToJsonSchema(ListFrameworksTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetFrameworkControlsTool.name,
-      description: GetFrameworkControlsTool.description,
-      parameters: zodToJsonSchema(GetFrameworkControlsTool.parameters),
+      name: ListFrameworkControlsTool.name,
+      description: ListFrameworkControlsTool.description,
+      parameters: zodToJsonSchema(ListFrameworkControlsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetControlsTool.name,
-      description: GetControlsTool.description,
-      parameters: zodToJsonSchema(GetControlsTool.parameters),
+      name: ListControlsTool.name,
+      description: ListControlsTool.description,
+      parameters: zodToJsonSchema(ListControlsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetControlTestsTool.name,
-      description: GetControlTestsTool.description,
-      parameters: zodToJsonSchema(GetControlTestsTool.parameters),
+      name: ListControlTestsTool.name,
+      description: ListControlTestsTool.description,
+      parameters: zodToJsonSchema(ListControlTestsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetLibraryControlsTool.name,
-      description: GetLibraryControlsTool.description,
-      parameters: zodToJsonSchema(GetLibraryControlsTool.parameters),
+      name: ListLibraryControlsTool.name,
+      description: ListLibraryControlsTool.description,
+      parameters: zodToJsonSchema(ListLibraryControlsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetControlDocumentsTool.name,
-      description: GetControlDocumentsTool.description,
-      parameters: zodToJsonSchema(GetControlDocumentsTool.parameters),
+      name: ListControlDocumentsTool.name,
+      description: ListControlDocumentsTool.description,
+      parameters: zodToJsonSchema(ListControlDocumentsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetControlByIdTool.name,
-      description: GetControlByIdTool.description,
-      parameters: zodToJsonSchema(GetControlByIdTool.parameters),
+      name: GetControlTool.name,
+      description: GetControlTool.description,
+      parameters: zodToJsonSchema(GetControlTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetRisksTool.name,
-      description: GetRisksTool.description,
-      parameters: zodToJsonSchema(GetRisksTool.parameters),
+      name: ListRisksTool.name,
+      description: ListRisksTool.description,
+      parameters: zodToJsonSchema(ListRisksTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetRiskByIdTool.name,
-      description: GetRiskByIdTool.description,
-      parameters: zodToJsonSchema(GetRiskByIdTool.parameters),
+      name: GetRiskTool.name,
+      description: GetRiskTool.description,
+      parameters: zodToJsonSchema(GetRiskTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetFrameworkByIdTool.name,
-      description: GetFrameworkByIdTool.description,
-      parameters: zodToJsonSchema(GetFrameworkByIdTool.parameters),
+      name: GetFrameworkTool.name,
+      description: GetFrameworkTool.description,
+      parameters: zodToJsonSchema(GetFrameworkTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetIntegrationsTool.name,
-      description: GetIntegrationsTool.description,
-      parameters: zodToJsonSchema(GetIntegrationsTool.parameters),
+      name: ListIntegrationsTool.name,
+      description: ListIntegrationsTool.description,
+      parameters: zodToJsonSchema(ListIntegrationsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetIntegrationByIdTool.name,
-      description: GetIntegrationByIdTool.description,
-      parameters: zodToJsonSchema(GetIntegrationByIdTool.parameters),
+      name: GetIntegrationTool.name,
+      description: GetIntegrationTool.description,
+      parameters: zodToJsonSchema(GetIntegrationTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVendorsTool.name,
-      description: GetVendorsTool.description,
-      parameters: zodToJsonSchema(GetVendorsTool.parameters),
+      name: ListVendorsTool.name,
+      description: ListVendorsTool.description,
+      parameters: zodToJsonSchema(ListVendorsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVendorByIdTool.name,
-      description: GetVendorByIdTool.description,
-      parameters: zodToJsonSchema(GetVendorByIdTool.parameters),
+      name: GetVendorTool.name,
+      description: GetVendorTool.description,
+      parameters: zodToJsonSchema(GetVendorTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDocumentsTool.name,
-      description: GetDocumentsTool.description,
-      parameters: zodToJsonSchema(GetDocumentsTool.parameters),
+      name: ListDocumentsTool.name,
+      description: ListDocumentsTool.description,
+      parameters: zodToJsonSchema(ListDocumentsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDocumentByIdTool.name,
-      description: GetDocumentByIdTool.description,
-      parameters: zodToJsonSchema(GetDocumentByIdTool.parameters),
+      name: GetDocumentTool.name,
+      description: GetDocumentTool.description,
+      parameters: zodToJsonSchema(GetDocumentTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDocumentControlsTool.name,
-      description: GetDocumentControlsTool.description,
-      parameters: zodToJsonSchema(GetDocumentControlsTool.parameters),
+      name: ListDocumentControlsTool.name,
+      description: ListDocumentControlsTool.description,
+      parameters: zodToJsonSchema(ListDocumentControlsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDocumentLinksTool.name,
-      description: GetDocumentLinksTool.description,
-      parameters: zodToJsonSchema(GetDocumentLinksTool.parameters),
+      name: ListDocumentLinksTool.name,
+      description: ListDocumentLinksTool.description,
+      parameters: zodToJsonSchema(ListDocumentLinksTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDocumentUploadsTool.name,
-      description: GetDocumentUploadsTool.description,
-      parameters: zodToJsonSchema(GetDocumentUploadsTool.parameters),
+      name: ListDocumentUploadsTool.name,
+      description: ListDocumentUploadsTool.description,
+      parameters: zodToJsonSchema(ListDocumentUploadsTool.parameters),
     },
   },
   {
@@ -248,137 +248,137 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetPoliciesTool.name,
-      description: GetPoliciesTool.description,
-      parameters: zodToJsonSchema(GetPoliciesTool.parameters),
+      name: ListPoliciesTool.name,
+      description: ListPoliciesTool.description,
+      parameters: zodToJsonSchema(ListPoliciesTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetPolicyByIdTool.name,
-      description: GetPolicyByIdTool.description,
-      parameters: zodToJsonSchema(GetPolicyByIdTool.parameters),
+      name: GetPolicyTool.name,
+      description: GetPolicyTool.description,
+      parameters: zodToJsonSchema(GetPolicyTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDiscoveredVendorsTool.name,
-      description: GetDiscoveredVendorsTool.description,
-      parameters: zodToJsonSchema(GetDiscoveredVendorsTool.parameters),
+      name: ListDiscoveredVendorsTool.name,
+      description: ListDiscoveredVendorsTool.description,
+      parameters: zodToJsonSchema(ListDiscoveredVendorsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetDiscoveredVendorAccountsTool.name,
-      description: GetDiscoveredVendorAccountsTool.description,
-      parameters: zodToJsonSchema(GetDiscoveredVendorAccountsTool.parameters),
+      name: ListDiscoveredVendorAccountsTool.name,
+      description: ListDiscoveredVendorAccountsTool.description,
+      parameters: zodToJsonSchema(ListDiscoveredVendorAccountsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetGroupsTool.name,
-      description: GetGroupsTool.description,
-      parameters: zodToJsonSchema(GetGroupsTool.parameters),
+      name: ListGroupsTool.name,
+      description: ListGroupsTool.description,
+      parameters: zodToJsonSchema(ListGroupsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetGroupByIdTool.name,
-      description: GetGroupByIdTool.description,
-      parameters: zodToJsonSchema(GetGroupByIdTool.parameters),
+      name: GetGroupTool.name,
+      description: GetGroupTool.description,
+      parameters: zodToJsonSchema(GetGroupTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetGroupPeopleTool.name,
-      description: GetGroupPeopleTool.description,
-      parameters: zodToJsonSchema(GetGroupPeopleTool.parameters),
+      name: ListGroupPeopleTool.name,
+      description: ListGroupPeopleTool.description,
+      parameters: zodToJsonSchema(ListGroupPeopleTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetPeopleTool.name,
-      description: GetPeopleTool.description,
-      parameters: zodToJsonSchema(GetPeopleTool.parameters),
+      name: ListPeopleTool.name,
+      description: ListPeopleTool.description,
+      parameters: zodToJsonSchema(ListPeopleTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetPersonByIdTool.name,
-      description: GetPersonByIdTool.description,
-      parameters: zodToJsonSchema(GetPersonByIdTool.parameters),
+      name: GetPersonTool.name,
+      description: GetPersonTool.description,
+      parameters: zodToJsonSchema(GetPersonTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVulnerabilitiesTool.name,
-      description: GetVulnerabilitiesTool.description,
-      parameters: zodToJsonSchema(GetVulnerabilitiesTool.parameters),
+      name: ListVulnerabilitiesTool.name,
+      description: ListVulnerabilitiesTool.description,
+      parameters: zodToJsonSchema(ListVulnerabilitiesTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVulnerabilityByIdTool.name,
-      description: GetVulnerabilityByIdTool.description,
-      parameters: zodToJsonSchema(GetVulnerabilityByIdTool.parameters),
+      name: GetVulnerabilityTool.name,
+      description: GetVulnerabilityTool.description,
+      parameters: zodToJsonSchema(GetVulnerabilityTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVulnerabilityRemediationsTool.name,
-      description: GetVulnerabilityRemediationsTool.description,
-      parameters: zodToJsonSchema(GetVulnerabilityRemediationsTool.parameters),
+      name: ListVulnerabilityRemediationsTool.name,
+      description: ListVulnerabilityRemediationsTool.description,
+      parameters: zodToJsonSchema(ListVulnerabilityRemediationsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVulnerableAssetsTool.name,
-      description: GetVulnerableAssetsTool.description,
-      parameters: zodToJsonSchema(GetVulnerableAssetsTool.parameters),
+      name: ListVulnerableAssetsTool.name,
+      description: ListVulnerableAssetsTool.description,
+      parameters: zodToJsonSchema(ListVulnerableAssetsTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVulnerableAssetByIdTool.name,
-      description: GetVulnerableAssetByIdTool.description,
-      parameters: zodToJsonSchema(GetVulnerableAssetByIdTool.parameters),
+      name: GetVulnerableAssetTool.name,
+      description: GetVulnerableAssetTool.description,
+      parameters: zodToJsonSchema(GetVulnerableAssetTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetMonitoredComputersTool.name,
-      description: GetMonitoredComputersTool.description,
-      parameters: zodToJsonSchema(GetMonitoredComputersTool.parameters),
+      name: ListMonitoredComputersTool.name,
+      description: ListMonitoredComputersTool.description,
+      parameters: zodToJsonSchema(ListMonitoredComputersTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetMonitoredComputerByIdTool.name,
-      description: GetMonitoredComputerByIdTool.description,
-      parameters: zodToJsonSchema(GetMonitoredComputerByIdTool.parameters),
+      name: GetMonitoredComputerTool.name,
+      description: GetMonitoredComputerTool.description,
+      parameters: zodToJsonSchema(GetMonitoredComputerTool.parameters),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetVendorRiskAttributesTool.name,
-      description: GetVendorRiskAttributesTool.description,
-      parameters: zodToJsonSchema(GetVendorRiskAttributesTool.parameters),
+      name: ListVendorRiskAttributesTool.name,
+      description: ListVendorRiskAttributesTool.description,
+      parameters: zodToJsonSchema(ListVendorRiskAttributesTool.parameters),
     },
   },
   {
@@ -392,9 +392,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetTrustCenterAccessRequestsTool.name,
-      description: GetTrustCenterAccessRequestsTool.description,
-      parameters: zodToJsonSchema(GetTrustCenterAccessRequestsTool.parameters),
+      name: ListTrustCenterAccessRequestsTool.name,
+      description: ListTrustCenterAccessRequestsTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterAccessRequestsTool.parameters),
     },
   },
   {
@@ -408,20 +408,20 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetTrustCenterViewerActivityEventsTool.name,
-      description: GetTrustCenterViewerActivityEventsTool.description,
+      name: ListTrustCenterViewerActivityEventsTool.name,
+      description: ListTrustCenterViewerActivityEventsTool.description,
       parameters: zodToJsonSchema(
-        GetTrustCenterViewerActivityEventsTool.parameters,
+        ListTrustCenterViewerActivityEventsTool.parameters,
       ),
     },
   },
   {
     type: "function" as const,
     function: {
-      name: GetTrustCenterControlCategoriesTool.name,
-      description: GetTrustCenterControlCategoriesTool.description,
+      name: ListTrustCenterControlCategoriesTool.name,
+      description: ListTrustCenterControlCategoriesTool.description,
       parameters: zodToJsonSchema(
-        GetTrustCenterControlCategoriesTool.parameters,
+        ListTrustCenterControlCategoriesTool.parameters,
       ),
     },
   },
@@ -436,9 +436,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetTrustCenterControlsTool.name,
-      description: GetTrustCenterControlsTool.description,
-      parameters: zodToJsonSchema(GetTrustCenterControlsTool.parameters),
+      name: ListTrustCenterControlsTool.name,
+      description: ListTrustCenterControlsTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterControlsTool.parameters),
     },
   },
   {
@@ -452,9 +452,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetTrustCenterFaqsTool.name,
-      description: GetTrustCenterFaqsTool.description,
-      parameters: zodToJsonSchema(GetTrustCenterFaqsTool.parameters),
+      name: ListTrustCenterFaqsTool.name,
+      description: ListTrustCenterFaqsTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterFaqsTool.parameters),
     },
   },
   {
@@ -468,9 +468,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: GetTrustCenterResourcesTool.name,
-      description: GetTrustCenterResourcesTool.description,
-      parameters: zodToJsonSchema(GetTrustCenterResourcesTool.parameters),
+      name: ListTrustCenterResourcesTool.name,
+      description: ListTrustCenterResourcesTool.description,
+      parameters: zodToJsonSchema(ListTrustCenterResourcesTool.parameters),
     },
   },
   {
@@ -792,7 +792,7 @@ const testCases: TestCase[] = [
   },
   {
     prompt: "List all pending access requests for our Trust Center.",
-    expectedTool: "get_trust_center_access_requests",
+    expectedTool: "list_trust_center_access_requests",
     expectedParams: { slugId: "our-trust-center" },
     description:
       "Should call get_trust_center_access_requests to review access requests",
@@ -806,14 +806,14 @@ const testCases: TestCase[] = [
   },
   {
     prompt: "What viewer activity has occurred on our Trust Center this month?",
-    expectedTool: "get_trust_center_viewer_activity_events",
+    expectedTool: "list_trust_center_viewer_activity_events",
     expectedParams: { slugId: "our-trust-center" },
     description:
       "Should call get_trust_center_viewer_activity_events to track engagement analytics",
   },
   {
     prompt: "Show me all the control categories in our Trust Center.",
-    expectedTool: "get_trust_center_control_categories",
+    expectedTool: "list_trust_center_control_categories",
     expectedParams: { slugId: "trust-center" },
     description:
       "Should call get_trust_center_control_categories to list control organization",
@@ -827,7 +827,7 @@ const testCases: TestCase[] = [
   },
   {
     prompt: "List all the controls published in our public Trust Center.",
-    expectedTool: "get_trust_center_controls",
+    expectedTool: "list_trust_center_controls",
     expectedParams: { slugId: "public-trust-center" },
     description:
       "Should call get_trust_center_controls to see published compliance controls",
@@ -844,7 +844,7 @@ const testCases: TestCase[] = [
   },
   {
     prompt: "What FAQs are available on our Trust Center for customers?",
-    expectedTool: "get_trust_center_faqs",
+    expectedTool: "list_trust_center_faqs",
     expectedParams: { slugId: "customer-trust-center" },
     description:
       "Should call get_trust_center_faqs to list customer information",
@@ -858,7 +858,7 @@ const testCases: TestCase[] = [
   {
     prompt:
       "What compliance documents and resources are available for download on our Trust Center?",
-    expectedTool: "get_trust_center_resources",
+    expectedTool: "list_trust_center_resources",
     expectedParams: { slugId: "compliance-center" },
     description:
       "Should call get_trust_center_resources to list downloadable materials",

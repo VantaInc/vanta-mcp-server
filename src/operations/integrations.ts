@@ -1,51 +1,30 @@
+// 1. Imports
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { baseApiUrl } from "../api.js";
 import { Tool } from "../types.js";
 import { z } from "zod";
-import { makeAuthenticatedRequest } from "./utils.js";
 import {
-  PAGE_SIZE_DESCRIPTION,
-  PAGE_CURSOR_DESCRIPTION,
-  INTEGRATION_ID_DESCRIPTION,
-} from "./global-descriptions.js";
+  createPaginationSchema,
+  createIdSchema,
+  makePaginatedGetRequest,
+  makeGetByIdRequest,
+  buildUrl,
+  makeAuthenticatedRequest,
+  handleApiResponse,
+} from "./utils.js";
+import { INTEGRATION_ID_DESCRIPTION } from "./global-descriptions.js";
 
-const ListIntegrationsInput = z.object({
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+// 2. Input Schemas
+const ListIntegrationsInput = createPaginationSchema();
+
+const GetIntegrationInput = createIdSchema({
+  paramName: "integrationId",
+  description: INTEGRATION_ID_DESCRIPTION,
 });
-
-export const ListIntegrationsTool: Tool<typeof ListIntegrationsInput> = {
-  name: "list_integrations",
-  description:
-    "List all connected integrations in your Vanta account. Returns integration id, display name, resource kinds supported by the integration, and how many connections exist for such integration. Use this to see all integrations connected in your Vanta instance.",
-  parameters: ListIntegrationsInput,
-};
-
-const GetIntegrationInput = z.object({
-  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-});
-
-export const GetIntegrationTool: Tool<typeof GetIntegrationInput> = {
-  name: "get_integration",
-  description:
-    "Get integration by ID. Retrieve detailed information about a specific integration when its ID is known. The ID of an integration can be found from get_integrations response. Returns complete integration details including configuration, resource kinds, and connection status.",
-  parameters: GetIntegrationInput,
-};
 
 const ListIntegrationResourceKindsInput = z.object({
   integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+  ...createPaginationSchema().shape,
 });
-
-export const ListIntegrationResourceKindsTool: Tool<
-  typeof ListIntegrationResourceKindsInput
-> = {
-  name: "list_integration_resource_kinds",
-  description:
-    "List integration resource kinds. Lists a connected integration's resource types (kinds) such as S3Bucket, CloudwatchLogGroup, etc. Use this to see what types of resources an integration can monitor.",
-  parameters: ListIntegrationResourceKindsInput,
-};
 
 const GetIntegrationResourceKindDetailsInput = z.object({
   integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
@@ -56,6 +35,54 @@ const GetIntegrationResourceKindDetailsInput = z.object({
     ),
 });
 
+const ListIntegrationResourcesInput = z.object({
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
+  resourceKind: z
+    .string()
+    .describe(
+      "Resource kind to list resources for, e.g. 'S3Bucket', 'CloudwatchLogGroup'",
+    ),
+  ...createPaginationSchema().shape,
+});
+
+const GetIntegrationResourceInput = z.object({
+  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
+  resourceKind: z
+    .string()
+    .describe(
+      "Resource kind to get resource from, e.g. 'S3Bucket', 'CloudwatchLogGroup'",
+    ),
+  resourceId: z
+    .string()
+    .describe(
+      "Resource ID to get details for, e.g. 'i-1234567890abcdef0', 'bucket-name'",
+    ),
+});
+
+// 3. Tool Definitions
+export const ListIntegrationsTool: Tool<typeof ListIntegrationsInput> = {
+  name: "list_integrations",
+  description:
+    "List all connected integrations in your Vanta account. Returns integration id, display name, resource kinds supported by the integration, and how many connections exist for such integration. Use this to see all integrations connected in your Vanta instance.",
+  parameters: ListIntegrationsInput,
+};
+
+export const GetIntegrationTool: Tool<typeof GetIntegrationInput> = {
+  name: "get_integration",
+  description:
+    "Get integration by ID. Retrieve detailed information about a specific integration when its ID is known. The ID of an integration can be found from get_integrations response. Returns complete integration details including configuration, resource kinds, and connection status.",
+  parameters: GetIntegrationInput,
+};
+
+export const ListIntegrationResourceKindsTool: Tool<
+  typeof ListIntegrationResourceKindsInput
+> = {
+  name: "list_integration_resource_kinds",
+  description:
+    "List integration resource kinds. Lists a connected integration's resource types (kinds) such as S3Bucket, CloudwatchLogGroup, etc. Use this to see what types of resources an integration can monitor.",
+  parameters: ListIntegrationResourceKindsInput,
+};
+
 export const GetIntegrationResourceKindDetailsTool: Tool<
   typeof GetIntegrationResourceKindDetailsInput
 > = {
@@ -65,218 +92,77 @@ export const GetIntegrationResourceKindDetailsTool: Tool<
   parameters: GetIntegrationResourceKindDetailsInput,
 };
 
-const GetIntegrationResourcesInput = z.object({
-  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
-});
-
 export const ListIntegrationResourcesTool: Tool<
   typeof ListIntegrationResourcesInput
 > = {
   name: "list_integration_resources",
   description:
-    "List resources. List all resources discovered by a specific integration. Use this to see all infrastructure resources that Vanta is monitoring through an integration.",
+    "List resources for a specific resource kind. List all resources of a specific type (kind) discovered by an integration. Use this to see all infrastructure resources of a particular type that Vanta is monitoring through an integration.",
   parameters: ListIntegrationResourcesInput,
 };
-
-const GetIntegrationResourceInput = z.object({
-  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-  resourceId: z
-    .string()
-    .describe(
-      "Resource ID to get details for, e.g. 'i-1234567890abcdef0', 'bucket-name'",
-    ),
-});
 
 export const GetIntegrationResourceTool: Tool<
   typeof GetIntegrationResourceInput
 > = {
   name: "get_integration_resource",
   description:
-    "Get resource by ID. Retrieve detailed information about a specific resource discovered by an integration. Use this to get full details about infrastructure resources including metadata, compliance status, and configuration.",
+    "Get resource by ID within a specific resource kind. Retrieve detailed information about a specific resource of a particular type discovered by an integration. Use this to get full details about infrastructure resources including metadata, compliance status, and configuration.",
   parameters: GetIntegrationResourceInput,
 };
 
+// 4. Implementation Functions
 export async function listIntegrations(
   args: z.infer<typeof ListIntegrationsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL("/v1/integrations", baseApiUrl());
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makePaginatedGetRequest("/v1/integrations", args);
 }
 
 export async function getIntegration(
   args: z.infer<typeof GetIntegrationInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/integrations/${args.integrationId}`, baseApiUrl());
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makeGetByIdRequest("/v1/integrations", args.integrationId);
 }
 
 export async function listIntegrationResourceKinds(
   args: z.infer<typeof ListIntegrationResourceKindsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/integrations/${args.integrationId}/resource-kinds`,
-    baseApiUrl(),
+  const { integrationId, ...params } = args;
+  const url = buildUrl(
+    `/v1/integrations/${String(integrationId)}/resource-kinds`,
+    params,
   );
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function getIntegrationResourceKindDetails(
   args: z.infer<typeof GetIntegrationResourceKindDetailsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/integrations/${args.integrationId}/resource-kinds/${args.resourceKind}`,
-    baseApiUrl(),
+  const url = buildUrl(
+    `/v1/integrations/${String(args.integrationId)}/resource-kinds/${String(args.resourceKind)}`,
   );
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function listIntegrationResources(
   args: z.infer<typeof ListIntegrationResourcesInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/integrations/${args.integrationId}/resources`,
-    baseApiUrl(),
+  const { integrationId, resourceKind, ...params } = args;
+  const url = buildUrl(
+    `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}/resources`,
+    params,
   );
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function getIntegrationResource(
   args: z.infer<typeof GetIntegrationResourceInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/integrations/${args.integrationId}/resources/${args.resourceId}`,
-    baseApiUrl(),
+  const url = buildUrl(
+    `/v1/integrations/${String(args.integrationId)}/resource-kinds/${String(args.resourceKind)}/resources/${String(args.resourceId)}`,
   );
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }

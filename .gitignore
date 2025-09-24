@@ -140,3 +140,6 @@ build/
 
 # Claude Code generated files
 CLAUDE.md
+
+# backup files
+*.bak*

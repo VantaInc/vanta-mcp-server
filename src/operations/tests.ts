@@ -1,176 +1,73 @@
-import { baseApiUrl } from "../api.js";
-import { z } from "zod";
-import { Tool } from "../types.js";
+// 1. Imports
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { makeAuthenticatedRequest } from "./utils.js";
+import { Tool } from "../types.js";
+import { z } from "zod";
 import {
-  PAGE_SIZE_DESCRIPTION,
-  PAGE_CURSOR_DESCRIPTION,
-} from "./global-descriptions.js";
+  createPaginationSchema,
+  createIdSchema,
+  createIdWithPaginationSchema,
+  makePaginatedGetRequest,
+  makeGetByIdRequest,
+  buildUrl,
+  makeAuthenticatedRequest,
+  handleApiResponse,
+} from "./utils.js";
+
+// 2. Input Schemas
+const ListTestEntitiesInput = createIdWithPaginationSchema({
+  paramName: "testId",
+  description:
+    "Test ID to get entities for, e.g. 'test-123' or specific test identifier",
+});
+
+const ListTestsInput = createPaginationSchema();
+
+const GetTestInput = createIdSchema({
+  paramName: "testId",
+  description:
+    "Test ID to retrieve, e.g. 'test-123' or specific test identifier",
+});
+
+// 3. Tool Definitions
+export const ListTestEntitiesTool: Tool<typeof ListTestEntitiesInput> = {
+  name: "list_test_entities",
+  description:
+    "List a test's entities. Get all entities (resources) that are being tested by a specific security test. Use this when you know a test ID and want to see which specific resources (servers, applications, databases, etc.) are being validated for compliance by that test.",
+  parameters: ListTestEntitiesInput,
+};
+
+export const ListTestsTool: Tool<typeof ListTestsInput> = {
+  name: "list_tests",
+  description:
+    "List all security tests configured in your Vanta account. Returns test IDs, names, types, schedules, and current status for compliance monitoring. Use this to see all automated and manual tests running for your security controls.",
+  parameters: ListTestsInput,
+};
+
+export const GetTestTool: Tool<typeof GetTestInput> = {
+  name: "get_test",
+  description:
+    "Get test by ID. Retrieve detailed information about a specific security test when its ID is known. The ID of a test can be found from list_tests response. Returns complete test details including configuration, execution history, results, and associated controls.",
+  parameters: GetTestInput,
+};
+
+// 4. Implementation Functions
+export async function listTestEntities(
+  args: z.infer<typeof ListTestEntitiesInput>,
+): Promise<CallToolResult> {
+  const { testId, ...params } = args;
+  const url = buildUrl(`/v1/tests/${String(testId)}/entities`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
 
 export async function listTests(
   args: z.infer<typeof ListTestsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL("/v1/tests", baseApiUrl());
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-  if (args.statusFilter !== undefined) {
-    url.searchParams.append("statusFilter", args.statusFilter);
-  }
-  if (args.integrationFilter !== undefined) {
-    url.searchParams.append("integrationFilter", args.integrationFilter);
-  }
-  if (args.controlFilter !== undefined) {
-    url.searchParams.append("controlFilter", args.controlFilter);
-  }
-  if (args.frameworkFilter !== undefined) {
-    url.searchParams.append("frameworkFilter", args.frameworkFilter);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Url: ${url.toString()}, Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
-}
-
-export async function listTestEntities(
-  args: z.infer<typeof ListTestEntitiesInput>,
-): Promise<CallToolResult> {
-  const url = new URL(`/v1/tests/${args.testId}/entities`, baseApiUrl());
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-  if (args.entityStatus !== undefined) {
-    url.searchParams.append("entityStatus", args.entityStatus);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Url: ${url.toString()}, Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makePaginatedGetRequest("/v1/tests", args);
 }
 
 export async function getTest(
   args: z.infer<typeof GetTestInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/tests/${args.testId}`, baseApiUrl());
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Url: ${url.toString()}, Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makeGetByIdRequest("/v1/tests", args.testId);
 }
-
-const TOOL_DESCRIPTION = `Retrieve Vanta's automated security and compliance tests. Vanta runs 1,200+ automated tests 
-continuously to monitor compliance across your infrastructure. Filter by status (OK, NEEDS_ATTENTION, DEACTIVATED), 
-cloud integration (aws, azure, gcp), or compliance framework (soc2, iso27001, hipaa). Returns test results 
-showing which security controls are passing or failing across your infrastructure. Tests that are NOT_APPLICABLE 
-to your resources are included by default - use statusFilter=NEEDS_ATTENTION to retrieve only actionable failing tests.`;
-
-const TEST_STATUS_FILTER_DESCRIPTION = `Filter tests by their status.
-Helpful for retrieving only relevant or actionable results.
-Possible values: OK, DEACTIVATED, NEEDS_ATTENTION, IN_PROGRESS, INVALID, NOT_APPLICABLE.`;
-
-const INTEGRATION_FILTER_DESCRIPTION = `Filter by integration. Non-exhaustive examples of possible values include aws, azure, gcp, snyk.`;
-
-const FRAMEWORK_FILTER_DESCRIPTION = `Filter by framework. Non-exhaustive examples: soc2, ccpa, fedramp`;
-
-const CONTROL_FILTER_DESCRIPTION = `Filter by control. Generally will only be known if pulled from the /v1/controls endpoint.`;
-
-export const ListTestsInput = z.object({
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
-  statusFilter: z.string().describe(TEST_STATUS_FILTER_DESCRIPTION).optional(),
-  integrationFilter: z
-    .string()
-    .describe(INTEGRATION_FILTER_DESCRIPTION)
-    .optional(),
-  frameworkFilter: z.string().describe(FRAMEWORK_FILTER_DESCRIPTION).optional(),
-  controlFilter: z.string().describe(CONTROL_FILTER_DESCRIPTION).optional(),
-});
-
-export const ListTestsTool: Tool<typeof ListTestsInput> = {
-  name: "list_tests",
-  description: TOOL_DESCRIPTION,
-  parameters: ListTestsInput,
-};
-
-const ListTestEntitiesInput = z.object({
-  testId: z.string().describe("Lowercase with hyphens"),
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
-  entityStatus: z
-    .string()
-    .describe("Filter by entity status. Possible values: FAILING, DEACTIVATED.")
-    .optional(),
-});
-
-export const ListTestEntitiesTool: Tool<typeof ListTestEntitiesInput> = {
-  name: "list_test_entities",
-  description: `Get the specific failing resources (entities) for a known test ID. Use this when you already 
-  know the test name/ID and need to see which specific infrastructure resources are failing that test. For 
-  example, if you know "aws-security-groups-open-to-world" test is failing, this returns the actual security 
-  group IDs that are failing. Requires a specific testId parameter. Do NOT use this for general test discovery - use list_tests for that.`,
-  parameters: ListTestEntitiesInput,
-};
-
-const GetTestInput = z.object({
-  testId: z.string().describe("Lowercase with hyphens"),
-});
-
-export const GetTestTool: Tool<typeof GetTestInput> = {
-  name: "get_test",
-  description: `Get the details of a single specific test when its ID is known. The ID of a test can be 
-  found in the response from list_tests or from the URL of the test in your browser after /tests/.`,
-  parameters: GetTestInput,
-};

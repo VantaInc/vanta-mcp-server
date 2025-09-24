@@ -1,75 +1,41 @@
+// 1. Imports
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { baseApiUrl } from "../api.js";
 import { Tool } from "../types.js";
 import { z } from "zod";
-import { makeAuthenticatedRequest } from "./utils.js";
 import {
-  PAGE_SIZE_DESCRIPTION,
-  PAGE_CURSOR_DESCRIPTION,
-  DOCUMENT_ID_DESCRIPTION,
-} from "./global-descriptions.js";
+  createPaginationSchema,
+  createIdSchema,
+  createIdWithPaginationSchema,
+  makePaginatedGetRequest,
+  makeGetByIdRequest,
+  buildUrl,
+  makeAuthenticatedRequest,
+  handleApiResponse,
+} from "./utils.js";
+import { DOCUMENT_ID_DESCRIPTION } from "./global-descriptions.js";
 
-const ListDocumentsInput = z.object({
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+// 2. Input Schemas
+const ListDocumentsInput = createPaginationSchema();
+
+const GetDocumentInput = createIdSchema({
+  paramName: "documentId",
+  description: DOCUMENT_ID_DESCRIPTION,
 });
 
-export const ListDocumentsTool: Tool<typeof ListDocumentsInput> = {
-  name: "list_documents",
-  description:
-    "List all documents in your Vanta account. Returns document IDs, names, types, and metadata for compliance and evidence management. Use this to see all documents available for compliance frameworks and controls.",
-  parameters: ListDocumentsInput,
-};
-
-const GetDocumentInput = z.object({
-  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
+const ListDocumentControlsInput = createIdWithPaginationSchema({
+  paramName: "documentId",
+  description: DOCUMENT_ID_DESCRIPTION,
 });
 
-export const GetDocumentTool: Tool<typeof GetDocumentInput> = {
-  name: "get_document",
-  description:
-    "Get document by ID. Retrieve detailed information about a specific document when its ID is known. The ID of a document can be found from get_documents response. Returns complete document details including name, type, metadata, and compliance mappings.",
-  parameters: GetDocumentInput,
-};
-
-const ListDocumentControlsInput = z.object({
-  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+const ListDocumentLinksInput = createIdWithPaginationSchema({
+  paramName: "documentId",
+  description: DOCUMENT_ID_DESCRIPTION,
 });
 
-export const ListDocumentControlsTool: Tool<typeof ListDocumentControlsInput> = {
-  name: "list_document_controls",
-  description:
-    "List document's controls. Get all security controls that are mapped to or associated with a specific document. Use this to understand which compliance controls are supported by a particular document as evidence.",
-  parameters: ListDocumentControlsInput,
-};
-
-const ListDocumentLinksInput = z.object({
-  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+const ListDocumentUploadsInput = createIdWithPaginationSchema({
+  paramName: "documentId",
+  description: DOCUMENT_ID_DESCRIPTION,
 });
-
-export const ListDocumentLinksTool: Tool<typeof ListDocumentLinksInput> = {
-  name: "list_document_links",
-  description:
-    "List document's links. Get all external links and references associated with a specific document. Use this to access related resources, external documentation, or supplementary materials for compliance evidence.",
-  parameters: ListDocumentLinksInput,
-};
-
-const ListDocumentUploadsInput = z.object({
-  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
-  pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-  pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
-});
-
-export const ListDocumentUploadsTool: Tool<typeof ListDocumentUploadsInput> = {
-  name: "list_document_uploads",
-  description:
-    "List document's uploads. Get all files and uploads that have been attached to a specific document. Use this to see what files are available for download or review as part of compliance documentation.",
-  parameters: ListDocumentUploadsInput,
-};
 
 const DownloadDocumentFileInput = z.object({
   documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
@@ -80,6 +46,43 @@ const DownloadDocumentFileInput = z.object({
     ),
 });
 
+// 3. Tool Definitions
+export const ListDocumentsTool: Tool<typeof ListDocumentsInput> = {
+  name: "list_documents",
+  description:
+    "List all documents in your Vanta account. Returns document IDs, names, types, and metadata for compliance and evidence management. Use this to see all documents available for compliance frameworks and controls.",
+  parameters: ListDocumentsInput,
+};
+
+export const GetDocumentTool: Tool<typeof GetDocumentInput> = {
+  name: "get_document",
+  description:
+    "Get document by ID. Retrieve detailed information about a specific document when its ID is known. The ID of a document can be found from get_documents response. Returns complete document details including name, type, metadata, and compliance mappings.",
+  parameters: GetDocumentInput,
+};
+
+export const ListDocumentControlsTool: Tool<typeof ListDocumentControlsInput> =
+  {
+    name: "list_document_controls",
+    description:
+      "List document's controls. Get all security controls that are mapped to or associated with a specific document. Use this to understand which compliance controls are supported by a particular document as evidence.",
+    parameters: ListDocumentControlsInput,
+  };
+
+export const ListDocumentLinksTool: Tool<typeof ListDocumentLinksInput> = {
+  name: "list_document_links",
+  description:
+    "List document's links. Get all external links and references associated with a specific document. Use this to access related resources, external documentation, or supplementary materials for compliance evidence.",
+  parameters: ListDocumentLinksInput,
+};
+
+export const ListDocumentUploadsTool: Tool<typeof ListDocumentUploadsInput> = {
+  name: "list_document_uploads",
+  description:
+    "List document's uploads. Get all files and uploads that have been attached to a specific document. Use this to see what files are available for download or review as part of compliance documentation.",
+  parameters: ListDocumentUploadsInput,
+};
+
 export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> =
   {
     name: "download_document_file",
@@ -88,186 +91,61 @@ export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> =
     parameters: DownloadDocumentFileInput,
   };
 
+// 4. Implementation Functions
 export async function listDocuments(
   args: z.infer<typeof ListDocumentsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL("/v1/documents", baseApiUrl());
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makePaginatedGetRequest("/v1/documents", args);
 }
 
 export async function getDocument(
   args: z.infer<typeof GetDocumentInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/documents/${args.documentId}`, baseApiUrl());
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  return makeGetByIdRequest("/v1/documents", args.documentId);
 }
 
 export async function listDocumentControls(
   args: z.infer<typeof ListDocumentControlsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/documents/${args.documentId}/controls`,
-    baseApiUrl(),
-  );
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const { documentId, ...params } = args;
+  const url = buildUrl(`/v1/documents/${String(documentId)}/controls`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function listDocumentLinks(
   args: z.infer<typeof ListDocumentLinksInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/documents/${args.documentId}/links`, baseApiUrl());
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const { documentId, ...params } = args;
+  const url = buildUrl(`/v1/documents/${String(documentId)}/links`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function listDocumentUploads(
   args: z.infer<typeof ListDocumentUploadsInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(`/v1/documents/${args.documentId}/uploads`, baseApiUrl());
-
-  if (args.pageSize !== undefined) {
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  }
-  if (args.pageCursor !== undefined) {
-    url.searchParams.append("pageCursor", args.pageCursor);
-  }
-
-  const response = await makeAuthenticatedRequest(url.toString());
-
-  if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
-  }
-
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  const { documentId, ...params } = args;
+  const url = buildUrl(`/v1/documents/${String(documentId)}/uploads`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function downloadDocumentFile(
   args: z.infer<typeof DownloadDocumentFileInput>,
 ): Promise<CallToolResult> {
-  const url = new URL(
-    `/v1/documents/${args.documentId}/uploads/${args.uploadedFileId}/media`,
-    baseApiUrl(),
+  const url = buildUrl(
+    `/v1/documents/${String(args.documentId)}/uploads/${String(args.uploadedFileId)}/media`,
   );
-
-  const response = await makeAuthenticatedRequest(url.toString());
+  const response = await makeAuthenticatedRequest(url);
 
   if (!response.ok) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${response.statusText}`,
-        },
-      ],
-    };
+    return handleApiResponse(response);
   }
 
   // Get the content type from the response headers
   const contentType =
-    response.headers.get("content-type") || "application/octet-stream";
+    response.headers.get("content-type") ?? "application/octet-stream";
   const contentLength = response.headers.get("content-length");
 
   // Handle text-based MIME types - return content that LLMs can process

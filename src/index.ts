@@ -135,26 +135,26 @@ import {
 import {
   getTrustCenter,
   GetTrustCenterTool,
-  getTrustCenterAccessRequests,
-  GetTrustCenterAccessRequestsTool,
+  listTrustCenterAccessRequests,
+  ListTrustCenterAccessRequestsTool,
   getTrustCenterAccessRequest,
   GetTrustCenterAccessRequestTool,
-  getTrustCenterViewerActivityEvents,
-  GetTrustCenterViewerActivityEventsTool,
-  getTrustCenterControlCategories,
-  GetTrustCenterControlCategoriesTool,
+  listTrustCenterViewerActivityEvents,
+  ListTrustCenterViewerActivityEventsTool,
+  listTrustCenterControlCategories,
+  ListTrustCenterControlCategoriesTool,
   getTrustCenterControlCategory,
   GetTrustCenterControlCategoryTool,
-  getTrustCenterControls,
-  GetTrustCenterControlsTool,
+  listTrustCenterControls,
+  ListTrustCenterControlsTool,
   getTrustCenterControl,
   GetTrustCenterControlTool,
-  getTrustCenterFaqs,
-  GetTrustCenterFaqsTool,
+  listTrustCenterFaqs,
+  ListTrustCenterFaqsTool,
   getTrustCenterFaq,
   GetTrustCenterFaqTool,
-  getTrustCenterResources,
-  GetTrustCenterResourcesTool,
+  listTrustCenterResources,
+  ListTrustCenterResourcesTool,
   getTrustCenterDocument,
   GetTrustCenterDocumentTool,
 } from "./operations/trust-centers.js";
@@ -518,10 +518,10 @@ server.tool(
 );
 
 server.tool(
-  GetTrustCenterAccessRequestsTool.name,
-  GetTrustCenterAccessRequestsTool.description,
-  GetTrustCenterAccessRequestsTool.parameters.shape,
-  getTrustCenterAccessRequests,
+  ListTrustCenterAccessRequestsTool.name,
+  ListTrustCenterAccessRequestsTool.description,
+  ListTrustCenterAccessRequestsTool.parameters.shape,
+  listTrustCenterAccessRequests,
 );
 
 server.tool(
@@ -532,17 +532,17 @@ server.tool(
 );
 
 server.tool(
-  GetTrustCenterViewerActivityEventsTool.name,
-  GetTrustCenterViewerActivityEventsTool.description,
-  GetTrustCenterViewerActivityEventsTool.parameters.shape,
-  getTrustCenterViewerActivityEvents,
+  ListTrustCenterViewerActivityEventsTool.name,
+  ListTrustCenterViewerActivityEventsTool.description,
+  ListTrustCenterViewerActivityEventsTool.parameters.shape,
+  listTrustCenterViewerActivityEvents,
 );
 
 server.tool(
-  GetTrustCenterControlCategoriesTool.name,
-  GetTrustCenterControlCategoriesTool.description,
-  GetTrustCenterControlCategoriesTool.parameters.shape,
-  getTrustCenterControlCategories,
+  ListTrustCenterControlCategoriesTool.name,
+  ListTrustCenterControlCategoriesTool.description,
+  ListTrustCenterControlCategoriesTool.parameters.shape,
+  listTrustCenterControlCategories,
 );
 
 server.tool(
@@ -553,10 +553,10 @@ server.tool(
 );
 
 server.tool(
-  GetTrustCenterControlsTool.name,
-  GetTrustCenterControlsTool.description,
-  GetTrustCenterControlsTool.parameters.shape,
-  getTrustCenterControls,
+  ListTrustCenterControlsTool.name,
+  ListTrustCenterControlsTool.description,
+  ListTrustCenterControlsTool.parameters.shape,
+  listTrustCenterControls,
 );
 
 server.tool(
@@ -567,10 +567,10 @@ server.tool(
 );
 
 server.tool(
-  GetTrustCenterFaqsTool.name,
-  GetTrustCenterFaqsTool.description,
-  GetTrustCenterFaqsTool.parameters.shape,
-  getTrustCenterFaqs,
+  ListTrustCenterFaqsTool.name,
+  ListTrustCenterFaqsTool.description,
+  ListTrustCenterFaqsTool.parameters.shape,
+  listTrustCenterFaqs,
 );
 
 server.tool(
@@ -581,10 +581,10 @@ server.tool(
 );
 
 server.tool(
-  GetTrustCenterResourcesTool.name,
-  GetTrustCenterResourcesTool.description,
-  GetTrustCenterResourcesTool.parameters.shape,
-  getTrustCenterResources,
+  ListTrustCenterResourcesTool.name,
+  ListTrustCenterResourcesTool.description,
+  ListTrustCenterResourcesTool.parameters.shape,
+  listTrustCenterResources,
 );
 
 server.tool(
