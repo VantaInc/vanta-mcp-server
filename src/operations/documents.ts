@@ -9,66 +9,66 @@ import {
   DOCUMENT_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetDocumentsInput = z.object({
+const ListDocumentsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetDocumentsTool: Tool<typeof GetDocumentsInput> = {
-  name: "get_documents",
+export const ListDocumentsTool: Tool<typeof ListDocumentsInput> = {
+  name: "list_documents",
   description:
     "List all documents in your Vanta account. Returns document IDs, names, types, and metadata for compliance and evidence management. Use this to see all documents available for compliance frameworks and controls.",
-  parameters: GetDocumentsInput,
+  parameters: ListDocumentsInput,
 };
 
-const GetDocumentByIdInput = z.object({
+const GetDocumentInput = z.object({
   documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
 });
 
-export const GetDocumentByIdTool: Tool<typeof GetDocumentByIdInput> = {
-  name: "get_document_by_id",
+export const GetDocumentTool: Tool<typeof GetDocumentInput> = {
+  name: "get_document",
   description:
     "Get document by ID. Retrieve detailed information about a specific document when its ID is known. The ID of a document can be found from get_documents response. Returns complete document details including name, type, metadata, and compliance mappings.",
-  parameters: GetDocumentByIdInput,
+  parameters: GetDocumentInput,
 };
 
-const GetDocumentControlsInput = z.object({
+const ListDocumentControlsInput = z.object({
   documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetDocumentControlsTool: Tool<typeof GetDocumentControlsInput> = {
-  name: "get_document_controls",
+export const ListDocumentControlsTool: Tool<typeof ListDocumentControlsInput> = {
+  name: "list_document_controls",
   description:
     "List document's controls. Get all security controls that are mapped to or associated with a specific document. Use this to understand which compliance controls are supported by a particular document as evidence.",
-  parameters: GetDocumentControlsInput,
+  parameters: ListDocumentControlsInput,
 };
 
-const GetDocumentLinksInput = z.object({
+const ListDocumentLinksInput = z.object({
   documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetDocumentLinksTool: Tool<typeof GetDocumentLinksInput> = {
-  name: "get_document_links",
+export const ListDocumentLinksTool: Tool<typeof ListDocumentLinksInput> = {
+  name: "list_document_links",
   description:
     "List document's links. Get all external links and references associated with a specific document. Use this to access related resources, external documentation, or supplementary materials for compliance evidence.",
-  parameters: GetDocumentLinksInput,
+  parameters: ListDocumentLinksInput,
 };
 
-const GetDocumentUploadsInput = z.object({
+const ListDocumentUploadsInput = z.object({
   documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetDocumentUploadsTool: Tool<typeof GetDocumentUploadsInput> = {
-  name: "get_document_uploads",
+export const ListDocumentUploadsTool: Tool<typeof ListDocumentUploadsInput> = {
+  name: "list_document_uploads",
   description:
     "List document's uploads. Get all files and uploads that have been attached to a specific document. Use this to see what files are available for download or review as part of compliance documentation.",
-  parameters: GetDocumentUploadsInput,
+  parameters: ListDocumentUploadsInput,
 };
 
 const DownloadDocumentFileInput = z.object({
@@ -88,8 +88,8 @@ export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> =
     parameters: DownloadDocumentFileInput,
   };
 
-export async function getDocuments(
-  args: z.infer<typeof GetDocumentsInput>,
+export async function listDocuments(
+  args: z.infer<typeof ListDocumentsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/documents", baseApiUrl());
 
@@ -120,8 +120,8 @@ export async function getDocuments(
   };
 }
 
-export async function getDocumentById(
-  args: z.infer<typeof GetDocumentByIdInput>,
+export async function getDocument(
+  args: z.infer<typeof GetDocumentInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/documents/${args.documentId}`, baseApiUrl());
 
@@ -145,8 +145,8 @@ export async function getDocumentById(
   };
 }
 
-export async function getDocumentControls(
-  args: z.infer<typeof GetDocumentControlsInput>,
+export async function listDocumentControls(
+  args: z.infer<typeof ListDocumentControlsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/documents/${args.documentId}/controls`,
@@ -180,8 +180,8 @@ export async function getDocumentControls(
   };
 }
 
-export async function getDocumentLinks(
-  args: z.infer<typeof GetDocumentLinksInput>,
+export async function listDocumentLinks(
+  args: z.infer<typeof ListDocumentLinksInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/documents/${args.documentId}/links`, baseApiUrl());
 
@@ -212,8 +212,8 @@ export async function getDocumentLinks(
   };
 }
 
-export async function getDocumentUploads(
-  args: z.infer<typeof GetDocumentUploadsInput>,
+export async function listDocumentUploads(
+  args: z.infer<typeof ListDocumentUploadsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/documents/${args.documentId}/uploads`, baseApiUrl());
 

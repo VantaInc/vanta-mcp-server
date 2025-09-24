@@ -9,71 +9,71 @@ import {
   VENDOR_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetVendorsInput = z.object({
+const ListVendorsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorsTool: Tool<typeof GetVendorsInput> = {
-  name: "get_vendors",
+export const ListVendorsTool: Tool<typeof ListVendorsInput> = {
+  name: "list_vendors",
   description:
     "List all vendors in your Vanta account. Returns vendor IDs, names, website URLs, and many other vendor attributes. Use this to see all existing vendors.",
-  parameters: GetVendorsInput,
+  parameters: ListVendorsInput,
 };
 
-const GetVendorByIdInput = z.object({
+const GetVendorInput = z.object({
   vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
 });
 
-export const GetVendorByIdTool: Tool<typeof GetVendorByIdInput> = {
-  name: "get_vendor_by_id",
+export const GetVendorTool: Tool<typeof GetVendorInput> = {
+  name: "get_vendor",
   description:
     "Get vendor by ID. Retrieve detailed information about a specific vendor when its ID is known. The ID of a vendor can be found from get_vendors response. Returns complete vendor details including name, website URLs, contact information, and risk assessment status.",
-  parameters: GetVendorByIdInput,
+  parameters: GetVendorInput,
 };
 
-const GetVendorDocumentsInput = z.object({
+const ListVendorDocumentsInput = z.object({
   vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorDocumentsTool: Tool<typeof GetVendorDocumentsInput> = {
-  name: "get_vendor_documents",
+export const ListVendorDocumentsTool: Tool<typeof ListVendorDocumentsInput> = {
+  name: "list_vendor_documents",
   description:
     "List vendor documents. Get all documents associated with a specific vendor for compliance and risk assessment purposes. Use this to see what documentation is available for vendor due diligence.",
-  parameters: GetVendorDocumentsInput,
+  parameters: ListVendorDocumentsInput,
 };
 
-const GetVendorFindingsInput = z.object({
+const ListVendorFindingsInput = z.object({
   vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorFindingsTool: Tool<typeof GetVendorFindingsInput> = {
-  name: "get_vendor_findings",
+export const ListVendorFindingsTool: Tool<typeof ListVendorFindingsInput> = {
+  name: "list_vendor_findings",
   description:
     "List vendor findings. Get all security findings and risk assessment results for a specific vendor. Use this to understand security concerns and compliance issues related to a vendor.",
-  parameters: GetVendorFindingsInput,
+  parameters: ListVendorFindingsInput,
 };
 
-const GetVendorSecurityReviewsInput = z.object({
+const ListVendorSecurityReviewsInput = z.object({
   vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorSecurityReviewsTool: Tool<
-  typeof GetVendorSecurityReviewsInput
+export const ListVendorSecurityReviewsTool: Tool<
+  typeof ListVendorSecurityReviewsInput
 > = {
-  name: "get_vendor_security_reviews",
+  name: "list_vendor_security_reviews",
   description:
     "Get security reviews by vendor ID. List all security reviews conducted for a specific vendor. Use this to see the history of security assessments and due diligence activities.",
-  parameters: GetVendorSecurityReviewsInput,
+  parameters: ListVendorSecurityReviewsInput,
 };
 
-const GetVendorSecurityReviewByIdInput = z.object({
+const GetVendorSecurityReviewInput = z.object({
   vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   securityReviewId: z
     .string()
@@ -82,16 +82,16 @@ const GetVendorSecurityReviewByIdInput = z.object({
     ),
 });
 
-export const GetVendorSecurityReviewByIdTool: Tool<
-  typeof GetVendorSecurityReviewByIdInput
+export const GetVendorSecurityReviewTool: Tool<
+  typeof GetVendorSecurityReviewInput
 > = {
-  name: "get_vendor_security_review_by_id",
+  name: "get_vendor_security_review",
   description:
     "Get security review by ID. Retrieve detailed information about a specific security review for a vendor. Use this to get complete details about a particular security assessment including findings, status, and recommendations.",
-  parameters: GetVendorSecurityReviewByIdInput,
+  parameters: GetVendorSecurityReviewInput,
 };
 
-const GetVendorSecurityReviewDocumentsInput = z.object({
+const ListVendorSecurityReviewDocumentsInput = z.object({
   vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
   securityReviewId: z
     .string()
@@ -102,17 +102,17 @@ const GetVendorSecurityReviewDocumentsInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVendorSecurityReviewDocumentsTool: Tool<
-  typeof GetVendorSecurityReviewDocumentsInput
+export const ListVendorSecurityReviewDocumentsTool: Tool<
+  typeof ListVendorSecurityReviewDocumentsInput
 > = {
-  name: "get_vendor_security_review_documents",
+  name: "list_vendor_security_review_documents",
   description:
     "Get security review documents. List all documents associated with a specific vendor security review. Use this to access supporting documentation, evidence, and reports related to a security assessment.",
-  parameters: GetVendorSecurityReviewDocumentsInput,
+  parameters: ListVendorSecurityReviewDocumentsInput,
 };
 
-export async function getVendors(
-  args: z.infer<typeof GetVendorsInput>,
+export async function listVendors(
+  args: z.infer<typeof ListVendorsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/vendors", baseApiUrl());
 
@@ -143,8 +143,8 @@ export async function getVendors(
   };
 }
 
-export async function getVendorById(
-  args: z.infer<typeof GetVendorByIdInput>,
+export async function getVendor(
+  args: z.infer<typeof GetVendorInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/vendors/${args.vendorId}`, baseApiUrl());
 
@@ -168,8 +168,8 @@ export async function getVendorById(
   };
 }
 
-export async function getVendorDocuments(
-  args: z.infer<typeof GetVendorDocumentsInput>,
+export async function listVendorDocuments(
+  args: z.infer<typeof ListVendorDocumentsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/vendors/${args.vendorId}/documents`, baseApiUrl());
 
@@ -200,8 +200,8 @@ export async function getVendorDocuments(
   };
 }
 
-export async function getVendorFindings(
-  args: z.infer<typeof GetVendorFindingsInput>,
+export async function listVendorFindings(
+  args: z.infer<typeof ListVendorFindingsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/vendors/${args.vendorId}/findings`, baseApiUrl());
 
@@ -232,8 +232,8 @@ export async function getVendorFindings(
   };
 }
 
-export async function getVendorSecurityReviews(
-  args: z.infer<typeof GetVendorSecurityReviewsInput>,
+export async function listVendorSecurityReviews(
+  args: z.infer<typeof ListVendorSecurityReviewsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/vendors/${args.vendorId}/security-reviews`,
@@ -267,8 +267,8 @@ export async function getVendorSecurityReviews(
   };
 }
 
-export async function getVendorSecurityReviewById(
-  args: z.infer<typeof GetVendorSecurityReviewByIdInput>,
+export async function getVendorSecurityReview(
+  args: z.infer<typeof GetVendorSecurityReviewInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}`,
@@ -295,8 +295,8 @@ export async function getVendorSecurityReviewById(
   };
 }
 
-export async function getVendorSecurityReviewDocuments(
-  args: z.infer<typeof GetVendorSecurityReviewDocumentsInput>,
+export async function listVendorSecurityReviewDocuments(
+  args: z.infer<typeof ListVendorSecurityReviewDocumentsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}/documents`,

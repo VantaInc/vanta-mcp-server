@@ -8,35 +8,35 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetDiscoveredVendorsInput = z.object({
+const ListDiscoveredVendorsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetDiscoveredVendorsTool: Tool<typeof GetDiscoveredVendorsInput> =
+export const ListDiscoveredVendorsTool: Tool<typeof ListDiscoveredVendorsInput> =
   {
-    name: "get_discovered_vendors",
+    name: "list_discovered_vendors",
     description:
       "List discovered vendors in your Vanta account. Returns vendors that have been automatically discovered through integrations but may not yet be managed as official vendors. Use this to see potential vendors for risk assessment and vendor management onboarding.",
-    parameters: GetDiscoveredVendorsInput,
+    parameters: ListDiscoveredVendorsInput,
   };
 
-const GetDiscoveredVendorAccountsInput = z.object({
+const ListDiscoveredVendorAccountsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetDiscoveredVendorAccountsTool: Tool<
-  typeof GetDiscoveredVendorAccountsInput
+export const ListDiscoveredVendorAccountsTool: Tool<
+  typeof ListDiscoveredVendorAccountsInput
 > = {
-  name: "get_discovered_vendor_accounts",
+  name: "list_discovered_vendor_accounts",
   description:
     "List discovered vendor accounts in your Vanta account. Returns detailed account information for discovered vendors including integration sources and account metadata. Use this to understand vendor relationships and account structures before converting to managed vendors.",
-  parameters: GetDiscoveredVendorAccountsInput,
+  parameters: ListDiscoveredVendorAccountsInput,
 };
 
-export async function getDiscoveredVendors(
-  args: z.infer<typeof GetDiscoveredVendorsInput>,
+export async function listDiscoveredVendors(
+  args: z.infer<typeof ListDiscoveredVendorsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/discovered-vendors", baseApiUrl());
 
@@ -67,8 +67,8 @@ export async function getDiscoveredVendors(
   };
 }
 
-export async function getDiscoveredVendorAccounts(
-  args: z.infer<typeof GetDiscoveredVendorAccountsInput>,
+export async function listDiscoveredVendorAccounts(
+  args: z.infer<typeof ListDiscoveredVendorAccountsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/discovered-vendors/accounts", baseApiUrl());
 

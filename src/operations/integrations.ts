@@ -9,42 +9,42 @@ import {
   INTEGRATION_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetIntegrationsInput = z.object({
+const ListIntegrationsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetIntegrationsTool: Tool<typeof GetIntegrationsInput> = {
-  name: "get_integrations",
+export const ListIntegrationsTool: Tool<typeof ListIntegrationsInput> = {
+  name: "list_integrations",
   description:
     "List all connected integrations in your Vanta account. Returns integration id, display name, resource kinds supported by the integration, and how many connections exist for such integration. Use this to see all integrations connected in your Vanta instance.",
-  parameters: GetIntegrationsInput,
+  parameters: ListIntegrationsInput,
 };
 
-const GetIntegrationByIdInput = z.object({
+const GetIntegrationInput = z.object({
   integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
 });
 
-export const GetIntegrationByIdTool: Tool<typeof GetIntegrationByIdInput> = {
-  name: "get_integration_by_id",
+export const GetIntegrationTool: Tool<typeof GetIntegrationInput> = {
+  name: "get_integration",
   description:
     "Get integration by ID. Retrieve detailed information about a specific integration when its ID is known. The ID of an integration can be found from get_integrations response. Returns complete integration details including configuration, resource kinds, and connection status.",
-  parameters: GetIntegrationByIdInput,
+  parameters: GetIntegrationInput,
 };
 
-const GetIntegrationResourceKindsInput = z.object({
+const ListIntegrationResourceKindsInput = z.object({
   integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetIntegrationResourceKindsTool: Tool<
-  typeof GetIntegrationResourceKindsInput
+export const ListIntegrationResourceKindsTool: Tool<
+  typeof ListIntegrationResourceKindsInput
 > = {
-  name: "get_integration_resource_kinds",
+  name: "list_integration_resource_kinds",
   description:
     "List integration resource kinds. Lists a connected integration's resource types (kinds) such as S3Bucket, CloudwatchLogGroup, etc. Use this to see what types of resources an integration can monitor.",
-  parameters: GetIntegrationResourceKindsInput,
+  parameters: ListIntegrationResourceKindsInput,
 };
 
 const GetIntegrationResourceKindDetailsInput = z.object({
@@ -71,16 +71,16 @@ const GetIntegrationResourcesInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetIntegrationResourcesTool: Tool<
-  typeof GetIntegrationResourcesInput
+export const ListIntegrationResourcesTool: Tool<
+  typeof ListIntegrationResourcesInput
 > = {
-  name: "get_integration_resources",
+  name: "list_integration_resources",
   description:
     "List resources. List all resources discovered by a specific integration. Use this to see all infrastructure resources that Vanta is monitoring through an integration.",
-  parameters: GetIntegrationResourcesInput,
+  parameters: ListIntegrationResourcesInput,
 };
 
-const GetIntegrationResourceByIdInput = z.object({
+const GetIntegrationResourceInput = z.object({
   integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
   resourceId: z
     .string()
@@ -89,17 +89,17 @@ const GetIntegrationResourceByIdInput = z.object({
     ),
 });
 
-export const GetIntegrationResourceByIdTool: Tool<
-  typeof GetIntegrationResourceByIdInput
+export const GetIntegrationResourceTool: Tool<
+  typeof GetIntegrationResourceInput
 > = {
-  name: "get_integration_resource_by_id",
+  name: "get_integration_resource",
   description:
     "Get resource by ID. Retrieve detailed information about a specific resource discovered by an integration. Use this to get full details about infrastructure resources including metadata, compliance status, and configuration.",
-  parameters: GetIntegrationResourceByIdInput,
+  parameters: GetIntegrationResourceInput,
 };
 
-export async function getIntegrations(
-  args: z.infer<typeof GetIntegrationsInput>,
+export async function listIntegrations(
+  args: z.infer<typeof ListIntegrationsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/integrations", baseApiUrl());
 
@@ -130,8 +130,8 @@ export async function getIntegrations(
   };
 }
 
-export async function getIntegrationById(
-  args: z.infer<typeof GetIntegrationByIdInput>,
+export async function getIntegration(
+  args: z.infer<typeof GetIntegrationInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/integrations/${args.integrationId}`, baseApiUrl());
 
@@ -155,8 +155,8 @@ export async function getIntegrationById(
   };
 }
 
-export async function getIntegrationResourceKinds(
-  args: z.infer<typeof GetIntegrationResourceKindsInput>,
+export async function listIntegrationResourceKinds(
+  args: z.infer<typeof ListIntegrationResourceKindsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/integrations/${args.integrationId}/resource-kinds`,
@@ -218,8 +218,8 @@ export async function getIntegrationResourceKindDetails(
   };
 }
 
-export async function getIntegrationResources(
-  args: z.infer<typeof GetIntegrationResourcesInput>,
+export async function listIntegrationResources(
+  args: z.infer<typeof ListIntegrationResourcesInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/integrations/${args.integrationId}/resources`,
@@ -253,8 +253,8 @@ export async function getIntegrationResources(
   };
 }
 
-export async function getIntegrationResourceById(
-  args: z.infer<typeof GetIntegrationResourceByIdInput>,
+export async function getIntegrationResource(
+  args: z.infer<typeof GetIntegrationResourceInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/integrations/${args.integrationId}/resources/${args.resourceId}`,

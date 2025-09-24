@@ -8,19 +8,19 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetVulnerabilitiesInput = z.object({
+const ListVulnerabilitiesInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVulnerabilitiesTool: Tool<typeof GetVulnerabilitiesInput> = {
-  name: "get_vulnerabilities",
+export const ListVulnerabilitiesTool: Tool<typeof ListVulnerabilitiesInput> = {
+  name: "list_vulnerabilities",
   description:
     "Get vulnerabilities in your Vanta account. Returns vulnerability IDs, CVE information, severity levels, and affected assets for security monitoring and remediation. Use this to see all vulnerabilities detected across your infrastructure and applications.",
-  parameters: GetVulnerabilitiesInput,
+  parameters: ListVulnerabilitiesInput,
 };
 
-const GetVulnerabilityByIdInput = z.object({
+const GetVulnerabilityInput = z.object({
   vulnerabilityId: z
     .string()
     .describe(
@@ -28,16 +28,16 @@ const GetVulnerabilityByIdInput = z.object({
     ),
 });
 
-export const GetVulnerabilityByIdTool: Tool<typeof GetVulnerabilityByIdInput> =
+export const GetVulnerabilityTool: Tool<typeof GetVulnerabilityInput> =
   {
-    name: "get_vulnerability_by_id",
+    name: "get_vulnerability",
     description:
-      "Get vulnerability by ID. Retrieve detailed information about a specific vulnerability when its ID is known. The ID of a vulnerability can be found from get_vulnerabilities response. Returns complete vulnerability details including CVE information, severity, affected assets, and remediation status.",
-    parameters: GetVulnerabilityByIdInput,
+      "Get vulnerability by ID. Retrieve detailed information about a specific vulnerability when its ID is known. The ID of a vulnerability can be found from list_vulnerabilities response. Returns complete vulnerability details including CVE information, severity, affected assets, and remediation status.",
+    parameters: GetVulnerabilityInput,
   };
 
-export async function getVulnerabilities(
-  args: z.infer<typeof GetVulnerabilitiesInput>,
+export async function listVulnerabilities(
+  args: z.infer<typeof ListVulnerabilitiesInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/vulnerabilities", baseApiUrl());
 
@@ -68,8 +68,8 @@ export async function getVulnerabilities(
   };
 }
 
-export async function getVulnerabilityById(
-  args: z.infer<typeof GetVulnerabilityByIdInput>,
+export async function getVulnerability(
+  args: z.infer<typeof GetVulnerabilityInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/vulnerabilities/${args.vulnerabilityId}`,

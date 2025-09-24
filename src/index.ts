@@ -3,134 +3,134 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
-  getTestEntities,
-  GetTestEntitiesTool,
-  getTests,
-  GetTestsTool,
-  getTestById,
-  GetTestByIdTool,
+  listTestEntities,
+  ListTestEntitiesTool,
+  listTests,
+  ListTestsTool,
+  getTest,
+  GetTestTool,
 } from "./operations/tests.js";
 import {
-  GetFrameworkControlsTool,
-  GetFrameworksTool,
-  GetFrameworkByIdTool,
-  getFrameworkControls,
-  getFrameworks,
-  getFrameworkById,
+  ListFrameworkControlsTool,
+  ListFrameworksTool,
+  GetFrameworkTool,
+  listFrameworkControls,
+  listFrameworks,
+  getFramework,
 } from "./operations/frameworks.js";
 import {
-  GetControlsTool,
-  GetControlTestsTool,
-  GetLibraryControlsTool,
-  GetControlDocumentsTool,
-  GetControlByIdTool,
-  getControls,
-  getControlTests,
-  getLibraryControls,
-  getControlDocuments,
-  getControlById,
+  ListControlsTool,
+  ListControlTestsTool,
+  ListLibraryControlsTool,
+  ListControlDocumentsTool,
+  GetControlTool,
+  listControls,
+  listControlTests,
+  listLibraryControls,
+  listControlDocuments,
+  getControl,
 } from "./operations/controls.js";
 import {
-  getRisks,
-  GetRisksTool,
-  getRiskById,
-  GetRiskByIdTool,
+  listRisks,
+  ListRisksTool,
+  getRisk,
+  GetRiskTool,
 } from "./operations/risks.js";
 import {
-  getIntegrations,
-  GetIntegrationsTool,
-  getIntegrationById,
-  GetIntegrationByIdTool,
-  getIntegrationResourceKinds,
-  GetIntegrationResourceKindsTool,
+  listIntegrations,
+  ListIntegrationsTool,
+  getIntegration,
+  GetIntegrationTool,
+  listIntegrationResourceKinds,
+  ListIntegrationResourceKindsTool,
   getIntegrationResourceKindDetails,
   GetIntegrationResourceKindDetailsTool,
-  getIntegrationResources,
-  GetIntegrationResourcesTool,
-  getIntegrationResourceById,
-  GetIntegrationResourceByIdTool,
+  listIntegrationResources,
+  ListIntegrationResourcesTool,
+  getIntegrationResource,
+  GetIntegrationResourceTool,
 } from "./operations/integrations.js";
 import {
-  getVendors,
-  GetVendorsTool,
-  getVendorById,
-  GetVendorByIdTool,
-  getVendorDocuments,
-  GetVendorDocumentsTool,
-  getVendorFindings,
-  GetVendorFindingsTool,
-  getVendorSecurityReviews,
-  GetVendorSecurityReviewsTool,
-  getVendorSecurityReviewById,
-  GetVendorSecurityReviewByIdTool,
-  getVendorSecurityReviewDocuments,
-  GetVendorSecurityReviewDocumentsTool,
+  listVendors,
+  ListVendorsTool,
+  getVendor,
+  GetVendorTool,
+  listVendorDocuments,
+  ListVendorDocumentsTool,
+  listVendorFindings,
+  ListVendorFindingsTool,
+  listVendorSecurityReviews,
+  ListVendorSecurityReviewsTool,
+  getVendorSecurityReview,
+  GetVendorSecurityReviewTool,
+  listVendorSecurityReviewDocuments,
+  ListVendorSecurityReviewDocumentsTool,
 } from "./operations/vendors.js";
 import {
-  getDocuments,
-  GetDocumentsTool,
-  getDocumentById,
-  GetDocumentByIdTool,
-  getDocumentControls,
-  GetDocumentControlsTool,
-  getDocumentLinks,
-  GetDocumentLinksTool,
-  getDocumentUploads,
-  GetDocumentUploadsTool,
+  listDocuments,
+  ListDocumentsTool,
+  getDocument,
+  GetDocumentTool,
+  listDocumentControls,
+  ListDocumentControlsTool,
+  listDocumentLinks,
+  ListDocumentLinksTool,
+  listDocumentUploads,
+  ListDocumentUploadsTool,
   downloadDocumentFile,
   DownloadDocumentFileTool,
 } from "./operations/documents.js";
 import {
-  getPolicies,
-  GetPoliciesTool,
-  getPolicyById,
-  GetPolicyByIdTool,
+  listPolicies,
+  ListPoliciesTool,
+  getPolicy,
+  GetPolicyTool,
 } from "./operations/policies.js";
 import {
-  getDiscoveredVendors,
-  GetDiscoveredVendorsTool,
-  getDiscoveredVendorAccounts,
-  GetDiscoveredVendorAccountsTool,
+  listDiscoveredVendors,
+  ListDiscoveredVendorsTool,
+  listDiscoveredVendorAccounts,
+  ListDiscoveredVendorAccountsTool,
 } from "./operations/discovered-vendors.js";
 import {
-  getGroups,
-  GetGroupsTool,
-  getGroupById,
-  GetGroupByIdTool,
-  getGroupPeople,
-  GetGroupPeopleTool,
+  listGroups,
+  ListGroupsTool,
+  getGroup,
+  GetGroupTool,
+  listGroupPeople,
+  ListGroupPeopleTool,
 } from "./operations/groups.js";
 import {
-  getPeople,
-  GetPeopleTool,
-  getPersonById,
-  GetPersonByIdTool,
+  listPeople,
+  ListPeopleTool,
+  getPerson,
+  GetPersonTool,
 } from "./operations/people.js";
 import {
-  getVulnerabilities,
-  GetVulnerabilitiesTool,
-  getVulnerabilityById,
-  GetVulnerabilityByIdTool,
+  listVulnerabilities,
+  ListVulnerabilitiesTool,
+  getVulnerability,
+  GetVulnerabilityTool,
 } from "./operations/vulnerabilities.js";
 import {
-  getVulnerabilityRemediations,
-  GetVulnerabilityRemediationsTool,
+  listVulnerabilityRemediations,
+  ListVulnerabilityRemediationsTool,
 } from "./operations/vulnerability-remediations.js";
 import {
-  getVulnerableAssets,
-  GetVulnerableAssetsTool,
-  getVulnerableAssetById,
-  GetVulnerableAssetByIdTool,
+  listVulnerableAssets,
+  ListVulnerableAssetsTool,
+  getVulnerableAsset,
+  GetVulnerableAssetTool,
 } from "./operations/vulnerable-assets.js";
 import {
-  getMonitoredComputers,
-  GetMonitoredComputersTool,
-  getMonitoredComputerById,
-  GetMonitoredComputerByIdTool,
+  listMonitoredComputers,
+  ListMonitoredComputersTool,
+  getMonitoredComputer,
+  GetMonitoredComputerTool,
 } from "./operations/monitored-computers.js";
 import {
-  getVendorRiskAttributes,
-  GetVendorRiskAttributesTool,
+  listVendorRiskAttributes,
+  ListVendorRiskAttributesTool,
 } from "./operations/vendor-risk-attributes.js";
 import {
   getTrustCenter,
@@ -168,115 +168,115 @@ const server = new McpServer({
 });
 
 server.tool(
-  GetTestsTool.name,
-  GetTestsTool.description,
-  GetTestsTool.parameters.shape,
-  getTests,
+  ListTestsTool.name,
+  ListTestsTool.description,
+  ListTestsTool.parameters.shape,
+  listTests,
 );
 
 server.tool(
-  GetTestByIdTool.name,
-  GetTestByIdTool.description,
-  GetTestByIdTool.parameters.shape,
-  getTestById,
+  GetTestTool.name,
+  GetTestTool.description,
+  GetTestTool.parameters.shape,
+  getTest,
 );
 
 server.tool(
-  GetTestEntitiesTool.name,
-  GetTestEntitiesTool.description,
-  GetTestEntitiesTool.parameters.shape,
-  getTestEntities,
+  ListTestEntitiesTool.name,
+  ListTestEntitiesTool.description,
+  ListTestEntitiesTool.parameters.shape,
+  listTestEntities,
 );
 
 server.tool(
-  GetFrameworksTool.name,
-  GetFrameworksTool.description,
-  GetFrameworksTool.parameters.shape,
-  getFrameworks,
+  ListFrameworksTool.name,
+  ListFrameworksTool.description,
+  ListFrameworksTool.parameters.shape,
+  listFrameworks,
 );
 
 server.tool(
-  GetFrameworkControlsTool.name,
-  GetFrameworkControlsTool.description,
-  GetFrameworkControlsTool.parameters.shape,
-  getFrameworkControls,
+  ListFrameworkControlsTool.name,
+  ListFrameworkControlsTool.description,
+  ListFrameworkControlsTool.parameters.shape,
+  listFrameworkControls,
 );
 
 server.tool(
-  GetFrameworkByIdTool.name,
-  GetFrameworkByIdTool.description,
-  GetFrameworkByIdTool.parameters.shape,
-  getFrameworkById,
+  GetFrameworkTool.name,
+  GetFrameworkTool.description,
+  GetFrameworkTool.parameters.shape,
+  getFramework,
 );
 
 server.tool(
-  GetControlsTool.name,
-  GetControlsTool.description,
-  GetControlsTool.parameters.shape,
-  getControls,
+  ListControlsTool.name,
+  ListControlsTool.description,
+  ListControlsTool.parameters.shape,
+  listControls,
 );
 
 server.tool(
-  GetControlTestsTool.name,
-  GetControlTestsTool.description,
-  GetControlTestsTool.parameters.shape,
-  getControlTests,
+  ListControlTestsTool.name,
+  ListControlTestsTool.description,
+  ListControlTestsTool.parameters.shape,
+  listControlTests,
 );
 
 server.tool(
-  GetLibraryControlsTool.name,
-  GetLibraryControlsTool.description,
-  GetLibraryControlsTool.parameters.shape,
-  getLibraryControls,
+  ListLibraryControlsTool.name,
+  ListLibraryControlsTool.description,
+  ListLibraryControlsTool.parameters.shape,
+  listLibraryControls,
 );
 
 server.tool(
-  GetControlDocumentsTool.name,
-  GetControlDocumentsTool.description,
-  GetControlDocumentsTool.parameters.shape,
-  getControlDocuments,
+  ListControlDocumentsTool.name,
+  ListControlDocumentsTool.description,
+  ListControlDocumentsTool.parameters.shape,
+  listControlDocuments,
 );
 
 server.tool(
-  GetControlByIdTool.name,
-  GetControlByIdTool.description,
-  GetControlByIdTool.parameters.shape,
-  getControlById,
+  GetControlTool.name,
+  GetControlTool.description,
+  GetControlTool.parameters.shape,
+  getControl,
 );
 
 server.tool(
-  GetRisksTool.name,
-  GetRisksTool.description,
-  GetRisksTool.parameters.shape,
-  getRisks,
+  ListRisksTool.name,
+  ListRisksTool.description,
+  ListRisksTool.parameters.shape,
+  listRisks,
 );
 
 server.tool(
-  GetRiskByIdTool.name,
-  GetRiskByIdTool.description,
-  GetRiskByIdTool.parameters.shape,
-  getRiskById,
+  GetRiskTool.name,
+  GetRiskTool.description,
+  GetRiskTool.parameters.shape,
+  getRisk,
 );
 
 server.tool(
-  GetIntegrationsTool.name,
-  GetIntegrationsTool.description,
-  GetIntegrationsTool.parameters.shape,
-  getIntegrations,
+  ListIntegrationsTool.name,
+  ListIntegrationsTool.description,
+  ListIntegrationsTool.parameters.shape,
+  listIntegrations,
 );
 
 server.tool(
-  GetIntegrationByIdTool.name,
-  GetIntegrationByIdTool.description,
-  GetIntegrationByIdTool.parameters.shape,
-  getIntegrationById,
+  GetIntegrationTool.name,
+  GetIntegrationTool.description,
+  GetIntegrationTool.parameters.shape,
+  getIntegration,
 );
 
 server.tool(
-  GetIntegrationResourceKindsTool.name,
-  GetIntegrationResourceKindsTool.description,
-  GetIntegrationResourceKindsTool.parameters.shape,
-  getIntegrationResourceKinds,
+  ListIntegrationResourceKindsTool.name,
+  ListIntegrationResourceKindsTool.description,
+  ListIntegrationResourceKindsTool.parameters.shape,
+  listIntegrationResourceKinds,
 );
 
 server.tool(
@@ -287,101 +287,101 @@ server.tool(
 );
 
 server.tool(
-  GetIntegrationResourcesTool.name,
-  GetIntegrationResourcesTool.description,
-  GetIntegrationResourcesTool.parameters.shape,
-  getIntegrationResources,
+  ListIntegrationResourcesTool.name,
+  ListIntegrationResourcesTool.description,
+  ListIntegrationResourcesTool.parameters.shape,
+  listIntegrationResources,
 );
 
 server.tool(
-  GetIntegrationResourceByIdTool.name,
-  GetIntegrationResourceByIdTool.description,
-  GetIntegrationResourceByIdTool.parameters.shape,
-  getIntegrationResourceById,
+  GetIntegrationResourceTool.name,
+  GetIntegrationResourceTool.description,
+  GetIntegrationResourceTool.parameters.shape,
+  getIntegrationResource,
 );
 
 server.tool(
-  GetVendorsTool.name,
-  GetVendorsTool.description,
-  GetVendorsTool.parameters.shape,
-  getVendors,
+  ListVendorsTool.name,
+  ListVendorsTool.description,
+  ListVendorsTool.parameters.shape,
+  listVendors,
 );
 
 server.tool(
-  GetVendorByIdTool.name,
-  GetVendorByIdTool.description,
-  GetVendorByIdTool.parameters.shape,
-  getVendorById,
+  GetVendorTool.name,
+  GetVendorTool.description,
+  GetVendorTool.parameters.shape,
+  getVendor,
 );
 
 server.tool(
-  GetVendorDocumentsTool.name,
-  GetVendorDocumentsTool.description,
-  GetVendorDocumentsTool.parameters.shape,
-  getVendorDocuments,
+  ListVendorDocumentsTool.name,
+  ListVendorDocumentsTool.description,
+  ListVendorDocumentsTool.parameters.shape,
+  listVendorDocuments,
 );
 
 server.tool(
-  GetVendorFindingsTool.name,
-  GetVendorFindingsTool.description,
-  GetVendorFindingsTool.parameters.shape,
-  getVendorFindings,
+  ListVendorFindingsTool.name,
+  ListVendorFindingsTool.description,
+  ListVendorFindingsTool.parameters.shape,
+  listVendorFindings,
 );
 
 server.tool(
-  GetVendorSecurityReviewsTool.name,
-  GetVendorSecurityReviewsTool.description,
-  GetVendorSecurityReviewsTool.parameters.shape,
-  getVendorSecurityReviews,
+  ListVendorSecurityReviewsTool.name,
+  ListVendorSecurityReviewsTool.description,
+  ListVendorSecurityReviewsTool.parameters.shape,
+  listVendorSecurityReviews,
 );
 
 server.tool(
-  GetVendorSecurityReviewByIdTool.name,
-  GetVendorSecurityReviewByIdTool.description,
-  GetVendorSecurityReviewByIdTool.parameters.shape,
-  getVendorSecurityReviewById,
+  GetVendorSecurityReviewTool.name,
+  GetVendorSecurityReviewTool.description,
+  GetVendorSecurityReviewTool.parameters.shape,
+  getVendorSecurityReview,
 );
 
 server.tool(
-  GetVendorSecurityReviewDocumentsTool.name,
-  GetVendorSecurityReviewDocumentsTool.description,
-  GetVendorSecurityReviewDocumentsTool.parameters.shape,
-  getVendorSecurityReviewDocuments,
+  ListVendorSecurityReviewDocumentsTool.name,
+  ListVendorSecurityReviewDocumentsTool.description,
+  ListVendorSecurityReviewDocumentsTool.parameters.shape,
+  listVendorSecurityReviewDocuments,
 );
 
 server.tool(
-  GetDocumentsTool.name,
-  GetDocumentsTool.description,
-  GetDocumentsTool.parameters.shape,
-  getDocuments,
+  ListDocumentsTool.name,
+  ListDocumentsTool.description,
+  ListDocumentsTool.parameters.shape,
+  listDocuments,
 );
 
 server.tool(
-  GetDocumentByIdTool.name,
-  GetDocumentByIdTool.description,
-  GetDocumentByIdTool.parameters.shape,
-  getDocumentById,
+  GetDocumentTool.name,
+  GetDocumentTool.description,
+  GetDocumentTool.parameters.shape,
+  getDocument,
 );
 
 server.tool(
-  GetDocumentControlsTool.name,
-  GetDocumentControlsTool.description,
-  GetDocumentControlsTool.parameters.shape,
-  getDocumentControls,
+  ListDocumentControlsTool.name,
+  ListDocumentControlsTool.description,
+  ListDocumentControlsTool.parameters.shape,
+  listDocumentControls,
 );
 
 server.tool(
-  GetDocumentLinksTool.name,
-  GetDocumentLinksTool.description,
-  GetDocumentLinksTool.parameters.shape,
-  getDocumentLinks,
+  ListDocumentLinksTool.name,
+  ListDocumentLinksTool.description,
+  ListDocumentLinksTool.parameters.shape,
+  listDocumentLinks,
 );
 
 server.tool(
-  GetDocumentUploadsTool.name,
-  GetDocumentUploadsTool.description,
-  GetDocumentUploadsTool.parameters.shape,
-  getDocumentUploads,
+  ListDocumentUploadsTool.name,
+  ListDocumentUploadsTool.description,
+  ListDocumentUploadsTool.parameters.shape,
+  listDocumentUploads,
 );
 
 server.tool(
@@ -392,122 +392,122 @@ server.tool(
 );
 
 server.tool(
-  GetPoliciesTool.name,
-  GetPoliciesTool.description,
-  GetPoliciesTool.parameters.shape,
-  getPolicies,
+  ListPoliciesTool.name,
+  ListPoliciesTool.description,
+  ListPoliciesTool.parameters.shape,
+  listPolicies,
 );
 
 server.tool(
-  GetPolicyByIdTool.name,
-  GetPolicyByIdTool.description,
-  GetPolicyByIdTool.parameters.shape,
-  getPolicyById,
+  GetPolicyTool.name,
+  GetPolicyTool.description,
+  GetPolicyTool.parameters.shape,
+  getPolicy,
 );
 
 server.tool(
-  GetDiscoveredVendorsTool.name,
-  GetDiscoveredVendorsTool.description,
-  GetDiscoveredVendorsTool.parameters.shape,
-  getDiscoveredVendors,
+  ListDiscoveredVendorsTool.name,
+  ListDiscoveredVendorsTool.description,
+  ListDiscoveredVendorsTool.parameters.shape,
+  listDiscoveredVendors,
 );
 
 server.tool(
-  GetDiscoveredVendorAccountsTool.name,
-  GetDiscoveredVendorAccountsTool.description,
-  GetDiscoveredVendorAccountsTool.parameters.shape,
-  getDiscoveredVendorAccounts,
+  ListDiscoveredVendorAccountsTool.name,
+  ListDiscoveredVendorAccountsTool.description,
+  ListDiscoveredVendorAccountsTool.parameters.shape,
+  listDiscoveredVendorAccounts,
 );
 
 server.tool(
-  GetGroupsTool.name,
-  GetGroupsTool.description,
-  GetGroupsTool.parameters.shape,
-  getGroups,
+  ListGroupsTool.name,
+  ListGroupsTool.description,
+  ListGroupsTool.parameters.shape,
+  listGroups,
 );
 
 server.tool(
-  GetGroupByIdTool.name,
-  GetGroupByIdTool.description,
-  GetGroupByIdTool.parameters.shape,
-  getGroupById,
+  GetGroupTool.name,
+  GetGroupTool.description,
+  GetGroupTool.parameters.shape,
+  getGroup,
 );
 
 server.tool(
-  GetGroupPeopleTool.name,
-  GetGroupPeopleTool.description,
-  GetGroupPeopleTool.parameters.shape,
-  getGroupPeople,
+  ListGroupPeopleTool.name,
+  ListGroupPeopleTool.description,
+  ListGroupPeopleTool.parameters.shape,
+  listGroupPeople,
 );
 
 server.tool(
-  GetPeopleTool.name,
-  GetPeopleTool.description,
-  GetPeopleTool.parameters.shape,
-  getPeople,
+  ListPeopleTool.name,
+  ListPeopleTool.description,
+  ListPeopleTool.parameters.shape,
+  listPeople,
 );
 
 server.tool(
-  GetPersonByIdTool.name,
-  GetPersonByIdTool.description,
-  GetPersonByIdTool.parameters.shape,
-  getPersonById,
+  GetPersonTool.name,
+  GetPersonTool.description,
+  GetPersonTool.parameters.shape,
+  getPerson,
 );
 
 server.tool(
-  GetVulnerabilitiesTool.name,
-  GetVulnerabilitiesTool.description,
-  GetVulnerabilitiesTool.parameters.shape,
-  getVulnerabilities,
+  ListVulnerabilitiesTool.name,
+  ListVulnerabilitiesTool.description,
+  ListVulnerabilitiesTool.parameters.shape,
+  listVulnerabilities,
 );
 
 server.tool(
-  GetVulnerabilityByIdTool.name,
-  GetVulnerabilityByIdTool.description,
-  GetVulnerabilityByIdTool.parameters.shape,
-  getVulnerabilityById,
+  GetVulnerabilityTool.name,
+  GetVulnerabilityTool.description,
+  GetVulnerabilityTool.parameters.shape,
+  getVulnerability,
 );
 
 server.tool(
-  GetVulnerabilityRemediationsTool.name,
-  GetVulnerabilityRemediationsTool.description,
-  GetVulnerabilityRemediationsTool.parameters.shape,
-  getVulnerabilityRemediations,
+  ListVulnerabilityRemediationsTool.name,
+  ListVulnerabilityRemediationsTool.description,
+  ListVulnerabilityRemediationsTool.parameters.shape,
+  listVulnerabilityRemediations,
 );
 
 server.tool(
-  GetVulnerableAssetsTool.name,
-  GetVulnerableAssetsTool.description,
-  GetVulnerableAssetsTool.parameters.shape,
-  getVulnerableAssets,
+  ListVulnerableAssetsTool.name,
+  ListVulnerableAssetsTool.description,
+  ListVulnerableAssetsTool.parameters.shape,
+  listVulnerableAssets,
 );
 
 server.tool(
-  GetVulnerableAssetByIdTool.name,
-  GetVulnerableAssetByIdTool.description,
-  GetVulnerableAssetByIdTool.parameters.shape,
-  getVulnerableAssetById,
+  GetVulnerableAssetTool.name,
+  GetVulnerableAssetTool.description,
+  GetVulnerableAssetTool.parameters.shape,
+  getVulnerableAsset,
 );
 
 server.tool(
-  GetMonitoredComputersTool.name,
-  GetMonitoredComputersTool.description,
-  GetMonitoredComputersTool.parameters.shape,
-  getMonitoredComputers,
+  ListMonitoredComputersTool.name,
+  ListMonitoredComputersTool.description,
+  ListMonitoredComputersTool.parameters.shape,
+  listMonitoredComputers,
 );
 
 server.tool(
-  GetMonitoredComputerByIdTool.name,
-  GetMonitoredComputerByIdTool.description,
-  GetMonitoredComputerByIdTool.parameters.shape,
-  getMonitoredComputerById,
+  GetMonitoredComputerTool.name,
+  GetMonitoredComputerTool.description,
+  GetMonitoredComputerTool.parameters.shape,
+  getMonitoredComputer,
 );
 
 server.tool(
-  GetVendorRiskAttributesTool.name,
-  GetVendorRiskAttributesTool.description,
-  GetVendorRiskAttributesTool.parameters.shape,
-  getVendorRiskAttributes,
+  ListVendorRiskAttributesTool.name,
+  ListVendorRiskAttributesTool.description,
+  ListVendorRiskAttributesTool.parameters.shape,
+  listVendorRiskAttributes,
 );
 
 server.tool(

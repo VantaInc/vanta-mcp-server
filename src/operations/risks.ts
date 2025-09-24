@@ -8,7 +8,7 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetRisksInput = z.object({
+const ListRisksInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
   categoryMatchesAny: z
@@ -19,13 +19,13 @@ const GetRisksInput = z.object({
     ),
 });
 
-export const GetRisksTool: Tool<typeof GetRisksInput> = {
-  name: "get_risks",
+export const ListRisksTool: Tool<typeof ListRisksInput> = {
+  name: "list_risks",
   description: "List all risk scenarios in your Vanta risk register.",
-  parameters: GetRisksInput,
+  parameters: ListRisksInput,
 };
 
-const GetRiskByIdInput = z.object({
+const GetRiskInput = z.object({
   riskId: z
     .string()
     .describe(
@@ -33,15 +33,15 @@ const GetRiskByIdInput = z.object({
     ),
 });
 
-export const GetRiskByIdTool: Tool<typeof GetRiskByIdInput> = {
-  name: "get_risk_by_id",
+export const GetRiskTool: Tool<typeof GetRiskInput> = {
+  name: "get_risk",
   description:
-    "Get risk scenario by ID. Retrieve detailed information about a specific risk scenario when its ID is known. The ID of a risk scenario can be found from get_risks response. Returns complete risk details including status, inherent & residual risk scores, treatment plan, and more.",
-  parameters: GetRiskByIdInput,
+    "Get risk scenario by ID. Retrieve detailed information about a specific risk scenario when its ID is known. The ID of a risk scenario can be found from list_risks response. Returns complete risk details including status, inherent & residual risk scores, treatment plan, and more.",
+  parameters: GetRiskInput,
 };
 
-export async function getRisks(
-  args: z.infer<typeof GetRisksInput>,
+export async function listRisks(
+  args: z.infer<typeof ListRisksInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/risk-scenarios", baseApiUrl());
   if (args.pageSize !== undefined) {
@@ -71,8 +71,8 @@ export async function getRisks(
   };
 }
 
-export async function getRiskById(
-  args: z.infer<typeof GetRiskByIdInput>,
+export async function getRisk(
+  args: z.infer<typeof GetRiskInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/risk-scenarios/${args.riskId}`, baseApiUrl());
 

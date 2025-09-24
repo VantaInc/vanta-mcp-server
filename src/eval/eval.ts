@@ -494,7 +494,7 @@ interface TestCase {
 const testCases: TestCase[] = [
   {
     prompt: "What security issues do I have in my AWS infrastructure?",
-    expectedTool: "get_tests",
+    expectedTool: "list_tests",
     expectedParams: {
       statusFilter: "NEEDS_ATTENTION",
       integrationFilter: "aws",
@@ -504,7 +504,7 @@ const testCases: TestCase[] = [
   },
   {
     prompt: "Show me all my SOC2 compliance tests that are failing",
-    expectedTool: "get_tests",
+    expectedTool: "list_tests",
     expectedParams: {
       frameworkFilter: "soc2",
       statusFilter: "NEEDS_ATTENTION",
@@ -514,122 +514,122 @@ const testCases: TestCase[] = [
   {
     prompt:
       "Show me the specific failing entities for test ID aws-security-groups-open-to-world",
-    expectedTool: "get_test_entities",
+    expectedTool: "list_test_entities",
     expectedParams: { testId: "aws-security-groups-open-to-world" },
     description: "Should call get_test_entities for specific test details",
   },
   {
     prompt: "Show me the details of test ID aws-security-groups-open-to-world",
-    expectedTool: "get_test_by_id",
+    expectedTool: "get_test",
     expectedParams: { testId: "aws-security-groups-open-to-world" },
     description: "Should call get_test_by_id for specific test details",
   },
   {
     prompt: "What compliance frameworks are we tracking?",
-    expectedTool: "get_frameworks",
+    expectedTool: "list_frameworks",
     expectedParams: {},
     description: "Should call get_frameworks to list available frameworks",
   },
   {
     prompt: "Get the control requirements for framework ID soc2",
-    expectedTool: "get_framework_controls",
+    expectedTool: "list_framework_controls",
     expectedParams: { frameworkId: "soc2" },
     description: "Should call get_framework_controls for SOC2",
   },
   {
     prompt: "What is the current % status of my SOC 2?",
-    expectedTool: "get_frameworks",
+    expectedTool: "list_frameworks",
     expectedParams: {},
     description: "Should call get_frameworks to get SOC2 completion percentage",
   },
   {
     prompt: "List all security controls in my Vanta account",
-    expectedTool: "get_controls",
+    expectedTool: "list_controls",
     expectedParams: {},
     description: "Should call get_controls to list all available controls",
   },
   {
     prompt: "Show me the tests for control ID access-control-1",
-    expectedTool: "get_control_tests",
+    expectedTool: "list_control_tests",
     expectedParams: { controlId: "access-control-1" },
     description: "Should call get_control_tests for specific control",
   },
   {
     prompt: "What controls are available in the Vanta library that I can add?",
-    expectedTool: "get_library_controls",
+    expectedTool: "list_library_controls",
     expectedParams: {},
     description:
       "Should call get_library_controls to list available library controls",
   },
   {
     prompt: "Show me the documents for control ID access-control-1",
-    expectedTool: "get_control_documents",
+    expectedTool: "list_control_documents",
     expectedParams: { controlId: "access-control-1" },
     description: "Should call get_control_documents for specific control",
   },
   {
     prompt: "Get details for control ID data-protection-2",
-    expectedTool: "get_control_by_id",
+    expectedTool: "get_control",
     expectedParams: { controlId: "data-protection-2" },
     description: "Should call get_control_by_id for specific control details",
   },
   {
     prompt: "Show me details for framework ID soc2",
-    expectedTool: "get_framework_by_id",
+    expectedTool: "get_framework",
     expectedParams: { frameworkId: "soc2" },
     description:
       "Should call get_framework_by_id for specific framework details",
   },
   {
     prompt: "Get details for risk scenario ID risk-scenario-123",
-    expectedTool: "get_risk_by_id",
+    expectedTool: "get_risk",
     expectedParams: { riskId: "risk-scenario-123" },
     description:
       "Should call get_risk_by_id for specific risk scenario details",
   },
   {
     prompt: "What integrations are connected to my Vanta account?",
-    expectedTool: "get_integrations",
+    expectedTool: "list_integrations",
     expectedParams: {},
     description:
       "Should call get_integrations to list all connected integrations",
   },
   {
     prompt: "Show me details for integration ID aws",
-    expectedTool: "get_integration_by_id",
+    expectedTool: "get_integration",
     expectedParams: { integrationId: "aws" },
     description:
       "Should call get_integration_by_id for specific integration details",
   },
   {
     prompt: "List all vendors in my Vanta account",
-    expectedTool: "get_vendors",
+    expectedTool: "list_vendors",
     expectedParams: {},
     description: "Should call get_vendors to list all vendors",
   },
   {
     prompt: "Get details for vendor ID vendor-123",
-    expectedTool: "get_vendor_by_id",
+    expectedTool: "get_vendor",
     expectedParams: { vendorId: "vendor-123" },
     description: "Should call get_vendor_by_id for specific vendor details",
   },
   {
     prompt:
       "Show me all the documents we have uploaded to Vanta for compliance purposes.",
-    expectedTool: "get_documents",
+    expectedTool: "list_documents",
     expectedParams: {},
     description: "Should call get_documents to list all compliance documents",
   },
   {
     prompt:
       "I need to see the details of document DOC-12345 including its metadata and compliance mappings.",
-    expectedTool: "get_document_by_id",
+    expectedTool: "get_document",
     expectedParams: { documentId: "DOC-12345" },
     description: "Should call get_document_by_id for specific document details",
   },
   {
     prompt: "Which security controls are mapped to document DOC-789?",
-    expectedTool: "get_document_controls",
+    expectedTool: "list_document_controls",
     expectedParams: { documentId: "DOC-789" },
     description:
       "Should call get_document_controls to find controls associated with document",
@@ -637,14 +637,14 @@ const testCases: TestCase[] = [
   {
     prompt:
       "What external links and references are attached to document POLICY-456?",
-    expectedTool: "get_document_links",
+    expectedTool: "list_document_links",
     expectedParams: { documentId: "POLICY-456" },
     description:
       "Should call get_document_links to get external references for document",
   },
   {
     prompt: "List all the files uploaded to document SEC-123.",
-    expectedTool: "get_document_uploads",
+    expectedTool: "list_document_uploads",
     expectedParams: { documentId: "SEC-123" },
     description:
       "Should call get_document_uploads to list file uploads for document",
@@ -660,21 +660,21 @@ const testCases: TestCase[] = [
   {
     prompt:
       "Show me all the policies we have established for our organization.",
-    expectedTool: "get_policies",
+    expectedTool: "list_policies",
     expectedParams: {},
     description: "Should call get_policies to list all organizational policies",
   },
   {
     prompt:
       "I need to review the details of our data retention policy with ID POLICY-789.",
-    expectedTool: "get_policy_by_id",
+    expectedTool: "get_policy",
     expectedParams: { policyId: "POLICY-789" },
     description: "Should call get_policy_by_id for specific policy details",
   },
   {
     prompt:
       "Show me all the vendors that have been discovered through our integrations but aren't yet managed.",
-    expectedTool: "get_discovered_vendors",
+    expectedTool: "list_discovered_vendors",
     expectedParams: {},
     description:
       "Should call get_discovered_vendors to list automatically discovered vendors",
@@ -682,7 +682,7 @@ const testCases: TestCase[] = [
   {
     prompt:
       "I need detailed account information for all discovered vendor accounts from our integrations.",
-    expectedTool: "get_discovered_vendor_accounts",
+    expectedTool: "list_discovered_vendor_accounts",
     expectedParams: {},
     description:
       "Should call get_discovered_vendor_accounts to get detailed vendor account information",
@@ -690,40 +690,40 @@ const testCases: TestCase[] = [
   {
     prompt:
       "Show me all the organizational groups we have set up for access management.",
-    expectedTool: "get_groups",
+    expectedTool: "list_groups",
     expectedParams: {},
     description: "Should call get_groups to list all organizational groups",
   },
   {
     prompt: "I need details about the Engineering group with ID GROUP-456.",
-    expectedTool: "get_group_by_id",
+    expectedTool: "get_group",
     expectedParams: { groupId: "GROUP-456" },
     description: "Should call get_group_by_id for specific group details",
   },
   {
     prompt: "Who are all the members of the Security team group?",
-    expectedTool: "get_group_people",
+    expectedTool: "list_group_people",
     expectedParams: { groupId: "Security team" },
     description:
       "Should call get_group_people to list people in a specific group",
   },
   {
     prompt: "List all people in our organization for the compliance audit.",
-    expectedTool: "get_people",
+    expectedTool: "list_people",
     expectedParams: {},
     description:
       "Should call get_people to list all people in the organization",
   },
   {
     prompt: "Get me the details for employee PERSON-789.",
-    expectedTool: "get_person_by_id",
+    expectedTool: "get_person",
     expectedParams: { personId: "PERSON-789" },
     description: "Should call get_person_by_id for specific person details",
   },
   {
     prompt:
       "Show me all the security vulnerabilities detected in our infrastructure.",
-    expectedTool: "get_vulnerabilities",
+    expectedTool: "list_vulnerabilities",
     expectedParams: {},
     description:
       "Should call get_vulnerabilities to list all detected vulnerabilities",
@@ -731,14 +731,14 @@ const testCases: TestCase[] = [
   {
     prompt:
       "I need detailed information about vulnerability VULN-456 including its CVE data.",
-    expectedTool: "get_vulnerability_by_id",
+    expectedTool: "get_vulnerability",
     expectedParams: { vulnerabilityId: "VULN-456" },
     description:
       "Should call get_vulnerability_by_id for specific vulnerability details",
   },
   {
     prompt: "What vulnerability remediations are currently in progress?",
-    expectedTool: "get_vulnerability_remediations",
+    expectedTool: "list_vulnerability_remediations",
     expectedParams: {},
     description:
       "Should call get_vulnerability_remediations to track remediation efforts",
@@ -746,7 +746,7 @@ const testCases: TestCase[] = [
   {
     prompt:
       "List all assets that are affected by vulnerabilities for our security review.",
-    expectedTool: "get_vulnerable_assets",
+    expectedTool: "list_vulnerable_assets",
     expectedParams: {},
     description:
       "Should call get_vulnerable_assets to identify affected infrastructure",
@@ -754,7 +754,7 @@ const testCases: TestCase[] = [
   {
     prompt:
       "Get details about vulnerable asset ASSET-789 and its security status.",
-    expectedTool: "get_vulnerable_asset_by_id",
+    expectedTool: "get_vulnerable_asset",
     expectedParams: { vulnerableAssetId: "ASSET-789" },
     description:
       "Should call get_vulnerable_asset_by_id for specific asset vulnerability details",
@@ -762,14 +762,14 @@ const testCases: TestCase[] = [
   {
     prompt:
       "Show me all the computers being monitored for compliance across our organization.",
-    expectedTool: "get_monitored_computers",
+    expectedTool: "list_monitored_computers",
     expectedParams: {},
     description:
       "Should call get_monitored_computers to list all monitored computers",
   },
   {
     prompt: "I need details about the monitored computer with ID COMP-456.",
-    expectedTool: "get_monitored_computer_by_id",
+    expectedTool: "get_monitored_computer",
     expectedParams: { computerId: "COMP-456" },
     description:
       "Should call get_monitored_computer_by_id for specific computer details",
@@ -777,7 +777,7 @@ const testCases: TestCase[] = [
   {
     prompt:
       "What vendor risk attributes are available for evaluating our vendors?",
-    expectedTool: "get_vendor_risk_attributes",
+    expectedTool: "list_vendor_risk_attributes",
     expectedParams: {},
     description:
       "Should call get_vendor_risk_attributes to list available risk assessment criteria",

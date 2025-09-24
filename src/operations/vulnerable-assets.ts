@@ -8,19 +8,19 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetVulnerableAssetsInput = z.object({
+const ListVulnerableAssetsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetVulnerableAssetsTool: Tool<typeof GetVulnerableAssetsInput> = {
-  name: "get_vulnerable_assets",
+export const ListVulnerableAssetsTool: Tool<typeof ListVulnerableAssetsInput> = {
+  name: "list_vulnerable_assets",
   description:
     "List assets associated with vulnerabilities in your Vanta account. Returns asset IDs, vulnerability associations, asset types, and security status for infrastructure security management. Use this to identify which assets are affected by vulnerabilities and prioritize security efforts.",
-  parameters: GetVulnerableAssetsInput,
+  parameters: ListVulnerableAssetsInput,
 };
 
-const GetVulnerableAssetByIdInput = z.object({
+const GetVulnerableAssetInput = z.object({
   vulnerableAssetId: z
     .string()
     .describe(
@@ -28,17 +28,17 @@ const GetVulnerableAssetByIdInput = z.object({
     ),
 });
 
-export const GetVulnerableAssetByIdTool: Tool<
-  typeof GetVulnerableAssetByIdInput
+export const GetVulnerableAssetTool: Tool<
+  typeof GetVulnerableAssetInput
 > = {
-  name: "get_vulnerable_asset_by_id",
+  name: "get_vulnerable_asset",
   description:
     "Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from get_vulnerable_assets response. Returns complete asset details including vulnerability associations, asset type, and security status.",
-  parameters: GetVulnerableAssetByIdInput,
+  parameters: GetVulnerableAssetInput,
 };
 
-export async function getVulnerableAssets(
-  args: z.infer<typeof GetVulnerableAssetsInput>,
+export async function listVulnerableAssets(
+  args: z.infer<typeof ListVulnerableAssetsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/vulnerable-assets", baseApiUrl());
 
@@ -69,8 +69,8 @@ export async function getVulnerableAssets(
   };
 }
 
-export async function getVulnerableAssetById(
-  args: z.infer<typeof GetVulnerableAssetByIdInput>,
+export async function getVulnerableAsset(
+  args: z.infer<typeof GetVulnerableAssetInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/vulnerable-assets/${args.vulnerableAssetId}`,

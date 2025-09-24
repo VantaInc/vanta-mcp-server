@@ -8,19 +8,19 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetPoliciesInput = z.object({
+const ListPoliciesInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetPoliciesTool: Tool<typeof GetPoliciesInput> = {
-  name: "get_policies",
+export const ListPoliciesTool: Tool<typeof ListPoliciesInput> = {
+  name: "list_policies",
   description:
     "List all policies in your Vanta account. Returns policy IDs, names, types, and metadata for compliance and governance management. Use this to see all policies available for compliance frameworks and organizational governance.",
-  parameters: GetPoliciesInput,
+  parameters: ListPoliciesInput,
 };
 
-const GetPolicyByIdInput = z.object({
+const GetPolicyInput = z.object({
   policyId: z
     .string()
     .describe(
@@ -28,15 +28,15 @@ const GetPolicyByIdInput = z.object({
     ),
 });
 
-export const GetPolicyByIdTool: Tool<typeof GetPolicyByIdInput> = {
-  name: "get_policy_by_id",
+export const GetPolicyTool: Tool<typeof GetPolicyInput> = {
+  name: "get_policy",
   description:
     "Get policy by ID. Retrieve detailed information about a specific policy when its ID is known. The ID of a policy can be found from get_policies response. Returns complete policy details including name, description, content, approval status, and compliance mappings.",
-  parameters: GetPolicyByIdInput,
+  parameters: GetPolicyInput,
 };
 
-export async function getPolicies(
-  args: z.infer<typeof GetPoliciesInput>,
+export async function listPolicies(
+  args: z.infer<typeof ListPoliciesInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/policies", baseApiUrl());
 
@@ -67,8 +67,8 @@ export async function getPolicies(
   };
 }
 
-export async function getPolicyById(
-  args: z.infer<typeof GetPolicyByIdInput>,
+export async function getPolicy(
+  args: z.infer<typeof GetPolicyInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/policies/${args.policyId}`, baseApiUrl());
 

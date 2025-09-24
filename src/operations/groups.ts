@@ -8,19 +8,19 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetGroupsInput = z.object({
+const ListGroupsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetGroupsTool: Tool<typeof GetGroupsInput> = {
-  name: "get_groups",
+export const ListGroupsTool: Tool<typeof ListGroupsInput> = {
+  name: "list_groups",
   description:
     "List all groups in your Vanta account. Returns group IDs, names, descriptions, and metadata for organizational structure and access management. Use this to see all groups available for people assignment and access control.",
-  parameters: GetGroupsInput,
+  parameters: ListGroupsInput,
 };
 
-const GetGroupByIdInput = z.object({
+const GetGroupInput = z.object({
   groupId: z
     .string()
     .describe(
@@ -28,14 +28,14 @@ const GetGroupByIdInput = z.object({
     ),
 });
 
-export const GetGroupByIdTool: Tool<typeof GetGroupByIdInput> = {
-  name: "get_group_by_id",
+export const GetGroupTool: Tool<typeof GetGroupInput> = {
+  name: "get_group",
   description:
     "Get group by ID. Retrieve detailed information about a specific group when its ID is known. The ID of a group can be found from get_groups response. Returns complete group details including name, description, member count, and access permissions.",
-  parameters: GetGroupByIdInput,
+  parameters: GetGroupInput,
 };
 
-const GetGroupPeopleInput = z.object({
+const ListGroupPeopleInput = z.object({
   groupId: z
     .string()
     .describe(
@@ -45,15 +45,15 @@ const GetGroupPeopleInput = z.object({
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetGroupPeopleTool: Tool<typeof GetGroupPeopleInput> = {
-  name: "get_group_people",
+export const ListGroupPeopleTool: Tool<typeof ListGroupPeopleInput> = {
+  name: "list_group_people",
   description:
     "List people in a group. Get all people who are members of a specific group for organizational structure and access management. Use this to understand group membership and review who has group-based access permissions.",
-  parameters: GetGroupPeopleInput,
+  parameters: ListGroupPeopleInput,
 };
 
-export async function getGroups(
-  args: z.infer<typeof GetGroupsInput>,
+export async function listGroups(
+  args: z.infer<typeof ListGroupsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/groups", baseApiUrl());
 
@@ -84,8 +84,8 @@ export async function getGroups(
   };
 }
 
-export async function getGroupById(
-  args: z.infer<typeof GetGroupByIdInput>,
+export async function getGroup(
+  args: z.infer<typeof GetGroupInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/groups/${args.groupId}`, baseApiUrl());
 
@@ -109,8 +109,8 @@ export async function getGroupById(
   };
 }
 
-export async function getGroupPeople(
-  args: z.infer<typeof GetGroupPeopleInput>,
+export async function listGroupPeople(
+  args: z.infer<typeof ListGroupPeopleInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/groups/${args.groupId}/people`, baseApiUrl());
 

@@ -8,21 +8,21 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetMonitoredComputersInput = z.object({
+const ListMonitoredComputersInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetMonitoredComputersTool: Tool<
-  typeof GetMonitoredComputersInput
+export const ListMonitoredComputersTool: Tool<
+  typeof ListMonitoredComputersInput
 > = {
-  name: "get_monitored_computers",
+  name: "list_monitored_computers",
   description:
     "List monitored computers in your Vanta account. Returns computer IDs, hostnames, operating systems, and security status for endpoint security management. Use this to see all computers being monitored for compliance and security across your organization.",
-  parameters: GetMonitoredComputersInput,
+  parameters: ListMonitoredComputersInput,
 };
 
-const GetMonitoredComputerByIdInput = z.object({
+const GetMonitoredComputerInput = z.object({
   computerId: z
     .string()
     .describe(
@@ -30,17 +30,17 @@ const GetMonitoredComputerByIdInput = z.object({
     ),
 });
 
-export const GetMonitoredComputerByIdTool: Tool<
-  typeof GetMonitoredComputerByIdInput
+export const GetMonitoredComputerTool: Tool<
+  typeof GetMonitoredComputerInput
 > = {
-  name: "get_monitored_computer_by_id",
+  name: "get_monitored_computer",
   description:
     "Get monitored computer by ID. Retrieve detailed information about a specific monitored computer when its ID is known. The ID of a computer can be found from get_monitored_computers response. Returns complete computer details including hostname, OS, security status, and compliance information.",
-  parameters: GetMonitoredComputerByIdInput,
+  parameters: GetMonitoredComputerInput,
 };
 
-export async function getMonitoredComputers(
-  args: z.infer<typeof GetMonitoredComputersInput>,
+export async function listMonitoredComputers(
+  args: z.infer<typeof ListMonitoredComputersInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/monitored-computers", baseApiUrl());
 
@@ -71,8 +71,8 @@ export async function getMonitoredComputers(
   };
 }
 
-export async function getMonitoredComputerById(
-  args: z.infer<typeof GetMonitoredComputerByIdInput>,
+export async function getMonitoredComputer(
+  args: z.infer<typeof GetMonitoredComputerInput>,
 ): Promise<CallToolResult> {
   const url = new URL(
     `/v1/monitored-computers/${args.computerId}`,

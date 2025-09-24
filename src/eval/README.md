@@ -44,19 +44,19 @@ The evaluation includes 54 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
-- **AWS Security Review**: `get_tests` with AWS and NEEDS_ATTENTION filters
-- **SOC2 Compliance**: `get_tests` with SOC2 framework filter
-- **Entity Details**: `get_test_entities` for specific failing resources
-- **Framework Listing**: `get_frameworks` for available frameworks
-- **Control Requirements**: `get_framework_controls` for specific framework details
-- **Status Percentage**: `get_frameworks` for completion percentages
-- **Control Listing**: `get_controls` for all security controls
-- **Control Tests**: `get_control_tests` for tests validating specific controls
-- **Library Controls**: `get_library_controls` for available Vanta library controls
-- **Control Documents**: `get_control_documents` for documents associated with controls
-- **Control Details**: `get_control_by_id` for specific control information
-- **Framework Details**: `get_framework_by_id` for specific framework information
-- **Risk Details**: `get_risk_by_id` for specific risk scenario information
+- **AWS Security Review**: `list_tests` with AWS and NEEDS_ATTENTION filters
+- **SOC2 Compliance**: `list_tests` with SOC2 framework filter
+- **Entity Details**: `list_test_entities` for specific failing resources
+- **Framework Listing**: `list_frameworks` for available frameworks
+- **Control Requirements**: `list_framework_controls` for specific framework details
+- **Status Percentage**: `list_frameworks` for completion percentages
+- **Control Listing**: `list_controls` for all security controls
+- **Control Tests**: `list_control_tests` for tests validating specific controls
+- **Library Controls**: `list_library_controls` for available Vanta library controls
+- **Control Documents**: `list_control_documents` for documents associated with controls
+- **Control Details**: `get_control` for specific control information
+- **Framework Details**: `get_framework` for specific framework information
+- **Risk Details**: `get_risk` for specific risk scenario information
 - **Integration Listing**: `get_integrations` for connected integrations
 - **Integration Details**: `get_integration_by_id` for specific integration information
 - **Vendor Listing**: `get_vendors` for all vendors
@@ -108,10 +108,10 @@ The evaluation includes 54 test cases covering:
 🧪 Vanta MCP Server Tool Evaluation
 ====================================
 
-📝 Test: Should call get_tests with AWS filter and NEEDS_ATTENTION status
+📝 Test: Should call list_tests with AWS filter and NEEDS_ATTENTION status
 💬 Prompt: "What security issues do I have in my AWS infrastructure?"
-🎯 Expected Tool: get_tests
-✅ PASS: Correctly called get_tests
+🎯 Expected Tool: list_tests
+✅ PASS: Correctly called list_tests
 ✅ Parameters match expected values
 📋 Called with: {
   "statusFilter": "NEEDS_ATTENTION",

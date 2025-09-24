@@ -8,8 +8,8 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-export async function getTests(
-  args: z.infer<typeof GetTestsInput>,
+export async function listTests(
+  args: z.infer<typeof ListTestsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/tests", baseApiUrl());
 
@@ -52,8 +52,8 @@ export async function getTests(
   };
 }
 
-export async function getTestEntities(
-  args: z.infer<typeof GetTestEntitiesInput>,
+export async function listTestEntities(
+  args: z.infer<typeof ListTestEntitiesInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/tests/${args.testId}/entities`, baseApiUrl());
   if (args.pageSize !== undefined) {
@@ -86,8 +86,8 @@ export async function getTestEntities(
   };
 }
 
-export async function getTestById(
-  args: z.infer<typeof GetTestByIdInput>,
+export async function getTest(
+  args: z.infer<typeof GetTestInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/tests/${args.testId}`, baseApiUrl());
 
@@ -127,7 +127,7 @@ const FRAMEWORK_FILTER_DESCRIPTION = `Filter by framework. Non-exhaustive exampl
 
 const CONTROL_FILTER_DESCRIPTION = `Filter by control. Generally will only be known if pulled from the /v1/controls endpoint.`;
 
-export const GetTestsInput = z.object({
+export const ListTestsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
   statusFilter: z.string().describe(TEST_STATUS_FILTER_DESCRIPTION).optional(),
@@ -139,13 +139,13 @@ export const GetTestsInput = z.object({
   controlFilter: z.string().describe(CONTROL_FILTER_DESCRIPTION).optional(),
 });
 
-export const GetTestsTool: Tool<typeof GetTestsInput> = {
-  name: "get_tests",
+export const ListTestsTool: Tool<typeof ListTestsInput> = {
+  name: "list_tests",
   description: TOOL_DESCRIPTION,
-  parameters: GetTestsInput,
+  parameters: ListTestsInput,
 };
 
-const GetTestEntitiesInput = z.object({
+const ListTestEntitiesInput = z.object({
   testId: z.string().describe("Lowercase with hyphens"),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
@@ -155,22 +155,22 @@ const GetTestEntitiesInput = z.object({
     .optional(),
 });
 
-export const GetTestEntitiesTool: Tool<typeof GetTestEntitiesInput> = {
-  name: "get_test_entities",
+export const ListTestEntitiesTool: Tool<typeof ListTestEntitiesInput> = {
+  name: "list_test_entities",
   description: `Get the specific failing resources (entities) for a known test ID. Use this when you already 
   know the test name/ID and need to see which specific infrastructure resources are failing that test. For 
   example, if you know "aws-security-groups-open-to-world" test is failing, this returns the actual security 
-  group IDs that are failing. Requires a specific testId parameter. Do NOT use this for general test discovery - use get_tests for that.`,
-  parameters: GetTestEntitiesInput,
+  group IDs that are failing. Requires a specific testId parameter. Do NOT use this for general test discovery - use list_tests for that.`,
+  parameters: ListTestEntitiesInput,
 };
 
-const GetTestByIdInput = z.object({
+const GetTestInput = z.object({
   testId: z.string().describe("Lowercase with hyphens"),
 });
 
-export const GetTestByIdTool: Tool<typeof GetTestByIdInput> = {
-  name: "get_test_by_id",
+export const GetTestTool: Tool<typeof GetTestInput> = {
+  name: "get_test",
   description: `Get the details of a single specific test when its ID is known. The ID of a test can be 
-  found in the response from get_tests or from the URL of the test in your browser after /tests/.`,
-  parameters: GetTestByIdInput,
+  found in the response from list_tests or from the URL of the test in your browser after /tests/.`,
+  parameters: GetTestInput,
 };

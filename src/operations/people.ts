@@ -8,19 +8,19 @@ import {
   PAGE_CURSOR_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetPeopleInput = z.object({
+const ListPeopleInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetPeopleTool: Tool<typeof GetPeopleInput> = {
-  name: "get_people",
+export const ListPeopleTool: Tool<typeof ListPeopleInput> = {
+  name: "list_people",
   description:
     "List all people in your Vanta account. Returns person IDs, names, email addresses, and metadata for organizational structure and access management. Use this to see all people in your organization for compliance and security management.",
-  parameters: GetPeopleInput,
+  parameters: ListPeopleInput,
 };
 
-const GetPersonByIdInput = z.object({
+const GetPersonInput = z.object({
   personId: z
     .string()
     .describe(
@@ -28,15 +28,15 @@ const GetPersonByIdInput = z.object({
     ),
 });
 
-export const GetPersonByIdTool: Tool<typeof GetPersonByIdInput> = {
-  name: "get_person_by_id",
+export const GetPersonTool: Tool<typeof GetPersonInput> = {
+  name: "get_person",
   description:
     "Get person by ID. Retrieve detailed information about a specific person when their ID is known. The ID of a person can be found from get_people response. Returns complete person details including name, email, role, group memberships, and access permissions.",
-  parameters: GetPersonByIdInput,
+  parameters: GetPersonInput,
 };
 
-export async function getPeople(
-  args: z.infer<typeof GetPeopleInput>,
+export async function listPeople(
+  args: z.infer<typeof ListPeopleInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/people", baseApiUrl());
 
@@ -67,8 +67,8 @@ export async function getPeople(
   };
 }
 
-export async function getPersonById(
-  args: z.infer<typeof GetPersonByIdInput>,
+export async function getPerson(
+  args: z.infer<typeof GetPersonInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/people/${args.personId}`, baseApiUrl());
 

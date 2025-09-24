@@ -9,7 +9,7 @@ import {
   CONTROL_ID_DESCRIPTION,
 } from "./global-descriptions.js";
 
-const GetControlsInput = z.object({
+const ListControlsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
   frameworkMatchesAny: z
@@ -20,64 +20,64 @@ const GetControlsInput = z.object({
     .optional(),
 });
 
-export const GetControlsTool: Tool<typeof GetControlsInput> = {
-  name: "get_controls",
+export const ListControlsTool: Tool<typeof ListControlsInput> = {
+  name: "list_controls",
   description:
     "List all security controls across all frameworks in your Vanta account. Returns control names, descriptions, framework mappings, and current implementation status. Use this to see all available controls or to find a specific control ID for use with other tools. Optionally filter by specific frameworks using frameworkMatchesAny.",
-  parameters: GetControlsInput,
+  parameters: ListControlsInput,
 };
 
-const GetControlTestsInput = z.object({
+const ListControlTestsInput = z.object({
   controlId: z.string().describe(CONTROL_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetControlTestsTool: Tool<typeof GetControlTestsInput> = {
-  name: "get_control_tests",
+export const ListControlTestsTool: Tool<typeof ListControlTestsInput> = {
+  name: "list_control_tests",
   description:
     "List a control's tests. Get all automated tests that validate a specific security control. Use this when you know a control ID and want to see which specific tests monitor compliance for that control. Returns test details, current status, and any failing entities for the control's tests.",
-  parameters: GetControlTestsInput,
+  parameters: ListControlTestsInput,
 };
 
-const GetLibraryControlsInput = z.object({
+const ListLibraryControlsInput = z.object({
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetLibraryControlsTool: Tool<typeof GetLibraryControlsInput> = {
-  name: "get_library_controls",
+export const ListLibraryControlsTool: Tool<typeof ListLibraryControlsInput> = {
+  name: "list_library_controls",
   description:
-    "List Vanta controls from the library. These are pre-built security controls available in Vanta's control library that can be added to your account. Different from get_controls which lists controls already in your account - this shows available controls you can implement.",
-  parameters: GetLibraryControlsInput,
+    "List Vanta controls from the library. These are pre-built security controls available in Vanta's control library that can be added to your account. Different from list_controls which lists controls already in your account - this shows available controls you can implement.",
+  parameters: ListLibraryControlsInput,
 };
 
-const GetControlDocumentsInput = z.object({
+const ListControlDocumentsInput = z.object({
   controlId: z.string().describe(CONTROL_ID_DESCRIPTION),
   pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
   pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
 });
 
-export const GetControlDocumentsTool: Tool<typeof GetControlDocumentsInput> = {
-  name: "get_control_documents",
+export const ListControlDocumentsTool: Tool<typeof ListControlDocumentsInput> = {
+  name: "list_control_documents",
   description:
     "List a control's documents. Get all documents that are associated with or provide evidence for a specific security control. Use this when you know a control ID and want to see which documents are mapped to that control for compliance evidence.",
-  parameters: GetControlDocumentsInput,
+  parameters: ListControlDocumentsInput,
 };
 
-const GetControlByIdInput = z.object({
+const GetControlInput = z.object({
   controlId: z.string().describe(CONTROL_ID_DESCRIPTION),
 });
 
-export const GetControlByIdTool: Tool<typeof GetControlByIdInput> = {
-  name: "get_control_by_id",
+export const GetControlTool: Tool<typeof GetControlInput> = {
+  name: "get_control",
   description:
-    "Get control by an ID. Retrieve detailed information about a specific security control when its ID is known. The ID of a control can be found from get_controls or get_framework_controls responses. Returns complete control details including name, description, framework mappings, and implementation status.",
-  parameters: GetControlByIdInput,
+    "Get control by an ID. Retrieve detailed information about a specific security control when its ID is known. The ID of a control can be found from list_controls or list_framework_controls responses. Returns complete control details including name, description, framework mappings, and implementation status.",
+  parameters: GetControlInput,
 };
 
-export async function getControls(
-  args: z.infer<typeof GetControlsInput>,
+export async function listControls(
+  args: z.infer<typeof ListControlsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/controls", baseApiUrl());
 
@@ -113,8 +113,8 @@ export async function getControls(
   };
 }
 
-export async function getControlTests(
-  args: z.infer<typeof GetControlTestsInput>,
+export async function listControlTests(
+  args: z.infer<typeof ListControlTestsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/controls/${args.controlId}/tests`, baseApiUrl());
 
@@ -145,8 +145,8 @@ export async function getControlTests(
   };
 }
 
-export async function getLibraryControls(
-  args: z.infer<typeof GetLibraryControlsInput>,
+export async function listLibraryControls(
+  args: z.infer<typeof ListLibraryControlsInput>,
 ): Promise<CallToolResult> {
   const url = new URL("/v1/controls/controls-library", baseApiUrl());
 
@@ -177,8 +177,8 @@ export async function getLibraryControls(
   };
 }
 
-export async function getControlDocuments(
-  args: z.infer<typeof GetControlDocumentsInput>,
+export async function listControlDocuments(
+  args: z.infer<typeof ListControlDocumentsInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/controls/${args.controlId}/documents`, baseApiUrl());
 
@@ -209,8 +209,8 @@ export async function getControlDocuments(
   };
 }
 
-export async function getControlById(
-  args: z.infer<typeof GetControlByIdInput>,
+export async function getControl(
+  args: z.infer<typeof GetControlInput>,
 ): Promise<CallToolResult> {
   const url = new URL(`/v1/controls/${args.controlId}`, baseApiUrl());
 
