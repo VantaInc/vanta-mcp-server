@@ -44,58 +44,71 @@ The evaluation includes 66 test cases covering:
 
 ### ✅ **Tool Selection Tests**
 
-- **AWS Security Review**: `list_tests` with AWS and NEEDS_ATTENTION filters
-- **SOC2 Compliance**: `list_tests` with SOC2 framework filter
-- **Entity Details**: `list_test_entities` for specific failing resources
-- **Framework Listing**: `list_frameworks` for available frameworks
-- **Control Requirements**: `list_framework_controls` for specific framework details
-- **Status Percentage**: `list_frameworks` for completion percentages
-- **Control Listing**: `list_controls` for all security controls
+- **Framework Listing**: `frameworks` to list available compliance frameworks
+- **Framework Details**: `frameworks` with frameworkId for specific framework information
+- **Framework Controls**: `list_framework_controls` for control requirements in specific frameworks
+- **Control Listing**: `controls` to list all security controls
+- **Control Details**: `controls` with controlId for specific control information
 - **Control Tests**: `list_control_tests` for tests validating specific controls
 - **Library Controls**: `list_library_controls` for available Vanta library controls
 - **Control Documents**: `list_control_documents` for documents associated with controls
-- **Control Details**: `get_control` for specific control information
-- **Framework Details**: `get_framework` for specific framework information
-- **Risk Details**: `get_risk` for specific risk scenario information
-- **Integration Listing**: `get_integrations` for connected integrations
-- **Integration Details**: `get_integration_by_id` for specific integration information
-- **Vendor Listing**: `get_vendors` for all vendors
-- **Vendor Details**: `get_vendor_by_id` for specific vendor information
-- **Document Listing**: `get_documents` for all compliance documents
-- **Document Details**: `get_document_by_id` for specific document information
-- **Document Controls**: `get_document_controls` for controls associated with documents
-- **Document Links**: `get_document_links` for external references in documents
-- **Document Uploads**: `get_document_uploads` for file uploads attached to documents
+- **Risk Listing**: `risks` to list all risk scenarios
+- **Risk Details**: `risks` with riskId for specific risk scenario information
+- **Test Listing**: `tests` to list all security tests
+- **Test Details**: `tests` with testId for specific test information
+- **Test Entities**: `list_test_entities` for resources tested by specific tests
+- **Integration Listing**: `integrations` to list connected integrations
+- **Integration Details**: `integrations` with integrationId for specific integration information
+- **Integration Resource Kinds**: `list_integration_resource_kinds` for available resource types
+- **Integration Resource Details**: `get_integration_resource_kind_details` for resource type schemas
+- **Integration Resources**: `list_integration_resources` for monitored resources
+- **Integration Resource Info**: `get_integration_resource` for specific resource details
+- **Vendor Listing**: `vendors` to list all vendors
+- **Vendor Details**: `vendors` with vendorId for specific vendor information
+- **Vendor Documents**: `list_vendor_documents` for vendor compliance documentation
+- **Vendor Findings**: `list_vendor_findings` for vendor security issues
+- **Vendor Security Reviews**: `list_vendor_security_reviews` for vendor assessments
+- **Vendor Security Review Details**: `get_vendor_security_review` for specific review information
+- **Vendor Security Review Documents**: `list_vendor_security_review_documents` for review documentation
+- **Document Listing**: `documents` to list all compliance documents
+- **Document Details**: `documents` with documentId for specific document information
+- **Document Controls**: `list_document_controls` for controls associated with documents
+- **Document Links**: `list_document_links` for external references in documents
+- **Document Uploads**: `list_document_uploads` for file uploads attached to documents
 - **Document Downloads**: `download_document_file` for intelligently downloading files (text content for readable files, metadata for binary files)
-- **Policy Listing**: `get_policies` for all organizational policies
-- **Policy Details**: `get_policy_by_id` for specific policy information
-- **Discovered Vendors**: `get_discovered_vendors` for automatically discovered vendors
-- **Discovered Vendor Accounts**: `get_discovered_vendor_accounts` for detailed vendor account information
-- **Group Listing**: `get_groups` for all organizational groups
-- **Group Details**: `get_group_by_id` for specific group information
-- **Group Membership**: `get_group_people` for people in specific groups
-- **People Listing**: `get_people` for all people in the organization
-- **Person Details**: `get_person_by_id` for specific person information
-- **Vulnerability Listing**: `get_vulnerabilities` for all detected vulnerabilities
-- **Vulnerability Details**: `get_vulnerability_by_id` for specific vulnerability information
-- **Vulnerability Remediations**: `get_vulnerability_remediations` for tracking remediation efforts
-- **Vulnerable Assets**: `get_vulnerable_assets` for assets affected by vulnerabilities
-- **Vulnerable Asset Details**: `get_vulnerable_asset_by_id` for specific asset vulnerability information
-- **Monitored Computers**: `get_monitored_computers` for all computers being monitored for compliance
-- **Computer Details**: `get_monitored_computer_by_id` for specific computer information
-- **Vendor Risk Attributes**: `get_vendor_risk_attributes` for available risk assessment criteria
+- **Policy Listing**: `policies` to list all organizational policies
+- **Policy Details**: `policies` with policyId for specific policy information
+- **Discovered Vendors**: `list_discovered_vendors` for automatically discovered vendors
+- **Discovered Vendor Accounts**: `list_discovered_vendor_accounts` for detailed vendor account information
+- **Group Listing**: `groups` to list all organizational groups
+- **Group Details**: `groups` with groupId for specific group information
+- **Group Membership**: `list_group_people` for people in specific groups
+- **People Listing**: `people` to list all people in the organization
+- **Person Details**: `people` with personId for specific person information
+- **Vulnerability Listing**: `vulnerabilities` to list all detected vulnerabilities
+- **Vulnerability Details**: `vulnerabilities` with vulnerabilityId for specific vulnerability information
+- **Vulnerability Remediations**: `list_vulnerability_remediations` for tracking remediation efforts
+- **Vulnerable Assets**: `vulnerable_assets` to list assets affected by vulnerabilities
+- **Vulnerable Asset Details**: `vulnerable_assets` with vulnerableAssetId for specific asset vulnerability information
+- **Monitored Computers**: `monitored_computers` to list all computers being monitored for compliance
+- **Computer Details**: `monitored_computers` with monitoredComputerId for specific computer information
+- **Vendor Risk Attributes**: `list_vendor_risk_attributes` for available risk assessment criteria
 - **Trust Center Configuration**: `get_trust_center` for Trust Center settings and branding
-- **Trust Center Access Requests**: `get_trust_center_access_requests` for managing customer access
-- **Access Request Details**: `get_trust_center_access_request` for individual request information
-- **Trust Center Analytics**: `get_trust_center_viewer_activity_events` for engagement tracking
-- **Control Categories**: `get_trust_center_control_categories` for compliance organization
-- **Category Details**: `get_trust_center_control_category` for specific category information
-- **Published Controls**: `get_trust_center_controls` for public compliance controls
-- **Control Details**: `get_trust_center_control` for specific control implementation
-- **Trust Center FAQs**: `get_trust_center_faqs` for customer information
-- **FAQ Details**: `get_trust_center_faq` for specific FAQ content
-- **Trust Center Resources**: `get_trust_center_resources` for downloadable materials
+- **Trust Center Access Requests**: `trust_center_access_requests` for managing customer access (list or get specific)
+- **Trust Center Analytics**: `list_trust_center_viewer_activity_events` for engagement tracking
+- **Control Categories**: `trust_center_control_categories` for compliance organization (list or get specific)
+- **Published Controls**: `trust_center_controls` for public compliance controls (list or get specific)
+- **Trust Center FAQs**: `trust_center_faqs` for customer information (list or get specific)
+- **Trust Center Resources**: `list_trust_center_resources` for downloadable materials
 - **Resource Documents**: `get_trust_center_document` for specific document details
+- **Resource Media**: `get_trust_center_resource_media` for downloading Trust Center files
+- **Trust Center Subprocessors**: `trust_center_subprocessors` for third-party service providers (list or get specific)
+- **Trust Center Updates**: `trust_center_updates` for compliance status changes (list or get specific)
+- **Trust Center Viewers**: `trust_center_viewers` for access management (list or get specific)
+- **Trust Center Subscribers**: `get_trust_center_subscriber` for subscriber details
+- **Trust Center Subscriber Groups**: `trust_center_subscriber_groups` for subscriber organization (list or get specific)
+- **Trust Center Historical Access**: `list_trust_center_historical_access_requests` for audit tracking
+- **Trust Center All Subscribers**: `list_trust_center_subscribers` for communication management
 
 ### ❌ **Negative Tests**
 
@@ -108,14 +121,20 @@ The evaluation includes 66 test cases covering:
 🧪 Vanta MCP Server Tool Evaluation
 ====================================
 
-📝 Test: Should call list_tests with AWS filter and NEEDS_ATTENTION status
-💬 Prompt: "What security issues do I have in my AWS infrastructure?"
-🎯 Expected Tool: list_tests
-✅ PASS: Correctly called list_tests
+📝 Test: Should call frameworks to list available frameworks
+💬 Prompt: "What compliance frameworks are we tracking?"
+🎯 Expected Tool: frameworks
+✅ PASS: Correctly called frameworks
+✅ Parameters match expected values
+📋 Called with: {}
+
+📝 Test: Should call controls with controlId for specific control details
+💬 Prompt: "Get details for control ID data-protection-2"
+🎯 Expected Tool: controls
+✅ PASS: Correctly called controls
 ✅ Parameters match expected values
 📋 Called with: {
-  "statusFilter": "NEEDS_ATTENTION",
-  "integrationFilter": "aws"
+  "controlId": "data-protection-2"
 }
 
 📊 Final Results
@@ -143,6 +162,33 @@ The evaluation includes 66 test cases covering:
 - Wrong tool was called
 - No tool was called when one was expected
 - Tool was called when none should be
+
+## Consolidated Tool Architecture
+
+The Vanta MCP Server uses a **consolidated tool pattern** where many tools can handle both list and get-by-ID operations:
+
+### **Consolidated Tools** (53 total)
+
+These tools accept an optional ID parameter:
+
+- **Without ID**: Lists all resources with optional filtering and pagination
+- **With ID**: Returns the specific resource details
+
+Examples:
+
+- `frameworks` - Lists all frameworks OR get specific framework with `frameworkId`
+- `controls` - Lists all controls OR get specific control with `controlId`
+- `vendors` - Lists all vendors OR get specific vendor with `vendorId`
+- `documents` - Lists all documents OR get specific document with `documentId`
+
+### **Specialized Tools**
+
+Some tools remain separate for specific operations:
+
+- `list_control_tests` - Lists tests for a control
+- `list_framework_controls` - Lists controls in a framework
+- `download_document_file` - Downloads document files
+- `get_integration_resource` - Gets specific integration resources
 
 ## Customizing Tests
 
@@ -202,5 +248,6 @@ This evaluation system helps ensure that:
 - **Real-world prompts** trigger the correct tools
 - **Parameter passing** works as expected
 - **Scope boundaries** are respected (no tools called for non-compliance queries)
+- **Consolidated architecture** works effectively (LLMs understand optional ID parameters)
 
-The goal is to maintain high confidence that AI assistants will use the Vanta MCP Server correctly for compliance and security management tasks.
+The goal is to maintain high confidence that AI assistants will use the Vanta MCP Server correctly for compliance and security management tasks, taking advantage of the intelligent consolidated tool pattern for optimal efficiency.

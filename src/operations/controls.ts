@@ -3,11 +3,9 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
+  createConsolidatedSchema,
   createIdWithPaginationSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
@@ -15,51 +13,56 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListControlsInput = createPaginationSchema().extend({
-  frameworkMatchesAny: z
-    .array(z.string())
-    .describe(
-      "Filter controls by framework IDs. Returns controls that belong to any of the specified frameworks, e.g. ['soc2', 'iso27001', 'hipaa']",
-    )
-    .optional(),
-});
+const ControlsInput = createConsolidatedSchema(
+  {
+    paramName: "controlId",
+    description: CONTROL_ID_DESCRIPTION,
+    resourceName: "control",
+  },
+  {
+    frameworkMatchesAny: z
+      .array(z.string())
+      .describe(
+        "Filter controls by framework IDs. Returns controls that belong to any of the specified frameworks, e.g. ['soc2', 'iso27001', 'hipaa']",
+      )
+      .optional(),
+  },
+);
 
 const ListControlTestsInput = createIdWithPaginationSchema({
   paramName: "controlId",
   description: CONTROL_ID_DESCRIPTION,
 });
 
-const ListLibraryControlsInput = createPaginationSchema();
+const ListLibraryControlsInput = createIdWithPaginationSchema({
+  paramName: "controlId",
+  description: CONTROL_ID_DESCRIPTION,
+});
 
 const ListControlDocumentsInput = createIdWithPaginationSchema({
   paramName: "controlId",
   description: CONTROL_ID_DESCRIPTION,
 });
 
-const GetControlInput = createIdSchema({
-  paramName: "controlId",
-  description: CONTROL_ID_DESCRIPTION,
-});
-
 // 3. Tool Definitions
-export const ListControlsTool: Tool<typeof ListControlsInput> = {
-  name: "list_controls",
+export const ControlsTool: Tool<typeof ControlsInput> = {
+  name: "controls",
   description:
-    "List all security controls across all frameworks in your Vanta account. Returns control names, descriptions, framework mappings, and current implementation status. Use this to see all available controls or to find a specific control ID for use with other tools. Optionally filter by specific frameworks using frameworkMatchesAny.",
-  parameters: ListControlsInput,
+    "Access security controls in your Vanta account. Provide controlId to get a specific control, or omit to list all controls with optional framework filtering. Returns control names, descriptions, framework mappings, and implementation status.",
+  parameters: ControlsInput,
 };
 
 export const ListControlTestsTool: Tool<typeof ListControlTestsInput> = {
   name: "list_control_tests",
   description:
-    "List a control's tests. Get all automated tests that validate a specific security control. Use this when you know a control ID and want to see which specific tests monitor compliance for that control. Returns test details, current status, and any failing entities for the control's tests.",
+    "List control tests. Get all automated tests that validate a specific security control. Use this when you know a control ID and want to see which specific tests monitor compliance for that control.",
   parameters: ListControlTestsInput,
 };
 
 export const ListLibraryControlsTool: Tool<typeof ListLibraryControlsInput> = {
   name: "list_library_controls",
   description:
-    "List Vanta controls from the library. These are pre-built security controls available in Vanta's control library that can be added to your account. Different from list_controls which lists controls already in your account - this shows available controls you can implement.",
+    "List Vanta controls from the library. These are pre-built security controls available in Vanta's control library that can be added to your account.",
   parameters: ListLibraryControlsInput,
 };
 
@@ -67,22 +70,15 @@ export const ListControlDocumentsTool: Tool<typeof ListControlDocumentsInput> =
   {
     name: "list_control_documents",
     description:
-      "List a control's documents. Get all documents that are associated with or provide evidence for a specific security control. Use this when you know a control ID and want to see which documents are mapped to that control for compliance evidence.",
+      "List a control's documents. Get all documents that are associated with or provide evidence for a specific security control.",
     parameters: ListControlDocumentsInput,
   };
 
-export const GetControlTool: Tool<typeof GetControlInput> = {
-  name: "get_control",
-  description:
-    "Get control by an ID. Retrieve detailed information about a specific security control when its ID is known. The ID of a control can be found from list_controls or list_framework_controls responses. Returns complete control details including name, description, framework mappings, and implementation status.",
-  parameters: GetControlInput,
-};
-
 // 4. Implementation Functions
-export async function listControls(
-  args: z.infer<typeof ListControlsInput>,
+export async function controls(
+  args: z.infer<typeof ControlsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/controls", args);
+  return makeConsolidatedRequest("/v1/controls", args, "controlId");
 }
 
 export async function listControlTests(
@@ -97,7 +93,10 @@ export async function listControlTests(
 export async function listLibraryControls(
   args: z.infer<typeof ListLibraryControlsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/controls/controls-library", args);
+  const { controlId, ...params } = args;
+  const url = buildUrl(`/v1/library-controls/${String(controlId)}`, params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
 }
 
 export async function listControlDocuments(
@@ -109,19 +108,12 @@ export async function listControlDocuments(
   return handleApiResponse(response);
 }
 
-export async function getControl(
-  args: z.infer<typeof GetControlInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/controls", args.controlId);
-}
-
 // Registry export for automated tool registration
 export default {
   tools: [
-    { tool: ListControlsTool, handler: listControls },
+    { tool: ControlsTool, handler: controls },
     { tool: ListControlTestsTool, handler: listControlTests },
     { tool: ListLibraryControlsTool, handler: listLibraryControls },
     { tool: ListControlDocumentsTool, handler: listControlDocuments },
-    { tool: GetControlTool, handler: getControl },
   ],
 };

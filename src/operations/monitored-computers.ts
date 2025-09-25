@@ -3,56 +3,38 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  createConsolidatedSchema,
+  makeConsolidatedRequest,
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListMonitoredComputersInput = createPaginationSchema();
-
-const GetMonitoredComputerInput = createIdSchema({
-  paramName: "computerId",
+const MonitoredComputersInput = createConsolidatedSchema({
+  paramName: "monitoredComputerId",
   description:
-    "Computer ID to retrieve, e.g. 'computer-123' or specific computer identifier",
+    "Monitored computer ID to retrieve, e.g. 'comp-123' or specific monitored computer identifier",
+  resourceName: "monitored computer",
 });
 
 // 3. Tool Definitions
-export const ListMonitoredComputersTool: Tool<
-  typeof ListMonitoredComputersInput
-> = {
-  name: "list_monitored_computers",
+export const MonitoredComputersTool: Tool<typeof MonitoredComputersInput> = {
+  name: "monitored_computers",
   description:
-    "List all monitored computers in your Vanta account. Returns computer IDs, hostnames, operating systems, and monitoring status for endpoint management. Use this to see all computers being monitored for compliance and security.",
-  parameters: ListMonitoredComputersInput,
+    "Access monitored computers in your Vanta account. Provide monitoredComputerId to get a specific computer, or omit to list all monitored computers. Returns computer details, compliance status, and security measures for device management.",
+  parameters: MonitoredComputersInput,
 };
 
-export const GetMonitoredComputerTool: Tool<typeof GetMonitoredComputerInput> =
-  {
-    name: "get_monitored_computer",
-    description:
-      "Get monitored computer by ID. Retrieve detailed information about a specific monitored computer when its ID is known. The ID of a computer can be found from list_monitored_computers response. Returns complete computer details including hardware specs, software inventory, and compliance status.",
-    parameters: GetMonitoredComputerInput,
-  };
-
 // 4. Implementation Functions
-export async function listMonitoredComputers(
-  args: z.infer<typeof ListMonitoredComputersInput>,
+export async function monitoredComputers(
+  args: z.infer<typeof MonitoredComputersInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/monitored-computers", args);
-}
-
-export async function getMonitoredComputer(
-  args: z.infer<typeof GetMonitoredComputerInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/monitored-computers", args.computerId);
+  return makeConsolidatedRequest(
+    "/v1/monitored-computers",
+    args,
+    "monitoredComputerId",
+  );
 }
 
 // Registry export for automated tool registration
 export default {
-  tools: [
-    { tool: ListMonitoredComputersTool, handler: listMonitoredComputers },
-    { tool: GetMonitoredComputerTool, handler: getMonitoredComputer },
-  ],
+  tools: [{ tool: MonitoredComputersTool, handler: monitoredComputers }],
 };

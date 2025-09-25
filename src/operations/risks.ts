@@ -3,59 +3,44 @@ import {
   CallToolResult,
   Tool,
   z,
-  createFilterSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  createConsolidatedSchema,
+  makeConsolidatedRequest,
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListRisksInput = createFilterSchema({
-  categoryMatchesAny: z
-    .string()
-    .optional()
-    .describe(
-      "Filter by risk category. Example: Access Control, Cryptography, Privacy, etc.",
-    ),
-});
-
-const GetRiskInput = createIdSchema({
-  paramName: "riskId",
-  description:
-    "Risk scenario ID to retrieve, e.g. 'risk-scenario-123' or specific risk identifier",
-});
+const RisksInput = createConsolidatedSchema(
+  {
+    paramName: "riskId",
+    description:
+      "Risk scenario ID to retrieve, e.g. 'risk-scenario-123' or specific risk identifier",
+    resourceName: "risk scenario",
+  },
+  {
+    categoryMatchesAny: z
+      .string()
+      .optional()
+      .describe(
+        "Filter by risk category. Example: Access Control, Cryptography, Privacy, etc.",
+      ),
+  },
+);
 
 // 3. Tool Definitions
-export const ListRisksTool: Tool<typeof ListRisksInput> = {
-  name: "list_risks",
-  description: "List all risk scenarios in your Vanta risk register.",
-  parameters: ListRisksInput,
-};
-
-export const GetRiskTool: Tool<typeof GetRiskInput> = {
-  name: "get_risk",
+export const RisksTool: Tool<typeof RisksInput> = {
+  name: "risks",
   description:
-    "Get risk scenario by ID. Retrieve detailed information about a specific risk scenario when its ID is known. The ID of a risk scenario can be found from list_risks response. Returns complete risk details including status, inherent & residual risk scores, treatment plan, and more.",
-  parameters: GetRiskInput,
+    "Access risk scenarios in your Vanta account. Provide riskId to get a specific risk scenario, or omit to list all risks with optional category filtering. Returns risk details, assessments, and mitigation strategies for compliance reporting.",
+  parameters: RisksInput,
 };
 
 // 4. Implementation Functions
-export async function listRisks(
-  args: z.infer<typeof ListRisksInput>,
+export async function risks(
+  args: z.infer<typeof RisksInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/risk-scenarios", args);
-}
-
-export async function getRisk(
-  args: z.infer<typeof GetRiskInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/risk-scenarios", args.riskId);
+  return makeConsolidatedRequest("/v1/risk-scenarios", args, "riskId");
 }
 
 // Registry export for automated tool registration
 export default {
-  tools: [
-    { tool: ListRisksTool, handler: listRisks },
-    { tool: GetRiskTool, handler: getRisk },
-  ],
+  tools: [{ tool: RisksTool, handler: risks }],
 };

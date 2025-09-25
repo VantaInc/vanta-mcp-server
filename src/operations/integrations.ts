@@ -3,10 +3,9 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  createConsolidatedSchema,
+  createIdWithPaginationSchema,
+  makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
@@ -14,16 +13,15 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListIntegrationsInput = createPaginationSchema();
-
-const GetIntegrationInput = createIdSchema({
+const IntegrationsInput = createConsolidatedSchema({
   paramName: "integrationId",
   description: INTEGRATION_ID_DESCRIPTION,
+  resourceName: "integration",
 });
 
-const ListIntegrationResourceKindsInput = z.object({
-  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-  ...createPaginationSchema().shape,
+const ListIntegrationResourceKindsInput = createIdWithPaginationSchema({
+  paramName: "integrationId",
+  description: INTEGRATION_ID_DESCRIPTION,
 });
 
 const GetIntegrationResourceKindDetailsInput = z.object({
@@ -31,7 +29,7 @@ const GetIntegrationResourceKindDetailsInput = z.object({
   resourceKind: z
     .string()
     .describe(
-      "Resource kind to get details for, e.g. 'S3Bucket', 'CloudwatchLogGroup'",
+      "Resource kind to get details for, e.g. 'ec2-instances' or specific resource kind identifier",
     ),
 });
 
@@ -40,9 +38,18 @@ const ListIntegrationResourcesInput = z.object({
   resourceKind: z
     .string()
     .describe(
-      "Resource kind to list resources for, e.g. 'S3Bucket', 'CloudwatchLogGroup'",
+      "Resource kind to list resources for, e.g. 'ec2-instances' or specific resource kind identifier",
     ),
-  ...createPaginationSchema().shape,
+  pageSize: z
+    .number()
+    .min(1)
+    .max(100)
+    .describe("Number of items to return per page (1-100)")
+    .optional(),
+  pageCursor: z
+    .string()
+    .describe("Cursor for pagination to get the next page of results")
+    .optional(),
 });
 
 const GetIntegrationResourceInput = z.object({
@@ -50,28 +57,21 @@ const GetIntegrationResourceInput = z.object({
   resourceKind: z
     .string()
     .describe(
-      "Resource kind to get resource from, e.g. 'S3Bucket', 'CloudwatchLogGroup'",
+      "Resource kind the resource belongs to, e.g. 'ec2-instances' or specific resource kind identifier",
     ),
   resourceId: z
     .string()
     .describe(
-      "Resource ID to get details for, e.g. 'i-1234567890abcdef0', 'bucket-name'",
+      "Resource ID to retrieve, e.g. 'resource-123' or specific resource identifier",
     ),
 });
 
 // 3. Tool Definitions
-export const ListIntegrationsTool: Tool<typeof ListIntegrationsInput> = {
-  name: "list_integrations",
+export const IntegrationsTool: Tool<typeof IntegrationsInput> = {
+  name: "integrations",
   description:
-    "List all connected integrations in your Vanta account. Returns integration id, display name, resource kinds supported by the integration, and how many connections exist for such integration. Use this to see all integrations connected in your Vanta instance.",
-  parameters: ListIntegrationsInput,
-};
-
-export const GetIntegrationTool: Tool<typeof GetIntegrationInput> = {
-  name: "get_integration",
-  description:
-    "Get integration by ID. Retrieve detailed information about a specific integration when its ID is known. The ID of an integration can be found from get_integrations response. Returns complete integration details including configuration, resource kinds, and connection status.",
-  parameters: GetIntegrationInput,
+    "Access connected integrations in your Vanta account. Provide integrationId to get a specific integration, or omit to list all integrations. Returns integration details, supported resource kinds, and connection status for compliance monitoring.",
+  parameters: IntegrationsInput,
 };
 
 export const ListIntegrationResourceKindsTool: Tool<
@@ -79,7 +79,7 @@ export const ListIntegrationResourceKindsTool: Tool<
 > = {
   name: "list_integration_resource_kinds",
   description:
-    "List integration resource kinds. Lists a connected integration's resource types (kinds) such as S3Bucket, CloudwatchLogGroup, etc. Use this to see what types of resources an integration can monitor.",
+    "List integration's resource kinds. Get all resource types that are available through a specific integration. Use this to see what kinds of resources (EC2 instances, S3 buckets, etc.) can be monitored through an integration.",
   parameters: ListIntegrationResourceKindsInput,
 };
 
@@ -88,7 +88,7 @@ export const GetIntegrationResourceKindDetailsTool: Tool<
 > = {
   name: "get_integration_resource_kind_details",
   description:
-    "Get details for resource kind. Gets details for a specific resource type (kind) such as S3Bucket or CloudwatchLogGroup for a specific integration. Use this to understand what properties and metadata are available for a resource type.",
+    "Get integration resource kind details. Get detailed information about a specific resource kind within an integration. Use this to understand the schema and available fields for a particular resource type.",
   parameters: GetIntegrationResourceKindDetailsInput,
 };
 
@@ -97,7 +97,7 @@ export const ListIntegrationResourcesTool: Tool<
 > = {
   name: "list_integration_resources",
   description:
-    "List resources for a specific resource kind. List all resources of a specific type (kind) discovered by an integration. Use this to see all infrastructure resources of a particular type that Vanta is monitoring through an integration.",
+    "List integration resources. Get all resources of a specific type within an integration. Use this to see all instances of a particular resource kind (like all EC2 instances) being monitored through an integration.",
   parameters: ListIntegrationResourcesInput,
 };
 
@@ -106,21 +106,15 @@ export const GetIntegrationResourceTool: Tool<
 > = {
   name: "get_integration_resource",
   description:
-    "Get resource by ID within a specific resource kind. Retrieve detailed information about a specific resource of a particular type discovered by an integration. Use this to get full details about infrastructure resources including metadata, compliance status, and configuration.",
+    "Get integration resource by ID. Get detailed information about a specific resource within an integration. Use this to see the current state and attributes of a particular monitored resource.",
   parameters: GetIntegrationResourceInput,
 };
 
 // 4. Implementation Functions
-export async function listIntegrations(
-  args: z.infer<typeof ListIntegrationsInput>,
+export async function integrations(
+  args: z.infer<typeof IntegrationsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/integrations", args);
-}
-
-export async function getIntegration(
-  args: z.infer<typeof GetIntegrationInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/integrations", args.integrationId);
+  return makeConsolidatedRequest("/v1/integrations", args, "integrationId");
 }
 
 export async function listIntegrationResourceKinds(
@@ -170,8 +164,7 @@ export async function getIntegrationResource(
 // Registry export for automated tool registration
 export default {
   tools: [
-    { tool: ListIntegrationsTool, handler: listIntegrations },
-    { tool: GetIntegrationTool, handler: getIntegration },
+    { tool: IntegrationsTool, handler: integrations },
     {
       tool: ListIntegrationResourceKindsTool,
       handler: listIntegrationResourceKinds,

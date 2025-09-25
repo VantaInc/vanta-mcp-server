@@ -3,11 +3,9 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
+  createConsolidatedSchema,
   createIdWithPaginationSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
@@ -15,11 +13,10 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListVendorsInput = createPaginationSchema();
-
-const GetVendorInput = createIdSchema({
+const VendorsInput = createConsolidatedSchema({
   paramName: "vendorId",
   description: VENDOR_ID_DESCRIPTION,
+  resourceName: "vendor",
 });
 
 const ListVendorDocumentsInput = createIdWithPaginationSchema({
@@ -42,7 +39,7 @@ const GetVendorSecurityReviewInput = z.object({
   securityReviewId: z
     .string()
     .describe(
-      "Security review ID to get details for, e.g. 'security-review-456'",
+      "Security review ID to retrieve, e.g. 'review-123' or specific security review identifier",
     ),
 });
 
@@ -51,37 +48,39 @@ const ListVendorSecurityReviewDocumentsInput = z.object({
   securityReviewId: z
     .string()
     .describe(
-      "Security review ID to get documents for, e.g. 'security-review-456'",
+      "Security review ID to get documents for, e.g. 'review-123' or specific security review identifier",
     ),
-  ...createPaginationSchema().shape,
+  pageSize: z
+    .number()
+    .min(1)
+    .max(100)
+    .describe("Number of items to return per page (1-100)")
+    .optional(),
+  pageCursor: z
+    .string()
+    .describe("Cursor for pagination to get the next page of results")
+    .optional(),
 });
 
 // 3. Tool Definitions
-export const ListVendorsTool: Tool<typeof ListVendorsInput> = {
-  name: "list_vendors",
+export const VendorsTool: Tool<typeof VendorsInput> = {
+  name: "vendors",
   description:
-    "List all vendors in your Vanta account. Returns vendor IDs, names, website URLs, and many other vendor attributes. Use this to see all existing vendors.",
-  parameters: ListVendorsInput,
-};
-
-export const GetVendorTool: Tool<typeof GetVendorInput> = {
-  name: "get_vendor",
-  description:
-    "Get vendor by ID. Retrieve detailed information about a specific vendor when its ID is known. The ID of a vendor can be found from get_vendors response. Returns complete vendor details including name, website URLs, contact information, and risk assessment status.",
-  parameters: GetVendorInput,
+    "Access vendors in your Vanta account. Provide vendorId to get a specific vendor, or omit to list all vendors. Returns vendor details, risk levels, and management status for third-party risk assessment.",
+  parameters: VendorsInput,
 };
 
 export const ListVendorDocumentsTool: Tool<typeof ListVendorDocumentsInput> = {
   name: "list_vendor_documents",
   description:
-    "List vendor documents. Get all documents associated with a specific vendor for compliance and risk assessment purposes. Use this to see what documentation is available for vendor due diligence.",
+    "List vendor's documents. Get all documents associated with a specific vendor for compliance and risk assessment.",
   parameters: ListVendorDocumentsInput,
 };
 
 export const ListVendorFindingsTool: Tool<typeof ListVendorFindingsInput> = {
   name: "list_vendor_findings",
   description:
-    "List vendor findings. Get all security findings and risk assessment results for a specific vendor. Use this to understand security concerns and compliance issues related to a vendor.",
+    "List vendor's findings. Get all security findings and compliance issues identified for a specific vendor.",
   parameters: ListVendorFindingsInput,
 };
 
@@ -90,7 +89,7 @@ export const ListVendorSecurityReviewsTool: Tool<
 > = {
   name: "list_vendor_security_reviews",
   description:
-    "Get security reviews by vendor ID. List all security reviews conducted for a specific vendor. Use this to see the history of security assessments and due diligence activities.",
+    "List vendor's security reviews. Get all security assessments and reviews conducted for a specific vendor.",
   parameters: ListVendorSecurityReviewsInput,
 };
 
@@ -99,7 +98,7 @@ export const GetVendorSecurityReviewTool: Tool<
 > = {
   name: "get_vendor_security_review",
   description:
-    "Get security review by ID. Retrieve detailed information about a specific security review for a vendor. Use this to get complete details about a particular security assessment including findings, status, and recommendations.",
+    "Get vendor security review by ID. Retrieve detailed information about a specific security review for a vendor.",
   parameters: GetVendorSecurityReviewInput,
 };
 
@@ -108,21 +107,15 @@ export const ListVendorSecurityReviewDocumentsTool: Tool<
 > = {
   name: "list_vendor_security_review_documents",
   description:
-    "Get security review documents. List all documents associated with a specific vendor security review. Use this to access supporting documentation, evidence, and reports related to a security assessment.",
+    "List vendor security review's documents. Get all documents associated with a specific vendor security review.",
   parameters: ListVendorSecurityReviewDocumentsInput,
 };
 
 // 4. Implementation Functions
-export async function listVendors(
-  args: z.infer<typeof ListVendorsInput>,
+export async function vendors(
+  args: z.infer<typeof VendorsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/vendors", args);
-}
-
-export async function getVendor(
-  args: z.infer<typeof GetVendorInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/vendors", args.vendorId);
+  return makeConsolidatedRequest("/v1/vendors", args, "vendorId");
 }
 
 export async function listVendorDocuments(
@@ -180,8 +173,7 @@ export async function listVendorSecurityReviewDocuments(
 // Registry export for automated tool registration
 export default {
   tools: [
-    { tool: ListVendorsTool, handler: listVendors },
-    { tool: GetVendorTool, handler: getVendor },
+    { tool: VendorsTool, handler: vendors },
     { tool: ListVendorDocumentsTool, handler: listVendorDocuments },
     { tool: ListVendorFindingsTool, handler: listVendorFindings },
     { tool: ListVendorSecurityReviewsTool, handler: listVendorSecurityReviews },

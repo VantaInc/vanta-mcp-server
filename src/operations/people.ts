@@ -3,53 +3,34 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  createConsolidatedSchema,
+  makeConsolidatedRequest,
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListPeopleInput = createPaginationSchema();
-
-const GetPersonInput = createIdSchema({
+const PeopleInput = createConsolidatedSchema({
   paramName: "personId",
   description:
     "Person ID to retrieve, e.g. 'person-123' or specific person identifier",
+  resourceName: "person",
 });
 
 // 3. Tool Definitions
-export const ListPeopleTool: Tool<typeof ListPeopleInput> = {
-  name: "list_people",
+export const PeopleTool: Tool<typeof PeopleInput> = {
+  name: "people",
   description:
-    "List all people in your Vanta account. Returns person IDs, names, email addresses, and metadata for organizational structure and access management. Use this to see all people in your organization for compliance and security management.",
-  parameters: ListPeopleInput,
-};
-
-export const GetPersonTool: Tool<typeof GetPersonInput> = {
-  name: "get_person",
-  description:
-    "Get person by ID. Retrieve detailed information about a specific person when their ID is known. The ID of a person can be found from get_people response. Returns complete person details including name, email, role, group memberships, and access permissions.",
-  parameters: GetPersonInput,
+    "Access people in your Vanta account. Provide personId to get a specific person, or omit to list all people. Returns person IDs, names, email addresses, and organizational information for identity and access management.",
+  parameters: PeopleInput,
 };
 
 // 4. Implementation Functions
-export async function listPeople(
-  args: z.infer<typeof ListPeopleInput>,
+export async function people(
+  args: z.infer<typeof PeopleInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/people", args);
-}
-
-export async function getPerson(
-  args: z.infer<typeof GetPersonInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/people", args.personId);
+  return makeConsolidatedRequest("/v1/people", args, "personId");
 }
 
 // Registry export for automated tool registration
 export default {
-  tools: [
-    { tool: ListPeopleTool, handler: listPeople },
-    { tool: GetPersonTool, handler: getPerson },
-  ],
+  tools: [{ tool: PeopleTool, handler: people }],
 };

@@ -18,40 +18,41 @@ export async function createAuthHeaders(): Promise<Record<string, string>> {
 /**
  * Makes an authenticated HTTP request using a bearer token from the Vanta MCP auth system.
  * If the request returns a 401 Unauthorized, it will refresh the token and retry once.
- *
- * @param {string} url - The URL to send the request to.
- * @param {RequestInit} [options={}] - Optional fetch options (method, headers, body, etc.).
- * @returns {Promise<Response>} The fetch Response object.
  */
 export async function makeAuthenticatedRequest(
   url: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  let headers = await createAuthHeaders();
+  const headers = await createAuthHeaders();
 
-  const response = await fetch(url, {
+  const requestOptions: RequestInit = {
     ...options,
     headers: {
       ...headers,
       ...options.headers,
     },
-  });
+  };
 
-  // If we get unauthorized, try refreshing the token once
+  // Try the request with the current token
+  let response = await fetch(url, requestOptions);
+
+  // If we get a 401, refresh the token and try again
   if (response.status === 401) {
-    const newToken = await refreshToken();
-    headers = {
-      "Authorization": `Bearer ${newToken}`,
-      "x-vanta-is-mcp": "true",
-    };
-
-    return fetch(url, {
-      ...options,
-      headers: {
-        ...headers,
-        ...options.headers,
-      },
-    });
+    try {
+      await refreshToken();
+      const newHeaders = await createAuthHeaders();
+      const retryOptions: RequestInit = {
+        ...options,
+        headers: {
+          ...newHeaders,
+          ...options.headers,
+        },
+      };
+      response = await fetch(url, retryOptions);
+    } catch (refreshError) {
+      console.error("Failed to refresh token:", refreshError);
+      // Return the original 401 response
+    }
   }
 
   return response;
@@ -62,34 +63,35 @@ export async function makeAuthenticatedRequest(
 // ==========================================
 
 /**
- * Creates a standard error response for failed API calls
+ * Creates an error response with consistent formatting
  */
 export function createErrorResponse(statusText: string): CallToolResult {
   return {
-    content: [
-      {
-        type: "text" as const,
-        text: `Error: ${statusText}`,
-      },
-    ],
+    content: [{ type: "text", text: `Error: ${statusText}` }],
+    isError: true,
   };
 }
 
 /**
- * Creates a standard success response with JSON data
+ * Creates a success response with JSON content
  */
 export async function createSuccessResponse(
   response: Response,
 ): Promise<CallToolResult> {
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify(await response.json()) },
-    ],
-  };
+  try {
+    const jsonData: unknown = await response.json();
+    return {
+      content: [{ type: "text", text: JSON.stringify(jsonData, null, 2) }],
+    };
+  } catch (error) {
+    return createErrorResponse(
+      `Failed to parse JSON response: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
 }
 
 /**
- * Handles API response with standard error/success processing
+ * Handles API response consistently - either returns success or error
  */
 export async function handleApiResponse(
   response: Response,
@@ -105,59 +107,114 @@ export async function handleApiResponse(
 // ==========================================
 
 /**
- * Creates a schema with only pagination parameters
+ * Creates a standard pagination schema
  */
-export function createPaginationSchema(): z.ZodObject<{
-  pageSize: z.ZodOptional<z.ZodNumber>;
-  pageCursor: z.ZodOptional<z.ZodString>;
-}> {
+export function createPaginationSchema(
+  customFields: Record<string, z.ZodTypeAny> = {},
+): z.ZodObject<Record<string, z.ZodTypeAny>> {
   return z.object({
-    pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
+    pageSize: z
+      .number()
+      .min(1)
+      .max(100)
+      .describe(PAGE_SIZE_DESCRIPTION)
+      .optional(),
     pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+    ...customFields,
   });
 }
 
 /**
- * Creates a schema with a single ID parameter
- */
-export function createIdSchema(params: {
-  paramName: string;
-  description: string;
-}): z.ZodObject<Record<string, z.ZodString>> {
-  return z.object({
-    [params.paramName]: z.string().describe(params.description),
-  });
-}
-
-/**
- * Creates a schema with an ID parameter plus pagination
- */
-export function createIdWithPaginationSchema(params: {
-  paramName: string;
-  description: string;
-}): z.ZodObject<
-  Record<
-    string,
-    z.ZodString | z.ZodOptional<z.ZodNumber> | z.ZodOptional<z.ZodString>
-  >
-> {
-  return z.object({
-    [params.paramName]: z.string().describe(params.description),
-    pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
-    pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
-  });
-}
-
-/**
- * Creates a base schema that can be extended with custom fields
+ * Creates a filter schema with pagination base
  */
 export function createFilterSchema(
   customFields: Record<string, z.ZodTypeAny> = {},
 ): z.ZodObject<Record<string, z.ZodTypeAny>> {
   return z.object({
-    pageSize: z.number().describe(PAGE_SIZE_DESCRIPTION).optional(),
+    pageSize: z
+      .number()
+      .min(1)
+      .max(100)
+      .describe(PAGE_SIZE_DESCRIPTION)
+      .optional(),
     pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
     ...customFields,
+  });
+}
+
+/**
+ * Creates a schema with a single required ID parameter plus pagination
+ */
+export function createIdWithPaginationSchema(params: {
+  paramName: string;
+  description: string;
+}): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  return z.object({
+    [params.paramName]: z.string().describe(params.description),
+    pageSize: z
+      .number()
+      .min(1)
+      .max(100)
+      .describe(PAGE_SIZE_DESCRIPTION)
+      .optional(),
+    pageCursor: z.string().describe(PAGE_CURSOR_DESCRIPTION).optional(),
+  });
+}
+
+/**
+ * Creates a schema with a single required ID parameter only
+ */
+export function createIdSchema(params: {
+  paramName: string;
+  description: string;
+}): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  return z.object({
+    [params.paramName]: z.string().describe(params.description),
+  });
+}
+
+/**
+ * Creates a schema for consolidated tools that can either list resources or get a single resource by ID
+ */
+export function createConsolidatedSchema(
+  params: {
+    paramName: string;
+    description: string;
+    resourceName: string;
+  },
+  additionalFields: Record<string, z.ZodTypeAny> = {},
+): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  const idDescription = `Optional ${params.resourceName} ID. If provided, returns the specific ${params.resourceName}. If omitted, lists all ${params.resourceName}s with optional filtering and pagination.`;
+
+  return z.object({
+    [params.paramName]: z.string().describe(idDescription).optional(),
+    ...createPaginationSchema().shape,
+    ...additionalFields,
+  });
+}
+
+/**
+ * Creates a schema for Trust Center consolidated tools that require a slugId plus optional resource ID
+ */
+export function createTrustCenterConsolidatedSchema(
+  params: {
+    paramName: string;
+    description: string;
+    resourceName: string;
+  },
+  additionalFields: Record<string, z.ZodTypeAny> = {},
+): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  const idDescription = `Optional ${params.resourceName} ID. If provided, returns the specific ${params.resourceName}. If omitted, lists all ${params.resourceName}s with optional filtering and pagination.`;
+
+  return z.object({
+    slugId: z
+      .string()
+      .describe(
+        "Trust Center slug ID, e.g. 'company-trust-center' or specific trust center identifier",
+      ),
+    [params.paramName]: z.string().describe(idDescription).optional(),
+    ...createPaginationSchema().shape,
+    ...additionalFields,
   });
 }
 
@@ -166,7 +223,7 @@ export function createFilterSchema(
 // ==========================================
 
 /**
- * Builds a URL with query parameters from an object
+ * Builds a URL with query parameters
  */
 export function buildUrl(
   basePath: string,
@@ -174,18 +231,16 @@ export function buildUrl(
 ): string {
   const url = new URL(basePath, baseApiUrl());
 
-  Object.entries(params).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(params)) {
     if (value !== undefined) {
       if (Array.isArray(value)) {
-        // Handle array parameters (e.g., frameworkMatchesAny)
-        value.forEach(item => {
-          url.searchParams.append(key, String(item));
-        });
+        // Handle arrays by joining with commas
+        url.searchParams.set(key, value.join(","));
       } else {
-        url.searchParams.append(key, String(value));
+        url.searchParams.set(key, String(value));
       }
     }
-  });
+  }
 
   return url.toString();
 }
@@ -195,22 +250,22 @@ export function buildUrl(
 // ==========================================
 
 /**
- * Makes a simple GET request with no parameters
+ * Makes a simple GET request to the specified endpoint
  */
 export async function makeSimpleGetRequest(
   endpoint: string,
 ): Promise<CallToolResult> {
-  const url = new URL(endpoint, baseApiUrl());
-  const response = await makeAuthenticatedRequest(url.toString());
+  const url = buildUrl(endpoint);
+  const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
 
 /**
- * Makes a GET request with pagination and filtering parameters
+ * Makes a paginated GET request with query parameters
  */
 export async function makePaginatedGetRequest(
   endpoint: string,
-  params: Record<string, string | number | boolean | string[] | undefined>,
+  params: Record<string, string | number | boolean | string[] | undefined> = {},
 ): Promise<CallToolResult> {
   const url = buildUrl(endpoint, params);
   const response = await makeAuthenticatedRequest(url);
@@ -227,4 +282,54 @@ export async function makeGetByIdRequest(
   const url = buildUrl(`${endpoint}/${String(id)}`);
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
+}
+
+/**
+ * Makes a request that can either list resources or get a single resource by ID
+ */
+export async function makeConsolidatedRequest(
+  endpoint: string,
+  params: Record<string, string | number | boolean | string[] | undefined>,
+  idParamName: string,
+): Promise<CallToolResult> {
+  const id = params[idParamName];
+
+  if (id) {
+    // Single resource request
+    return makeGetByIdRequest(endpoint, String(id));
+  } else {
+    // List request - remove the ID param from the parameters
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [idParamName]: _removedId, ...listParams } = params;
+    return makePaginatedGetRequest(endpoint, listParams);
+  }
+}
+
+/**
+ * Makes a Trust Center request that can either list resources or get a single resource by ID
+ */
+export async function makeTrustCenterConsolidatedRequest(
+  baseEndpoint: string,
+  params: Record<string, string | number | boolean | string[] | undefined>,
+  idParamName: string,
+  resourcePath: string,
+): Promise<CallToolResult> {
+  const { slugId, [idParamName]: resourceId, ...otherParams } = params;
+
+  if (resourceId) {
+    // Single resource request: /v1/trust-centers/{slugId}/{resourcePath}/{resourceId}
+    const url = buildUrl(
+      `${baseEndpoint}/${String(slugId)}/${resourcePath}/${String(resourceId)}`,
+    );
+    const response = await makeAuthenticatedRequest(url);
+    return handleApiResponse(response);
+  } else {
+    // List request: /v1/trust-centers/{slugId}/{resourcePath}
+    const url = buildUrl(
+      `${baseEndpoint}/${String(slugId)}/${resourcePath}`,
+      otherParams,
+    );
+    const response = await makeAuthenticatedRequest(url);
+    return handleApiResponse(response);
+  }
 }

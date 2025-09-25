@@ -3,54 +3,38 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  createConsolidatedSchema,
+  makeConsolidatedRequest,
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListVulnerableAssetsInput = createPaginationSchema();
-
-const GetVulnerableAssetInput = createIdSchema({
+const VulnerableAssetsInput = createConsolidatedSchema({
   paramName: "vulnerableAssetId",
   description:
     "Vulnerable asset ID to retrieve, e.g. 'vulnerable-asset-123' or specific asset identifier",
+  resourceName: "vulnerable asset",
 });
 
 // 3. Tool Definitions
-export const ListVulnerableAssetsTool: Tool<typeof ListVulnerableAssetsInput> =
-  {
-    name: "list_vulnerable_assets",
-    description:
-      "List all vulnerable assets in your Vanta account. Returns asset IDs, hostnames, vulnerability counts, and risk scores for security monitoring. Use this to see all assets that have identified vulnerabilities requiring attention.",
-    parameters: ListVulnerableAssetsInput,
-  };
-
-export const GetVulnerableAssetTool: Tool<typeof GetVulnerableAssetInput> = {
-  name: "get_vulnerable_asset",
+export const VulnerableAssetsTool: Tool<typeof VulnerableAssetsInput> = {
+  name: "vulnerable_assets",
   description:
-    "Get vulnerable asset by ID. Retrieve detailed information about a specific vulnerable asset when its ID is known. The ID of a vulnerable asset can be found from list_vulnerable_assets response. Returns complete asset details including vulnerability list, risk assessment, and remediation recommendations.",
-  parameters: GetVulnerableAssetInput,
+    "Access vulnerable assets in your Vanta account. Provide vulnerableAssetId to get a specific vulnerable asset, or omit to list all vulnerable assets. Returns asset details, vulnerability counts, and security status.",
+  parameters: VulnerableAssetsInput,
 };
 
 // 4. Implementation Functions
-export async function listVulnerableAssets(
-  args: z.infer<typeof ListVulnerableAssetsInput>,
+export async function vulnerableAssets(
+  args: z.infer<typeof VulnerableAssetsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/vulnerable-assets", args);
-}
-
-export async function getVulnerableAsset(
-  args: z.infer<typeof GetVulnerableAssetInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/vulnerable-assets", args.vulnerableAssetId);
+  return makeConsolidatedRequest(
+    "/v1/vulnerable-assets",
+    args,
+    "vulnerableAssetId",
+  );
 }
 
 // Registry export for automated tool registration
 export default {
-  tools: [
-    { tool: ListVulnerableAssetsTool, handler: listVulnerableAssets },
-    { tool: GetVulnerableAssetTool, handler: getVulnerableAsset },
-  ],
+  tools: [{ tool: VulnerableAssetsTool, handler: vulnerableAssets }],
 };

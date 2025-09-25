@@ -22,11 +22,38 @@ The operations layer provides a clean, consistent interface to the Vanta API. Ea
 ### Key Architectural Principles
 
 1. **DRY (Don't Repeat Yourself)**: Common patterns are abstracted into reusable utilities
-2. **RESTful Naming**: Tools follow REST conventions (`list_*` for multiple items, `get_*` for single items)
+2. **Consolidated Tool Pattern**: Single tools intelligently handle both list and get operations
 3. **Type Safety**: Full TypeScript support with proper type definitions
 4. **Consistent Error Handling**: Standardized error responses across all operations
 5. **Schema Factories**: Reusable Zod schema generators for common patterns
 6. **Automated Registry**: Zero-maintenance tool registration system
+
+### Consolidated Tool Architecture
+
+The operations layer implements a **consolidated tool pattern** where a single tool can intelligently handle both listing multiple resources and retrieving a single resource by ID. This approach provides significant benefits:
+
+#### Benefits of Consolidation
+
+- **Improved LLM Experience**: Reduces cognitive load by providing fewer, more intuitive tools
+- **Clearer Intent Mapping**: Tools match natural language patterns ("I want controls" vs "I want to list controls")
+- **Reduced API Surface**: Fewer tools to learn, document, and maintain
+- **Intelligent Routing**: Single tool automatically routes to appropriate endpoints based on parameters
+- **Preserved Functionality**: All original capabilities maintained with enhanced usability
+
+#### How It Works
+
+```typescript
+// Single tool handles multiple scenarios
+await controls({}); // Lists all controls
+await controls({ controlId: "control-123" }); // Gets specific control
+await controls({ frameworkMatchesAny: ["soc2"] }); // Filtered listing
+
+// Trust Center tools include required slugId
+await trust_center_faqs({ slugId: "company" }); // Lists FAQs
+await trust_center_faqs({ slugId: "company", faqId: "faq-123" }); // Gets specific FAQ
+```
+
+The consolidation pattern uses optional ID parameters - when an ID is provided, the tool retrieves that specific resource; when omitted, it lists all resources with optional filtering and pagination.
 
 ## File Structure
 

@@ -3,23 +3,20 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
+  createConsolidatedSchema,
   createIdWithPaginationSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListGroupsInput = createPaginationSchema();
-
-const GetGroupInput = createIdSchema({
+const GroupsInput = createConsolidatedSchema({
   paramName: "groupId",
   description:
     "Group ID to retrieve, e.g. 'group-123' or specific group identifier",
+  resourceName: "group",
 });
 
 const ListGroupPeopleInput = createIdWithPaginationSchema({
@@ -29,38 +26,25 @@ const ListGroupPeopleInput = createIdWithPaginationSchema({
 });
 
 // 3. Tool Definitions
-export const ListGroupsTool: Tool<typeof ListGroupsInput> = {
-  name: "list_groups",
+export const GroupsTool: Tool<typeof GroupsInput> = {
+  name: "groups",
   description:
-    "List all groups in your Vanta account. Returns group IDs, names, descriptions, and member counts for organizational structure management. Use this to see all available groups for access control and compliance.",
-  parameters: ListGroupsInput,
-};
-
-export const GetGroupTool: Tool<typeof GetGroupInput> = {
-  name: "get_group",
-  description:
-    "Get group by ID. Retrieve detailed information about a specific group when its ID is known. The ID of a group can be found from list_groups response. Returns complete group details including name, description, member list, and access permissions.",
-  parameters: GetGroupInput,
+    "Access groups in your Vanta account. Provide groupId to get a specific group, or omit to list all groups. Returns group IDs, names, descriptions, and metadata for organizational structure and access management.",
+  parameters: GroupsInput,
 };
 
 export const ListGroupPeopleTool: Tool<typeof ListGroupPeopleInput> = {
   name: "list_group_people",
   description:
-    "List people in a group. Get all people who are members of a specific group for access management and organizational oversight. Returns person details including names, emails, and roles within the group.",
+    "List group's people. Get all people who are members of a specific group. Use this to see group membership and organizational structure.",
   parameters: ListGroupPeopleInput,
 };
 
 // 4. Implementation Functions
-export async function listGroups(
-  args: z.infer<typeof ListGroupsInput>,
+export async function groups(
+  args: z.infer<typeof GroupsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/groups", args);
-}
-
-export async function getGroup(
-  args: z.infer<typeof GetGroupInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/groups", args.groupId);
+  return makeConsolidatedRequest("/v1/groups", args, "groupId");
 }
 
 export async function listGroupPeople(
@@ -75,8 +59,7 @@ export async function listGroupPeople(
 // Registry export for automated tool registration
 export default {
   tools: [
-    { tool: ListGroupsTool, handler: listGroups },
-    { tool: GetGroupTool, handler: getGroup },
+    { tool: GroupsTool, handler: groups },
     { tool: ListGroupPeopleTool, handler: listGroupPeople },
   ],
 };

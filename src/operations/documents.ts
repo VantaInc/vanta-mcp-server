@@ -3,11 +3,9 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
+  createConsolidatedSchema,
   createIdWithPaginationSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
@@ -15,11 +13,10 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const ListDocumentsInput = createPaginationSchema();
-
-const GetDocumentInput = createIdSchema({
+const DocumentsInput = createConsolidatedSchema({
   paramName: "documentId",
   description: DOCUMENT_ID_DESCRIPTION,
+  resourceName: "document",
 });
 
 const ListDocumentControlsInput = createIdWithPaginationSchema({
@@ -38,48 +35,40 @@ const ListDocumentUploadsInput = createIdWithPaginationSchema({
 });
 
 const DownloadDocumentFileInput = z.object({
-  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
   uploadedFileId: z
     .string()
     .describe(
-      "Uploaded file ID to download, e.g. 'file-456' or specific uploaded file identifier",
+      "Uploaded file ID to download, e.g. 'upload-123' or specific uploaded file identifier",
     ),
 });
 
 // 3. Tool Definitions
-export const ListDocumentsTool: Tool<typeof ListDocumentsInput> = {
-  name: "list_documents",
+export const DocumentsTool: Tool<typeof DocumentsInput> = {
+  name: "documents",
   description:
-    "List all documents in your Vanta account. Returns document IDs, names, types, and metadata for compliance and evidence management. Use this to see all documents available for compliance frameworks and controls.",
-  parameters: ListDocumentsInput,
-};
-
-export const GetDocumentTool: Tool<typeof GetDocumentInput> = {
-  name: "get_document",
-  description:
-    "Get document by ID. Retrieve detailed information about a specific document when its ID is known. The ID of a document can be found from get_documents response. Returns complete document details including name, type, metadata, and compliance mappings.",
-  parameters: GetDocumentInput,
+    "Access documents in your Vanta account. Provide documentId to get a specific document, or omit to list all documents. Returns document IDs, names, types, and metadata for compliance and evidence management.",
+  parameters: DocumentsInput,
 };
 
 export const ListDocumentControlsTool: Tool<typeof ListDocumentControlsInput> =
   {
     name: "list_document_controls",
     description:
-      "List document's controls. Get all security controls that are mapped to or associated with a specific document. Use this to understand which compliance controls are supported by a particular document as evidence.",
+      "List document's controls. Get all security controls that are mapped to or associated with a specific document.",
     parameters: ListDocumentControlsInput,
   };
 
 export const ListDocumentLinksTool: Tool<typeof ListDocumentLinksInput> = {
   name: "list_document_links",
   description:
-    "List document's links. Get all external links and references associated with a specific document. Use this to access related resources, external documentation, or supplementary materials for compliance evidence.",
+    "List document's links. Get all external links and references associated with a specific document.",
   parameters: ListDocumentLinksInput,
 };
 
 export const ListDocumentUploadsTool: Tool<typeof ListDocumentUploadsInput> = {
   name: "list_document_uploads",
   description:
-    "List document's uploads. Get all files and uploads that have been attached to a specific document. Use this to see what files are available for download or review as part of compliance documentation.",
+    "List document's uploads. Get all files and uploads attached to a specific document for compliance documentation.",
   parameters: ListDocumentUploadsInput,
 };
 
@@ -87,21 +76,15 @@ export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> =
   {
     name: "download_document_file",
     description:
-      "Download file for document. Intelligently retrieves file content from a document upload. For text-based files (txt, json, csv, xml, etc.), returns the readable content. For binary files (images, PDFs, etc.), returns file metadata and information. Use this to access compliance evidence and documentation content that can be analyzed.",
+      "Download document file by upload ID. Get the actual uploaded document file. Intelligently handles different MIME types: returns text content for readable files (text/*, JSON, XML, CSV, JavaScript) and metadata information for binary files (images, videos, PDFs, etc.).",
     parameters: DownloadDocumentFileInput,
   };
 
 // 4. Implementation Functions
-export async function listDocuments(
-  args: z.infer<typeof ListDocumentsInput>,
+export async function documents(
+  args: z.infer<typeof DocumentsInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/documents", args);
-}
-
-export async function getDocument(
-  args: z.infer<typeof GetDocumentInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/documents", args.documentId);
+  return makeConsolidatedRequest("/v1/documents", args, "documentId");
 }
 
 export async function listDocumentControls(
@@ -135,7 +118,7 @@ export async function downloadDocumentFile(
   args: z.infer<typeof DownloadDocumentFileInput>,
 ): Promise<CallToolResult> {
   const url = buildUrl(
-    `/v1/documents/${String(args.documentId)}/uploads/${String(args.uploadedFileId)}/media`,
+    `/v1/document-uploads/${String(args.uploadedFileId)}/download`,
   );
   const response = await makeAuthenticatedRequest(url);
 
@@ -163,7 +146,7 @@ export async function downloadDocumentFile(
         content: [
           {
             type: "text" as const,
-            text: `File Content (${contentType}):\n\n${textContent}`,
+            text: `Document File Content (${contentType}):\n\n${textContent}`,
           },
         ],
       };
@@ -172,25 +155,26 @@ export async function downloadDocumentFile(
         content: [
           {
             type: "text" as const,
-            text: `Error reading text content: ${String(error)}`,
+            text: `Error reading text content: ${error instanceof Error ? error.message : "Unknown error"}`,
           },
         ],
+        isError: true,
       };
     }
   }
 
-  // For binary files, return metadata instead of raw binary data
+  // For binary files, return metadata about the file
   return {
     content: [
       {
         type: "text" as const,
-        text: `Binary File Information:
-MIME Type: ${contentType}
-Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}
-Document ID: ${args.documentId}
-Uploaded File ID: ${args.uploadedFileId}
+        text: `Document File Information:
+- Content Type: ${contentType}
+- Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}
+- File Type: ${contentType.startsWith("image/") ? "Image" : contentType.startsWith("video/") ? "Video" : contentType.startsWith("audio/") ? "Audio" : contentType.startsWith("application/pdf") ? "PDF Document" : "Binary File"}
+- Upload ID: ${String(args.uploadedFileId)}
 
-Note: This is a binary file (${contentType.split("/")[0]} format) that cannot be displayed as text. Use get_document_uploads to see file metadata, or access the file directly through the Vanta web interface for viewing.`,
+Note: This is a binary file. Use appropriate tools to download and process the actual file content.`,
       },
     ],
   };
@@ -199,8 +183,7 @@ Note: This is a binary file (${contentType.split("/")[0]} format) that cannot be
 // Registry export for automated tool registration
 export default {
   tools: [
-    { tool: ListDocumentsTool, handler: listDocuments },
-    { tool: GetDocumentTool, handler: getDocument },
+    { tool: DocumentsTool, handler: documents },
     { tool: ListDocumentControlsTool, handler: listDocumentControls },
     { tool: ListDocumentLinksTool, handler: listDocumentLinks },
     { tool: ListDocumentUploadsTool, handler: listDocumentUploads },

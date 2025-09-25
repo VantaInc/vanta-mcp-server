@@ -3,32 +3,36 @@ import {
   CallToolResult,
   Tool,
   z,
-  createPaginationSchema,
-  createIdSchema,
+  createConsolidatedSchema,
   createIdWithPaginationSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
+  makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
 } from "./common/imports.js";
 
 // 2. Input Schemas
+const TestsInput = createConsolidatedSchema({
+  paramName: "testId",
+  description:
+    "Test ID to retrieve, e.g. 'test-123' or specific test identifier",
+  resourceName: "test",
+});
+
 const ListTestEntitiesInput = createIdWithPaginationSchema({
   paramName: "testId",
   description:
     "Test ID to get entities for, e.g. 'test-123' or specific test identifier",
 });
 
-const ListTestsInput = createPaginationSchema();
-
-const GetTestInput = createIdSchema({
-  paramName: "testId",
-  description:
-    "Test ID to retrieve, e.g. 'test-123' or specific test identifier",
-});
-
 // 3. Tool Definitions
+export const TestsTool: Tool<typeof TestsInput> = {
+  name: "tests",
+  description:
+    "Access security tests in your Vanta account. Provide testId to get a specific test, or omit to list all tests. Returns test IDs, names, types, schedules, current status, and detailed configuration for compliance monitoring.",
+  parameters: TestsInput,
+};
+
 export const ListTestEntitiesTool: Tool<typeof ListTestEntitiesInput> = {
   name: "list_test_entities",
   description:
@@ -36,21 +40,13 @@ export const ListTestEntitiesTool: Tool<typeof ListTestEntitiesInput> = {
   parameters: ListTestEntitiesInput,
 };
 
-export const ListTestsTool: Tool<typeof ListTestsInput> = {
-  name: "list_tests",
-  description:
-    "List all security tests configured in your Vanta account. Returns test IDs, names, types, schedules, and current status for compliance monitoring. Use this to see all automated and manual tests running for your security controls.",
-  parameters: ListTestsInput,
-};
-
-export const GetTestTool: Tool<typeof GetTestInput> = {
-  name: "get_test",
-  description:
-    "Get test by ID. Retrieve detailed information about a specific security test when its ID is known. The ID of a test can be found from list_tests response. Returns complete test details including configuration, execution history, results, and associated controls.",
-  parameters: GetTestInput,
-};
-
 // 4. Implementation Functions
+export async function tests(
+  args: z.infer<typeof TestsInput>,
+): Promise<CallToolResult> {
+  return makeConsolidatedRequest("/v1/tests", args, "testId");
+}
+
 export async function listTestEntities(
   args: z.infer<typeof ListTestEntitiesInput>,
 ): Promise<CallToolResult> {
@@ -60,23 +56,10 @@ export async function listTestEntities(
   return handleApiResponse(response);
 }
 
-export async function listTests(
-  args: z.infer<typeof ListTestsInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/tests", args);
-}
-
-export async function getTest(
-  args: z.infer<typeof GetTestInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/tests", args.testId);
-}
-
 // Registry export for automated tool registration
 export default {
   tools: [
-    { tool: ListTestsTool, handler: listTests },
+    { tool: TestsTool, handler: tests },
     { tool: ListTestEntitiesTool, handler: listTestEntities },
-    { tool: GetTestTool, handler: getTest },
   ],
 };
