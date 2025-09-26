@@ -4,8 +4,8 @@ import {
   Tool,
   z,
   createConsolidatedSchema,
-  createIdWithPaginationSchema,
   makeConsolidatedRequest,
+  makePaginatedGetRequest,
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
@@ -19,27 +19,25 @@ const IntegrationsInput = createConsolidatedSchema({
   resourceName: "integration",
 });
 
-const ListIntegrationResourceKindsInput = createIdWithPaginationSchema({
-  paramName: "integrationId",
-  description: INTEGRATION_ID_DESCRIPTION,
-});
-
-const GetIntegrationResourceKindDetailsInput = z.object({
+const IntegrationResourcesInput = z.object({
   integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
+  operation: z
+    .enum(["list_kinds", "get_kind_details", "list_resources", "get_resource"])
+    .describe(
+      "Integration resource operation: 'list_kinds' to get available resource types, 'get_kind_details' for schema information, 'list_resources' for all resources of a type, 'get_resource' for specific resource details",
+    ),
   resourceKind: z
     .string()
     .describe(
-      "Resource kind to get details for, e.g. 'ec2-instances' or specific resource kind identifier",
-    ),
-});
-
-const ListIntegrationResourcesInput = z.object({
-  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-  resourceKind: z
+      "Resource kind to operate on, e.g. 'ec2-instances' or specific resource kind identifier (required for get_kind_details, list_resources, get_resource)",
+    )
+    .optional(),
+  resourceId: z
     .string()
     .describe(
-      "Resource kind to list resources for, e.g. 'ec2-instances' or specific resource kind identifier",
-    ),
+      "Resource ID to retrieve, e.g. 'resource-123' or specific resource identifier (required for get_resource)",
+    )
+    .optional(),
   pageSize: z
     .number()
     .min(1)
@@ -52,20 +50,6 @@ const ListIntegrationResourcesInput = z.object({
     .optional(),
 });
 
-const GetIntegrationResourceInput = z.object({
-  integrationId: z.string().describe(INTEGRATION_ID_DESCRIPTION),
-  resourceKind: z
-    .string()
-    .describe(
-      "Resource kind the resource belongs to, e.g. 'ec2-instances' or specific resource kind identifier",
-    ),
-  resourceId: z
-    .string()
-    .describe(
-      "Resource ID to retrieve, e.g. 'resource-123' or specific resource identifier",
-    ),
-});
-
 // 3. Tool Definitions
 export const IntegrationsTool: Tool<typeof IntegrationsInput> = {
   name: "integrations",
@@ -74,41 +58,13 @@ export const IntegrationsTool: Tool<typeof IntegrationsInput> = {
   parameters: IntegrationsInput,
 };
 
-export const ListIntegrationResourceKindsTool: Tool<
-  typeof ListIntegrationResourceKindsInput
-> = {
-  name: "list_integration_resource_kinds",
-  description:
-    "List integration's resource kinds. Get all resource types that are available through a specific integration. Use this to see what kinds of resources (EC2 instances, S3 buckets, etc.) can be monitored through an integration.",
-  parameters: ListIntegrationResourceKindsInput,
-};
-
-export const GetIntegrationResourceKindDetailsTool: Tool<
-  typeof GetIntegrationResourceKindDetailsInput
-> = {
-  name: "get_integration_resource_kind_details",
-  description:
-    "Get integration resource kind details. Get detailed information about a specific resource kind within an integration. Use this to understand the schema and available fields for a particular resource type.",
-  parameters: GetIntegrationResourceKindDetailsInput,
-};
-
-export const ListIntegrationResourcesTool: Tool<
-  typeof ListIntegrationResourcesInput
-> = {
-  name: "list_integration_resources",
-  description:
-    "List integration resources. Get all resources of a specific type within an integration. Use this to see all instances of a particular resource kind (like all EC2 instances) being monitored through an integration.",
-  parameters: ListIntegrationResourcesInput,
-};
-
-export const GetIntegrationResourceTool: Tool<
-  typeof GetIntegrationResourceInput
-> = {
-  name: "get_integration_resource",
-  description:
-    "Get integration resource by ID. Get detailed information about a specific resource within an integration. Use this to see the current state and attributes of a particular monitored resource.",
-  parameters: GetIntegrationResourceInput,
-};
+export const IntegrationResourcesTool: Tool<typeof IntegrationResourcesInput> =
+  {
+    name: "integration_resources",
+    description:
+      "Access integration resources including resource kinds, resource kind details, and specific resources. Specify operation to perform: 'list_kinds' for available resource types, 'get_kind_details' for schema information, 'list_resources' for all resources of a type, or 'get_resource' for specific resource details.",
+    parameters: IntegrationResourcesInput,
+  };
 
 // 4. Implementation Functions
 export async function integrations(
@@ -117,63 +73,94 @@ export async function integrations(
   return makeConsolidatedRequest("/v1/integrations", args, "integrationId");
 }
 
-export async function listIntegrationResourceKinds(
-  args: z.infer<typeof ListIntegrationResourceKindsInput>,
+export async function integrationResources(
+  args: z.infer<typeof IntegrationResourcesInput>,
 ): Promise<CallToolResult> {
-  const { integrationId, ...params } = args;
-  const url = buildUrl(
-    `/v1/integrations/${String(integrationId)}/resource-kinds`,
-    params,
-  );
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+  const { integrationId, operation, resourceKind, resourceId, ...params } =
+    args;
 
-export async function getIntegrationResourceKindDetails(
-  args: z.infer<typeof GetIntegrationResourceKindDetailsInput>,
-): Promise<CallToolResult> {
-  const url = buildUrl(
-    `/v1/integrations/${String(args.integrationId)}/resource-kinds/${String(args.resourceKind)}`,
-  );
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+  switch (operation) {
+    case "list_kinds": {
+      return makePaginatedGetRequest(
+        `/v1/integrations/${String(integrationId)}/resource-kinds`,
+        params,
+      );
+    }
 
-export async function listIntegrationResources(
-  args: z.infer<typeof ListIntegrationResourcesInput>,
-): Promise<CallToolResult> {
-  const { integrationId, resourceKind, ...params } = args;
-  const url = buildUrl(
-    `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}/resources`,
-    params,
-  );
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+    case "get_kind_details": {
+      if (!resourceKind) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: resourceKind is required for get_kind_details operation",
+            },
+          ],
+          isError: true,
+        };
+      }
+      const kindUrl = buildUrl(
+        `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}`,
+      );
+      const kindResponse = await makeAuthenticatedRequest(kindUrl);
+      return handleApiResponse(kindResponse);
+    }
 
-export async function getIntegrationResource(
-  args: z.infer<typeof GetIntegrationResourceInput>,
-): Promise<CallToolResult> {
-  const url = buildUrl(
-    `/v1/integrations/${String(args.integrationId)}/resource-kinds/${String(args.resourceKind)}/resources/${String(args.resourceId)}`,
-  );
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
+    case "list_resources": {
+      if (!resourceKind) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: resourceKind is required for list_resources operation",
+            },
+          ],
+          isError: true,
+        };
+      }
+      return makePaginatedGetRequest(
+        `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}/resources`,
+        params,
+      );
+    }
+
+    case "get_resource": {
+      if (!resourceKind || !resourceId) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: both resourceKind and resourceId are required for get_resource operation",
+            },
+          ],
+          isError: true,
+        };
+      }
+      const resourceUrl = buildUrl(
+        `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}/resources/${String(resourceId)}`,
+      );
+      const resourceResponse = await makeAuthenticatedRequest(resourceUrl);
+      return handleApiResponse(resourceResponse);
+    }
+
+    default: {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error: Invalid operation '${operation as string}'. Must be one of: list_kinds, get_kind_details, list_resources, get_resource`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
 }
 
 // Registry export for automated tool registration
 export default {
   tools: [
     { tool: IntegrationsTool, handler: integrations },
-    {
-      tool: ListIntegrationResourceKindsTool,
-      handler: listIntegrationResourceKinds,
-    },
-    {
-      tool: GetIntegrationResourceKindDetailsTool,
-      handler: getIntegrationResourceKindDetails,
-    },
-    { tool: ListIntegrationResourcesTool, handler: listIntegrationResources },
-    { tool: GetIntegrationResourceTool, handler: getIntegrationResource },
+    { tool: IntegrationResourcesTool, handler: integrationResources },
   ],
 };

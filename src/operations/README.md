@@ -1,730 +1,311 @@
-# Operations Architecture Guide
+# Operations Architecture Reference
 
-This document explains the architecture, patterns, and conventions used in the Vanta MCP Server operations layer.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [File Structure](#file-structure)
-- [Naming Conventions](#naming-conventions)
-- [DRY Utilities](#dry-utilities)
-- [Schema Factory Functions](#schema-factory-functions)
-- [Request Handler Utilities](#request-handler-utilities)
-- [Automated Tool Registry System](#automated-tool-registry-system)
-- [Creating New Operations](#creating-new-operations)
-- [Best Practices](#best-practices)
-- [Examples](#examples)
+This document explains the structure, conventions, and utilities used in the Vanta MCP Server operations layer. It is intended for developers extending the `src/operations/` directory.
 
 ## Overview
 
-The operations layer provides a clean, consistent interface to the Vanta API. Each operation file corresponds to a specific resource type in the Vanta API (e.g., `controls.ts`, `vendors.ts`, `people.ts`).
+- **Purpose**: Each operations file wraps one or more Vanta API GET endpoints as MCP tools.
+- **Scope**: Operation modules and registered tools.
+- **Patterns**: Consolidated list/get tools, resource-specific routing tools, and specialized tools for unique behaviors (e.g., downloads).
+- **Automation**: Tools are auto-registered through the registry system; common logic lives in `src/operations/common/`.
 
-### Key Architectural Principles
+## Directory Layout
 
-1. **DRY (Don't Repeat Yourself)**: Common patterns are abstracted into reusable utilities
-2. **Consolidated Tool Pattern**: Single tools intelligently handle both list and get operations
-3. **Type Safety**: Full TypeScript support with proper type definitions
-4. **Consistent Error Handling**: Standardized error responses across all operations
-5. **Schema Factories**: Reusable Zod schema generators for common patterns
-6. **Automated Registry**: Zero-maintenance tool registration system
+```
+src/operations/
+├── README.md                # Operations reference (this file)
+├── README.proposed.md       # Proposal used for the latest refresh
+├── index.ts                 # Barrel export of all operations modules
+├── common/
+│   ├── descriptions.ts      # Reusable parameter descriptions (e.g., DOCUMENT_ID_DESCRIPTION)
+│   ├── imports.ts           # Barrel import for CallToolResult, Tool, z, utilities, constants
+│   └── utils.ts             # Shared schema factories, request helpers, response handlers
+├── documents.ts             # Document tools (consolidated + download)
+├── frameworks.ts            # Framework tools (consolidated + nested resources)
+├── controls.ts
+├── discovered-vendors.ts
+├── ...
+```
 
-### Consolidated Tool Architecture
+## Core Concepts
 
-The operations layer implements a **consolidated tool pattern** where a single tool can intelligently handle both listing multiple resources and retrieving a single resource by ID. This approach provides significant benefits:
+### Consolidated Tool Pattern
 
-#### Benefits of Consolidation
+Many resources expose both “list” and “get by ID” behaviors within a single tool. The helper `createConsolidatedSchema` creates a schema with an optional ID plus pagination fields, and `makeConsolidatedRequest` routes the request based on the presence of that ID.
 
-- **Improved LLM Experience**: Reduces cognitive load by providing fewer, more intuitive tools
-- **Clearer Intent Mapping**: Tools match natural language patterns ("I want controls" vs "I want to list controls")
-- **Reduced API Surface**: Fewer tools to learn, document, and maintain
-- **Intelligent Routing**: Single tool automatically routes to appropriate endpoints based on parameters
-- **Preserved Functionality**: All original capabilities maintained with enhanced usability
-
-#### How It Works
+Example (`frameworks.ts`):
 
 ```typescript
-// Single tool handles multiple scenarios
-await controls({}); // Lists all controls
-await controls({ controlId: "control-123" }); // Gets specific control
-await controls({ frameworkMatchesAny: ["soc2"] }); // Filtered listing
+const FrameworksInput = createConsolidatedSchema({
+  paramName: "frameworkId",
+  description: FRAMEWORK_ID_DESCRIPTION,
+  resourceName: "framework",
+});
 
-// Trust Center tools include required slugId
-await trust_center_faqs({ slugId: "company" }); // Lists FAQs
-await trust_center_faqs({ slugId: "company", faqId: "faq-123" }); // Gets specific FAQ
+export async function frameworks(
+  args: z.infer<typeof FrameworksInput>,
+): Promise<CallToolResult> {
+  return makeConsolidatedRequest("/v1/frameworks", args, "frameworkId");
+}
 ```
 
-The consolidation pattern uses optional ID parameters - when an ID is provided, the tool retrieves that specific resource; when omitted, it lists all resources with optional filtering and pagination.
+- **No ID provided** → lists frameworks with pagination.
+- **ID provided** → fetches a specific framework.
 
-## File Structure
+### Resource-Specific Routing Tools
 
+Some resources expose additional nested endpoints. These tools accept a required ID plus a discriminator to route to different endpoints.
+
+Example (`documents.ts`):
+
+```typescript
+const DocumentResourcesInput = z.object({
+  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
+  resourceType: z
+    .enum(["controls", "links", "uploads"])
+    .describe(
+      "Type of document resource: 'controls' for associated controls, 'links' for external references, 'uploads' for attached files",
+    ),
+  ...createPaginationSchema().shape,
+});
+
+export async function documentResources(
+  args: z.infer<typeof DocumentResourcesInput>,
+): Promise<CallToolResult> {
+  const { documentId, resourceType, ...params } = args;
+  const endpoints = {
+    controls: `/v1/documents/${String(documentId)}/controls`,
+    links: `/v1/documents/${String(documentId)}/links`,
+    uploads: `/v1/documents/${String(documentId)}/uploads`,
+  };
+  const url = buildUrl(endpoints[resourceType], params);
+  const response = await makeAuthenticatedRequest(url);
+  return handleApiResponse(response);
+}
 ```
-operations/
-├── README.md                    # This file
-├── index.ts                    # Barrel export for all operations
-├── common/                     # Shared utilities and common files
-│   ├── descriptions.ts         # Centralized parameter descriptions
-│   ├── imports.ts             # Centralized common imports for operations
-│   └── utils.ts               # DRY utilities and common functions
-├── controls.ts                 # Control-related operations
-├── vendors.ts                  # Vendor-related operations
-├── people.ts                   # People-related operations
-└── ...                         # Other resource operations
+
+### Specialized Tools
+
+When behavior diverges from JSON-based responses (e.g., file downloads), tools implement custom response logic.
+
+Example (`documents.ts`):
+
+```typescript
+const DownloadDocumentFileInput = z.object({
+  uploadedFileId: z
+    .string()
+    .describe(
+      "Uploaded file ID to download, e.g. 'upload-123' or specific uploaded file identifier",
+    ),
+});
+
+export async function downloadDocumentFile(
+  args: z.infer<typeof DownloadDocumentFileInput>,
+): Promise<CallToolResult> {
+  const url = buildUrl(
+    `/v1/document-uploads/${String(args.uploadedFileId)}/download`,
+  );
+  const response = await makeAuthenticatedRequest(url);
+
+  if (!response.ok) {
+    return handleApiResponse(response);
+  }
+
+  const contentType =
+    response.headers.get("content-type") ?? "application/octet-stream";
+  const contentLength = response.headers.get("content-length");
+
+  if (
+    contentType.startsWith("text/") ||
+    contentType.includes("application/json") ||
+    contentType.includes("application/xml") ||
+    contentType.includes("application/javascript") ||
+    contentType.includes("application/csv") ||
+    contentType.includes("text/csv")
+  ) {
+    const textContent = await response.text();
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Document File Content (${contentType}):\n\n${textContent}`,
+        },
+      ],
+    };
+  }
+
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: `Document File Information:\n- Content Type: ${contentType}\n- Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}\n- File Type: ${contentType.startsWith("image/") ? "Image" : contentType.startsWith("video/") ? "Video" : contentType.startsWith("audio/") ? "Audio" : contentType.startsWith("application/pdf") ? "PDF Document" : "Binary File"}\n- Upload ID: ${String(args.uploadedFileId)}\n\nNote: This is a binary file. Use appropriate tools to download and process the actual file content.`,
+      },
+    ],
+  };
+}
 ```
 
-### Standard Operation File Structure
+## Shared Infrastructure (`common/`)
 
-Each operation file follows this pattern:
+### `descriptions.ts`
+
+- Contains reusable strings for parameter descriptions (e.g., `DOCUMENT_ID_DESCRIPTION`, `FRAMEWORK_ID_DESCRIPTION`).
+- Promotes consistency and reduces duplication of descriptive text across operation files.
+
+### `imports.ts`
+
+- Re-exports `CallToolResult`, `Tool`, `z`, schema factories, request helpers, and description constants.
+- Imported by every operations file so that a single statement brings in all required utilities:
+
+```typescript
+import {
+  CallToolResult,
+  Tool,
+  z,
+  createConsolidatedSchema,
+  createPaginationSchema,
+  makeConsolidatedRequest,
+  buildUrl,
+  makeAuthenticatedRequest,
+  handleApiResponse,
+  DOCUMENT_ID_DESCRIPTION,
+} from "./common/imports.js";
+```
+
+### `utils.ts`
+
+Key exports include:
+
+- **Schema factories**: `createConsolidatedSchema`, `createPaginationSchema`, `createIdSchema`, `createIdWithPaginationSchema`, `createFilterSchema`.
+- **Request helpers**: `makeConsolidatedRequest`, `makePaginatedGetRequest`, `makeGetByIdRequest`, `makeSimpleGetRequest`.
+- **URL utilities**: `buildUrl` for query string construction.
+- **Response utilities**: `handleApiResponse`, `createErrorResponse`, `createSuccessResponse`.
+
+All utilities enforce consistent error handling and response formatting across tools.
+
+## Anatomy of an Operations File
+
+Each operations file follows a common structure:
+
+1. **Imports** from `./common/imports.js` for all dependencies.
+2. **Input schemas** using schema factories or explicit Zod objects.
+3. **Tool definitions** exporting REST-style tool metadata.
+4. **Implementation functions** calling Vanta endpoints using utilities.
+5. **Registry export** listing every tool/handler pair for automated registration.
+
+Example skeleton:
 
 ```typescript
 // 1. Imports
-import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { Tool } from "../types.js";
-import { z } from "zod";
-import { list of DRY utilities } from "./utils.js";
-// This is now available through common-imports.js
+import {
+  CallToolResult,
+  Tool,
+  z,
+  createConsolidatedSchema,
+  makeConsolidatedRequest,
+  buildUrl,
+  makeAuthenticatedRequest,
+  handleApiResponse,
+} from "./common/imports.js";
 
-// 2. Input Schemas (using schema factories)
-const ListResourcesInput = createPaginationSchema();
-const GetResourceInput = createIdSchema("resourceId", RESOURCE_ID_DESCRIPTION);
+// 2. Input Schemas
+const ResourceInput = createConsolidatedSchema({
+  paramName: "resourceId",
+  description: "Resource ID...",
+  resourceName: "resource",
+});
+
+const ResourceDetailsInput = z.object({
+  resourceId: z.string().describe("Resource ID..."),
+  detailType: z.enum(["summary", "history"]),
+  ...createPaginationSchema().shape,
+});
 
 // 3. Tool Definitions
-export const ListResourcesTool: Tool<typeof ListResourcesInput> = {
-  name: "list_resources",
-  description: "...",
-  parameters: ListResourcesInput,
+export const ResourcesTool: Tool<typeof ResourceInput> = {
+  name: "resources",
+  description: "Access resources...",
+  parameters: ResourceInput,
 };
 
-// 4. Implementation Functions (using request handlers)
-export async function listResources(
-  args: z.infer<typeof ListResourcesInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/resources", args);
-}
-
-// 5. Registry Export (REQUIRED for auto-registration)
-export default {
-  tools: [
-    { tool: ListResourcesTool, handler: listResources },
-    { tool: GetResourceTool, handler: getResource },
-  ],
+export const ResourceDetailsTool: Tool<typeof ResourceDetailsInput> = {
+  name: "resource_details",
+  description: "Access resource details...",
+  parameters: ResourceDetailsInput,
 };
-```
 
-## Naming Conventions
-
-### REST-Style Tool Names
-
-- **`list_*`**: Returns multiple items (e.g., `list_controls`, `list_vendors`)
-- **`get_*`**: Returns a single item by ID (e.g., `get_control`, `get_vendor`)
-- **Special actions**: Keep descriptive names (e.g., `download_document_file`)
-
-### Consistent Naming Pattern
-
-```typescript
-// ✅ Correct
-const ListControlsInput = createPaginationSchema();
-export const ListControlsTool: Tool<typeof ListControlsInput> = { name: "list_controls", ... };
-export async function listControls(args: z.infer<typeof ListControlsInput>): Promise<CallToolResult> { ... }
-
-// ✅ Correct
-const GetControlInput = createIdSchema("controlId", CONTROL_ID_DESCRIPTION);
-export const GetControlTool: Tool<typeof GetControlInput> = { name: "get_control", ... };
-export async function getControl(args: z.infer<typeof GetControlInput>): Promise<CallToolResult> { ... }
-```
-
-### Function and Constant Naming
-
-- **Input schemas**: `List*Input`, `Get*Input`
-- **Tool exports**: `List*Tool`, `Get*Tool`
-- **Implementation functions**: `list*()`, `get*()`
-
-## DRY Utilities
-
-### Barrel Export Pattern
-
-**Location**: `src/operations/index.ts`
-
-We use a barrel export pattern to provide a single entry point for importing all tools and utilities:
-
-```typescript
-// Single import for all operations tools
-import {
-  ListControlsTool,
-  GetControlTool,
-  ListRisksTool,
-  // ... all other tools
-} from "./operations/index.js";
-
-// Instead of multiple individual imports:
-// import { ListControlsTool } from "./operations/controls.js";
-// import { ListRisksTool } from "./operations/risks.js";
-// ... dozens more import statements
-```
-
-**Benefits:**
-
-- ✅ Single source of truth for operations exports
-- ✅ Better organization with commented sections
-- ✅ Easier refactoring and maintenance
-- ✅ Auto-completion works seamlessly
-
-### Common Imports Pattern
-
-**Location**: `src/operations/common/imports.ts`
-
-For operations files themselves, we use a common imports barrel to reduce repetitive import statements:
-
-```typescript
-// Before: Multiple separate imports in each operations file
-import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { Tool } from "../types.js";
-import { z } from "zod";
-import {
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
-} from "./utils.js";
-
-// After: Single consolidated import
-import {
-  CallToolResult,
-  Tool,
-  z,
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
-} from "./common/imports.js";
-```
-
-**Benefits:**
-
-- ✅ Reduces import clutter in operations files
-- ✅ Ensures consistency across all operations
-- ✅ Single source of truth for common dependencies
-- ✅ Easier to add new common utilities
-- ✅ Better maintainability when dependencies change
-
-### Utility Functions
-
-The `utils.ts` file provides reusable utilities to eliminate code duplication:
-
-### Response Processing
-
-```typescript
-// Standard error response
-export function createErrorResponse(statusText: string): CallToolResult;
-
-// Standard success response with JSON
-export async function createSuccessResponse(
-  response: Response,
-): Promise<CallToolResult>;
-
-// Complete response handling (error or success)
-export async function handleApiResponse(
-  response: Response,
-): Promise<CallToolResult>;
-```
-
-### URL Construction
-
-```typescript
-// Build URLs with query parameters
-export function buildUrl(
-  basePath: string,
-  params: Record<string, string | number | boolean | string[] | undefined>,
-): string;
-
-// Build resource-by-ID URLs
-export function buildResourceUrl(resource: string, id: string): string;
-```
-
-### Authentication
-
-```typescript
-// Make authenticated requests to Vanta API
-export async function makeAuthenticatedRequest(
-  url: string,
-  options?: RequestInit,
-): Promise<Response>;
-```
-
-## Schema Factory Functions
-
-Common parameter patterns are abstracted into reusable schema generators:
-
-### Basic Schemas
-
-```typescript
-// Pagination parameters (pageSize, pageCursor)
-const schema = createPaginationSchema();
-
-// Single ID parameter
-const schema = createIdSchema("controlId", CONTROL_ID_DESCRIPTION);
-
-// ID + pagination parameters
-const schema = createIdWithPaginationSchema("vendorId", VENDOR_ID_DESCRIPTION);
-
-// Base schema with custom fields
-const schema = createFilterSchema({
-  categoryMatchesAny: z.array(z.string()).optional(),
-});
-```
-
-### Extended Schemas
-
-```typescript
-// Extend pagination with custom fields
-const ListControlsInput = createPaginationSchema().extend({
-  frameworkMatchesAny: z
-    .array(z.string())
-    .describe("Framework IDs to filter by")
-    .optional(),
-});
-```
-
-## Request Handler Utilities
-
-Common request patterns are abstracted into reusable functions:
-
-### Simple GET Request
-
-```typescript
-export async function listResources(
-  args: z.infer<typeof ListResourcesInput>,
+// 4. Implementation Functions
+export async function resources(
+  args: z.infer<typeof ResourceInput>,
 ): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/resources", args);
+  return makeConsolidatedRequest("/v1/resources", args, "resourceId");
 }
-```
 
-### GET by ID
-
-```typescript
-export async function getResource(
-  args: z.infer<typeof GetResourceInput>,
+export async function resourceDetails(
+  args: z.infer<typeof ResourceDetailsInput>,
 ): Promise<CallToolResult> {
-  return makeGetByIdRequest("resources", args.resourceId);
-}
-```
-
-### Custom Endpoints
-
-```typescript
-export async function listResourceDetails(
-  args: z.infer<typeof ListResourceDetailsInput>,
-): Promise<CallToolResult> {
-  const { resourceId, ...params } = args;
-  const url = buildUrl(`/v1/resources/${String(resourceId)}/details`, params);
+  const { resourceId, detailType, ...params } = args;
+  const url = buildUrl(
+    `/v1/resources/${String(resourceId)}/${detailType}`,
+    params,
+  );
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
-```
 
-## Creating New Operations
-
-### Step 1: Create the Operation File
-
-```typescript
-// src/operations/new-resource.ts
-import {
-  CallToolResult,
-  Tool,
-  z,
-  createPaginationSchema,
-  createIdSchema,
-  makePaginatedGetRequest,
-  makeGetByIdRequest,
-} from "./common/imports.js";
-
-// All utilities, descriptions, and core imports are now available
-// through the common/imports.js barrel export (located in common/ subdirectory)
-
-// Define schemas
-const ListNewResourcesInput = createPaginationSchema();
-const GetNewResourceInput = createIdSchema(
-  "newResourceId",
-  "New resource ID to retrieve",
-);
-
-// Define tools
-export const ListNewResourcesTool: Tool<typeof ListNewResourcesInput> = {
-  name: "list_new_resources",
-  description: "List all new resources in your Vanta account.",
-  parameters: ListNewResourcesInput,
-};
-
-export const GetNewResourceTool: Tool<typeof GetNewResourceInput> = {
-  name: "get_new_resource",
-  description: "Get new resource by ID.",
-  parameters: GetNewResourceInput,
-};
-
-// Implement functions
-export async function listNewResources(
-  args: z.infer<typeof ListNewResourcesInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/new-resources", args);
-}
-
-export async function getNewResource(
-  args: z.infer<typeof GetNewResourceInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("/v1/new-resources", args.newResourceId);
-}
-
-// Registry export for automated tool registration
+// 5. Registry Export
 export default {
   tools: [
-    { tool: ListNewResourcesTool, handler: listNewResources },
-    { tool: GetNewResourceTool, handler: getNewResource },
+    { tool: ResourcesTool, handler: resources },
+    { tool: ResourceDetailsTool, handler: resourceDetails },
   ],
 };
 ```
 
-### Step 2: Add to Barrel Export
+## Naming and Tool Guidelines
 
-Update `src/operations/index.ts` to include your new operations file:
+- **Tool names**: Use plural nouns for consolidated tools (e.g., `frameworks`, `documents`).
+- **Schema constants**: Use PascalCase with `Input` suffix (e.g., `DocumentsInput`).
+- **Implementation functions**: Use camelCase matching tool names (e.g., `frameworks`, `documentResources`).
+- **Registry export**: Always include every tool/handler pair in the default export.
+- **Descriptions**: Reference centralized descriptions from `common/descriptions.ts` whenever possible.
 
-```typescript
-// Add your new operations file to the barrel export
-export * from "./tests.js";
-export * from "./frameworks.js";
-export * from "./controls.js";
-// ... existing exports ...
-export * from "./new-resource.js"; // ← Add this line
+## Automated Registration
 
-// Common utilities and shared resources
-export * from "./common/utils.js";
-export * from "./common/descriptions.js";
-export * from "./common/imports.js";
-```
+- Each operations file exports a default object `{ tools: [...] }`.
+- `src/registry.ts` automatically imports every `src/operations/*.ts` module and registers the listed tools.
+- Adding a new operation only requires exporting the tool and handler, then listing them in the default export.
 
-This ensures your tools are available through the centralized import pattern.
+## Adding or Updating Operations
 
-### Step 3: Verify Registry Export
+1. **Create or edit input schemas** using factory helpers or explicit `z.object` definitions.
+2. **Define or update tool metadata** with REST-aligned naming.
+3. **Implement handlers** using `makeConsolidatedRequest`, `makePaginatedGetRequest`, or custom logic.
+4. **Extend the default export** with the new tool/handler pair.
+5. **Update `src/operations/index.ts`** to re-export the module (if a new file is added).
+6. **Document new tools** in `README.md` (root) and update evaluation artifacts (below).
 
-Ensure your operations file includes the required registry export:
+## Evaluation Suite Updates
 
-```typescript
-// At the end of your operations file
-export default {
-  tools: [
-    { tool: ListNewResourcesTool, handler: listNewResources },
-    { tool: GetNewResourceTool, handler: getNewResource },
-    // Add all tools from this file here
-  ],
-};
-```
+Whenever tools change:
 
-**That's it!** Your tools will be automatically registered when the server starts. No changes to `index.ts` are needed.
+- Update `src/eval/eval.ts` to include the new tool definition and test cases.
+- Update `src/eval/README.md` to describe new or renamed test scenarios.
 
-### Step 4: Add to eval.ts
+## Testing and Validation
 
-```typescript
-// Import tools from barrel export
-import {
-  // ... existing tools
-  ListNewResourcesTool,
-  GetNewResourceTool,
-} from "../operations/index.js";
+- **TypeScript Build**: `npm run build`
+- **Linting**: `npm run lint -- src/operations/*.ts`
+- **Manual Testing**: Invoke tools through the MCP interface if available.
 
-// Add to tools array
-const tools = [
-  // ... existing tools
-  {
-    type: "function" as const,
-    function: {
-      name: ListNewResourcesTool.name,
-      description: ListNewResourcesTool.description,
-      parameters: zodToJsonSchema(ListNewResourcesTool.parameters),
-    },
-  },
-  // Add test cases...
-];
-```
+## Quick Reference
 
-### Step 5: Update README.md
-
-Add the new operations to the main project README.md.
-
-## Best Practices
-
-### 1. Use DRY Utilities
-
-```typescript
-// ✅ Good - Uses DRY utilities
-export async function listControls(
-  args: z.infer<typeof ListControlsInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/controls", args);
-}
-
-// ❌ Bad - Manual implementation
-export async function listControls(
-  args: z.infer<typeof ListControlsInput>,
-): Promise<CallToolResult> {
-  const url = new URL("/v1/controls", baseApiUrl());
-  if (args.pageSize)
-    url.searchParams.append("pageSize", args.pageSize.toString());
-  // ... 20+ more lines of boilerplate
-}
-```
-
-### 2. Use Schema Factories
-
-```typescript
-// ✅ Good - Uses schema factory
-const GetControlInput = createIdSchema("controlId", CONTROL_ID_DESCRIPTION);
-
-// ❌ Bad - Manual schema
-const GetControlInput = z.object({
-  controlId: z.string().describe("Control ID to retrieve, e.g. 'control-123'"),
-});
-```
-
-### 3. Centralize Descriptions
-
-```typescript
-// ✅ Good - Uses centralized description
-import { CONTROL_ID_DESCRIPTION } from "./common/imports.js";
-const schema = createIdSchema("controlId", CONTROL_ID_DESCRIPTION);
-
-// ❌ Bad - Hardcoded description
-const schema = createIdSchema("controlId", "Control ID to retrieve");
-```
-
-### 4. Consistent Error Handling
-
-```typescript
-// ✅ Good - Uses standard response handling
-const response = await makeAuthenticatedRequest(url);
-return handleApiResponse(response);
-
-// ❌ Bad - Manual error handling
-if (!response.ok) {
-  return { content: [{ type: "text", text: `Error: ${response.statusText}` }] };
-}
-return {
-  content: [{ type: "text", text: JSON.stringify(await response.json()) }],
-};
-```
-
-### 5. Type Safety
-
-```typescript
-// ✅ Good - Explicit return type
-export async function listControls(
-  args: z.infer<typeof ListControlsInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/controls", args);
-}
-
-// ❌ Bad - Missing return type
-export async function listControls(args: z.infer<typeof ListControlsInput>) {
-  return makePaginatedGetRequest("/v1/controls", args);
-}
-```
-
-## Examples
-
-### Basic List Operation
-
-```typescript
-const ListVendorsInput = createPaginationSchema();
-
-export const ListVendorsTool: Tool<typeof ListVendorsInput> = {
-  name: "list_vendors",
-  description: "List all vendors in your Vanta account.",
-  parameters: ListVendorsInput,
-};
-
-export async function listVendors(
-  args: z.infer<typeof ListVendorsInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/vendors", args);
-}
-```
-
-### Get by ID Operation
-
-```typescript
-const GetVendorInput = createIdSchema("vendorId", VENDOR_ID_DESCRIPTION);
-
-export const GetVendorTool: Tool<typeof GetVendorInput> = {
-  name: "get_vendor",
-  description: "Get vendor by ID.",
-  parameters: GetVendorInput,
-};
-
-export async function getVendor(
-  args: z.infer<typeof GetVendorInput>,
-): Promise<CallToolResult> {
-  return makeGetByIdRequest("vendors", args.vendorId);
-}
-```
-
-### Custom Filtered List
-
-```typescript
-const ListControlsInput = createPaginationSchema().extend({
-  frameworkMatchesAny: z
-    .array(z.string())
-    .describe("Framework IDs to filter by")
-    .optional(),
-});
-
-export async function listControls(
-  args: z.infer<typeof ListControlsInput>,
-): Promise<CallToolResult> {
-  return makePaginatedGetRequest("/v1/controls", args);
-}
-```
-
-### Nested Resource Operations
-
-```typescript
-const ListVendorDocumentsInput = createIdWithPaginationSchema(
-  "vendorId",
-  VENDOR_ID_DESCRIPTION,
-);
-
-export async function listVendorDocuments(
-  args: z.infer<typeof ListVendorDocumentsInput>,
-): Promise<CallToolResult> {
-  const { vendorId, ...params } = args;
-  const url = buildUrl(`/v1/vendors/${String(vendorId)}/documents`, params);
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
-```
-
-## Code Quality
-
-### ESLint Compliance
-
-- All operation files should pass ESLint with zero errors
-- Use `npx eslint src/operations/*.ts --quiet` to check
-
-### Type Safety
-
-- All functions must have explicit return types
-- Use proper TypeScript types throughout
-- Avoid `any` types
-
-### Testing
-
-- Add evaluation test cases for all new tools in `eval.ts`
-- Update `eval/README.md` with new test descriptions
-
-## Automated Tool Registry System
-
-### Overview
-
-The Vanta MCP Server uses an automated tool registry system that eliminates the need for manual tool registration in `index.ts`.
-
-### Key Benefits
-
-- **✅ Zero Maintenance**: Adding new tools requires no changes to `index.ts`
-- **✅ Auto-Discovery**: New operations files are automatically detected and loaded
-- **✅ Type Safety**: Full TypeScript support throughout the registration process
-- **✅ Error Prevention**: No risk of forgetting to register new tools
-- **✅ Scalability**: System grows effortlessly as you add more operations
-
-### How It Works
-
-1. **Registry Export**: Each operations file exports a `default` object with all its tools
-2. **Auto-Discovery**: `src/registry.ts` imports all operations modules dynamically
-3. **Automatic Registration**: `registerAllOperations()` registers each tool with the MCP server
-4. **Single Call**: `index.ts` simply calls `await registerAllOperations(server)`
-
-### Required Registry Export
-
-Every operations file MUST include this export at the end:
-
-```typescript
-// Registry export for automated tool registration
-export default {
-  tools: [
-    { tool: ToolDefinition, handler: HandlerFunction },
-    { tool: AnotherTool, handler: anotherHandler },
-    // ... all tools in this file
-  ],
-};
-```
-
-**⚠️ Without this export, your tools will NOT be registered automatically!**
-
-### Adding New Tools
-
-To add a new tool to an existing operations file:
-
-1. Create your tool definition and handler function (following our patterns)
-2. Add the tool entry to the `tools` array in the default export
-3. The tool will be automatically registered on the next server restart
-
-Example:
-
-```typescript
-export default {
-  tools: [
-    { tool: ExistingTool, handler: existingHandler },
-    { tool: NewTool, handler: newHandler }, // ← Just add here!
-  ],
-};
-```
-
-### Registry Implementation
-
-The automated registry system works through a simple pattern:
-
-**Operations File Pattern:**
-
-```typescript
-// At the end of each operations file
-export default {
-  tools: [
-    { tool: ToolDefinition, handler: HandlerFunction },
-    // ... all tools in this file
-  ],
-};
-```
-
-**Main Server Registration:**
-
-```typescript
-// index.ts
-import { registerAllOperations } from "./registry.js";
-
-await registerAllOperations(server);
-// ✅ Automatically registers all tools from all operations files
-```
+- **Consolidated tool example**: `frameworks.ts` (`frameworks` tool).
+- **Nested resource example**: `documents.ts` (`document_resources` tool).
+- **Download example**: `documents.ts` (`download_document_file` tool).
+- **Common utilities**: `src/operations/common/utils.ts`.
+- **Automated registry**: `src/registry.ts` + per-file `export default { tools: [...] }`.
 
 ---
 
-### Common Files Organization
-
-The operations directory uses a clean separation between individual operations and shared infrastructure:
-
-**Operations Files** (at root level):
-
-- Individual operation files (`controls.ts`, `vendors.ts`, `people.ts`, etc.)
-- Each implements tools for a specific Vanta API resource
-- Clean, focused implementation with consistent patterns
-
-**Common Infrastructure** (in `common/` subdirectory):
-
-- **`descriptions.ts`**: Centralized parameter descriptions for consistency
-- **`imports.ts`**: Common imports barrel to reduce import boilerplate
-- **`utils.ts`**: DRY utilities including schema factories and request handlers
-
-**Coordination Files**:
-
-- **`index.ts`**: Barrel export providing access to all operations from a single import
-- **`README.md`**: Architecture documentation (this file)
-
-This structure provides excellent visual separation between business logic (operations) and infrastructure (common utilities).
-
----
-
-This architecture provides a maintainable, consistent, and **highly scalable** foundation for extending the Vanta MCP Server with new operations while ensuring code quality and developer productivity. The automated registry system ensures that adding new functionality is effortless and error-free!
+Use this README as the canonical reference for updates to the operations layer. Developers should rely on it when adding, modifying, or auditing tools.

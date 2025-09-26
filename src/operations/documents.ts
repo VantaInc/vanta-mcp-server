@@ -4,7 +4,7 @@ import {
   Tool,
   z,
   createConsolidatedSchema,
-  createIdWithPaginationSchema,
+  createPaginationSchema,
   makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
@@ -19,19 +19,14 @@ const DocumentsInput = createConsolidatedSchema({
   resourceName: "document",
 });
 
-const ListDocumentControlsInput = createIdWithPaginationSchema({
-  paramName: "documentId",
-  description: DOCUMENT_ID_DESCRIPTION,
-});
-
-const ListDocumentLinksInput = createIdWithPaginationSchema({
-  paramName: "documentId",
-  description: DOCUMENT_ID_DESCRIPTION,
-});
-
-const ListDocumentUploadsInput = createIdWithPaginationSchema({
-  paramName: "documentId",
-  description: DOCUMENT_ID_DESCRIPTION,
+const DocumentResourcesInput = z.object({
+  documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
+  resourceType: z
+    .enum(["controls", "links", "uploads"])
+    .describe(
+      "Type of document resource: 'controls' for associated controls, 'links' for external references, 'uploads' for attached files",
+    ),
+  ...createPaginationSchema().shape,
 });
 
 const DownloadDocumentFileInput = z.object({
@@ -50,26 +45,11 @@ export const DocumentsTool: Tool<typeof DocumentsInput> = {
   parameters: DocumentsInput,
 };
 
-export const ListDocumentControlsTool: Tool<typeof ListDocumentControlsInput> =
-  {
-    name: "list_document_controls",
-    description:
-      "List document's controls. Get all security controls that are mapped to or associated with a specific document.",
-    parameters: ListDocumentControlsInput,
-  };
-
-export const ListDocumentLinksTool: Tool<typeof ListDocumentLinksInput> = {
-  name: "list_document_links",
+export const DocumentResourcesTool: Tool<typeof DocumentResourcesInput> = {
+  name: "document_resources",
   description:
-    "List document's links. Get all external links and references associated with a specific document.",
-  parameters: ListDocumentLinksInput,
-};
-
-export const ListDocumentUploadsTool: Tool<typeof ListDocumentUploadsInput> = {
-  name: "list_document_uploads",
-  description:
-    "List document's uploads. Get all files and uploads attached to a specific document for compliance documentation.",
-  parameters: ListDocumentUploadsInput,
+    "Access document-related resources including controls, links, and uploads. Specify resourceType to get the specific type of resource associated with a document. Use this to explore what controls are linked to a document, what external references exist, or what files are attached.",
+  parameters: DocumentResourcesInput,
 };
 
 export const DownloadDocumentFileTool: Tool<typeof DownloadDocumentFileInput> =
@@ -87,29 +67,31 @@ export async function documents(
   return makeConsolidatedRequest("/v1/documents", args, "documentId");
 }
 
-export async function listDocumentControls(
-  args: z.infer<typeof ListDocumentControlsInput>,
+export async function documentResources(
+  args: z.infer<typeof DocumentResourcesInput>,
 ): Promise<CallToolResult> {
-  const { documentId, ...params } = args;
-  const url = buildUrl(`/v1/documents/${String(documentId)}/controls`, params);
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+  const { documentId, resourceType, ...params } = args;
 
-export async function listDocumentLinks(
-  args: z.infer<typeof ListDocumentLinksInput>,
-): Promise<CallToolResult> {
-  const { documentId, ...params } = args;
-  const url = buildUrl(`/v1/documents/${String(documentId)}/links`, params);
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+  const endpoints = {
+    controls: `/v1/documents/${String(documentId)}/controls`,
+    links: `/v1/documents/${String(documentId)}/links`,
+    uploads: `/v1/documents/${String(documentId)}/uploads`,
+  };
 
-export async function listDocumentUploads(
-  args: z.infer<typeof ListDocumentUploadsInput>,
-): Promise<CallToolResult> {
-  const { documentId, ...params } = args;
-  const url = buildUrl(`/v1/documents/${String(documentId)}/uploads`, params);
+  const endpoint = endpoints[resourceType];
+  if (!endpoint) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Error: Invalid resourceType '${resourceType}'. Must be one of: controls, links, uploads`,
+        },
+      ],
+      isError: true,
+    };
+  }
+
+  const url = buildUrl(endpoint, params);
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
@@ -184,9 +166,7 @@ Note: This is a binary file. Use appropriate tools to download and process the a
 export default {
   tools: [
     { tool: DocumentsTool, handler: documents },
-    { tool: ListDocumentControlsTool, handler: listDocumentControls },
-    { tool: ListDocumentLinksTool, handler: listDocumentLinks },
-    { tool: ListDocumentUploadsTool, handler: listDocumentUploads },
+    { tool: DocumentResourcesTool, handler: documentResources },
     { tool: DownloadDocumentFileTool, handler: downloadDocumentFile },
   ],
 };

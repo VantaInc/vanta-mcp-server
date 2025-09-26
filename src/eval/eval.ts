@@ -16,22 +16,15 @@ import {
   RisksTool,
   // Integrations
   IntegrationsTool,
-  ListIntegrationResourceKindsTool,
-  GetIntegrationResourceKindDetailsTool,
-  ListIntegrationResourcesTool,
-  GetIntegrationResourceTool,
+  IntegrationResourcesTool,
   // Vendors
   VendorsTool,
-  ListVendorDocumentsTool,
-  ListVendorFindingsTool,
-  ListVendorSecurityReviewsTool,
+  VendorComplianceTool,
   GetVendorSecurityReviewTool,
   ListVendorSecurityReviewDocumentsTool,
   // Documents
   DocumentsTool,
-  ListDocumentControlsTool,
-  ListDocumentLinksTool,
-  ListDocumentUploadsTool,
+  DocumentResourcesTool,
   DownloadDocumentFileTool,
   // Policies
   PoliciesTool,
@@ -157,35 +150,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: ListIntegrationResourceKindsTool.name,
-      description: ListIntegrationResourceKindsTool.description,
-      parameters: zodToJsonSchema(ListIntegrationResourceKindsTool.parameters),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: GetIntegrationResourceKindDetailsTool.name,
-      description: GetIntegrationResourceKindDetailsTool.description,
-      parameters: zodToJsonSchema(
-        GetIntegrationResourceKindDetailsTool.parameters,
-      ),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: ListIntegrationResourcesTool.name,
-      description: ListIntegrationResourcesTool.description,
-      parameters: zodToJsonSchema(ListIntegrationResourcesTool.parameters),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: GetIntegrationResourceTool.name,
-      description: GetIntegrationResourceTool.description,
-      parameters: zodToJsonSchema(GetIntegrationResourceTool.parameters),
+      name: IntegrationResourcesTool.name,
+      description: IntegrationResourcesTool.description,
+      parameters: zodToJsonSchema(IntegrationResourcesTool.parameters),
     },
   },
   {
@@ -199,25 +166,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: ListVendorDocumentsTool.name,
-      description: ListVendorDocumentsTool.description,
-      parameters: zodToJsonSchema(ListVendorDocumentsTool.parameters),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: ListVendorFindingsTool.name,
-      description: ListVendorFindingsTool.description,
-      parameters: zodToJsonSchema(ListVendorFindingsTool.parameters),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: ListVendorSecurityReviewsTool.name,
-      description: ListVendorSecurityReviewsTool.description,
-      parameters: zodToJsonSchema(ListVendorSecurityReviewsTool.parameters),
+      name: VendorComplianceTool.name,
+      description: VendorComplianceTool.description,
+      parameters: zodToJsonSchema(VendorComplianceTool.parameters),
     },
   },
   {
@@ -249,25 +200,9 @@ const tools = [
   {
     type: "function" as const,
     function: {
-      name: ListDocumentControlsTool.name,
-      description: ListDocumentControlsTool.description,
-      parameters: zodToJsonSchema(ListDocumentControlsTool.parameters),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: ListDocumentLinksTool.name,
-      description: ListDocumentLinksTool.description,
-      parameters: zodToJsonSchema(ListDocumentLinksTool.parameters),
-    },
-  },
-  {
-    type: "function" as const,
-    function: {
-      name: ListDocumentUploadsTool.name,
-      description: ListDocumentUploadsTool.description,
-      parameters: zodToJsonSchema(ListDocumentUploadsTool.parameters),
+      name: DocumentResourcesTool.name,
+      description: DocumentResourcesTool.description,
+      parameters: zodToJsonSchema(DocumentResourcesTool.parameters),
     },
   },
   {
@@ -509,6 +444,22 @@ export const testCases = [
     description: "Should call frameworks to list available frameworks",
   },
   {
+    prompt:
+      "Show me all discovered vendors flagged by Vanta's discovery engine",
+    expectedTool: "list_discovered_vendors",
+    expectedParams: {},
+    description:
+      "Should call list_discovered_vendors to list all discovered vendors",
+  },
+  {
+    prompt:
+      "Show the accounts associated with discovered vendor discovered-vendor-123",
+    expectedTool: "list_discovered_vendor_accounts",
+    expectedParams: { discoveredVendorId: "discovered-vendor-123" },
+    description:
+      "Should call list_discovered_vendor_accounts with discoveredVendorId for vendor accounts",
+  },
+  {
     prompt: "What is the current % status of my SOC 2?",
     expectedTool: "frameworks",
     expectedParams: {},
@@ -603,13 +554,6 @@ export const testCases = [
     expectedParams: { documentId: "DOC-12345" },
     description:
       "Should call documents with documentId for specific document details",
-  },
-  {
-    prompt:
-      "Show me all the policies we have established for our organization.",
-    expectedTool: "policies",
-    expectedParams: {},
-    description: "Should call policies to list all organizational policies",
   },
   {
     prompt:

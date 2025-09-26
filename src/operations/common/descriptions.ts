@@ -25,3 +25,6 @@ export const INTEGRATION_ID_DESCRIPTION =
 
 export const VENDOR_ID_DESCRIPTION =
   "Vendor ID to operate on, e.g. 'vendor-123' or specific vendor identifier";
+
+export const DISCOVERED_VENDOR_ID_DESCRIPTION =
+  "Discovered vendor ID to operate on, e.g. 'discovered-vendor-123' or specific discovered vendor identifier";

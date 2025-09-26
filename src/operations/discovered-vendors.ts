@@ -9,6 +9,7 @@ import {
   buildUrl,
   makeAuthenticatedRequest,
   handleApiResponse,
+  DISCOVERED_VENDOR_ID_DESCRIPTION,
 } from "./common/imports.js";
 
 // 2. Input Schemas
@@ -16,8 +17,7 @@ const ListDiscoveredVendorsInput = createPaginationSchema();
 
 const ListDiscoveredVendorAccountsInput = createIdWithPaginationSchema({
   paramName: "discoveredVendorId",
-  description:
-    "Discovered vendor ID to get accounts for, e.g. 'discovered-vendor-123' or specific discovered vendor identifier",
+  description: DISCOVERED_VENDOR_ID_DESCRIPTION,
 });
 
 // 3. Tool Definitions
@@ -26,7 +26,7 @@ export const ListDiscoveredVendorsTool: Tool<
 > = {
   name: "list_discovered_vendors",
   description:
-    "List all discovered vendors in your Vanta account. Returns vendor IDs, names, and metadata for vendor risk management. Use this to see all vendors that have been discovered through automatic detection or manual entry.",
+    "List discovered vendors identified by Vanta's automated discovery. Returns vendor names, domains, discovery sources, and linkage status to managed vendor records.",
   parameters: ListDiscoveredVendorsInput,
 };
 
@@ -35,7 +35,7 @@ export const ListDiscoveredVendorAccountsTool: Tool<
 > = {
   name: "list_discovered_vendor_accounts",
   description:
-    "List a discovered vendor's accounts. Get all accounts associated with a specific discovered vendor for vendor risk management. Use this when you know a discovered vendor ID and want to see which accounts are linked to that vendor.",
+    "List accounts associated with a discovered vendor. Provide discoveredVendorId to retrieve account identifiers, connection details, and discovery metadata.",
   parameters: ListDiscoveredVendorAccountsInput,
 };
 

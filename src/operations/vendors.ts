@@ -4,7 +4,6 @@ import {
   Tool,
   z,
   createConsolidatedSchema,
-  createIdWithPaginationSchema,
   makeConsolidatedRequest,
   buildUrl,
   makeAuthenticatedRequest,
@@ -19,19 +18,23 @@ const VendorsInput = createConsolidatedSchema({
   resourceName: "vendor",
 });
 
-const ListVendorDocumentsInput = createIdWithPaginationSchema({
-  paramName: "vendorId",
-  description: VENDOR_ID_DESCRIPTION,
-});
-
-const ListVendorFindingsInput = createIdWithPaginationSchema({
-  paramName: "vendorId",
-  description: VENDOR_ID_DESCRIPTION,
-});
-
-const ListVendorSecurityReviewsInput = createIdWithPaginationSchema({
-  paramName: "vendorId",
-  description: VENDOR_ID_DESCRIPTION,
+const VendorComplianceInput = z.object({
+  vendorId: z.string().describe(VENDOR_ID_DESCRIPTION),
+  complianceType: z
+    .enum(["documents", "findings", "security_reviews"])
+    .describe(
+      "Type of vendor compliance data: 'documents' for compliance documentation, 'findings' for security findings, 'security_reviews' for security assessments",
+    ),
+  pageSize: z
+    .number()
+    .min(1)
+    .max(100)
+    .describe("Number of items to return per page (1-100)")
+    .optional(),
+  pageCursor: z
+    .string()
+    .describe("Cursor for pagination to get the next page of results")
+    .optional(),
 });
 
 const GetVendorSecurityReviewInput = z.object({
@@ -70,27 +73,11 @@ export const VendorsTool: Tool<typeof VendorsInput> = {
   parameters: VendorsInput,
 };
 
-export const ListVendorDocumentsTool: Tool<typeof ListVendorDocumentsInput> = {
-  name: "list_vendor_documents",
+export const VendorComplianceTool: Tool<typeof VendorComplianceInput> = {
+  name: "vendor_compliance",
   description:
-    "List vendor's documents. Get all documents associated with a specific vendor for compliance and risk assessment.",
-  parameters: ListVendorDocumentsInput,
-};
-
-export const ListVendorFindingsTool: Tool<typeof ListVendorFindingsInput> = {
-  name: "list_vendor_findings",
-  description:
-    "List vendor's findings. Get all security findings and compliance issues identified for a specific vendor.",
-  parameters: ListVendorFindingsInput,
-};
-
-export const ListVendorSecurityReviewsTool: Tool<
-  typeof ListVendorSecurityReviewsInput
-> = {
-  name: "list_vendor_security_reviews",
-  description:
-    "List vendor's security reviews. Get all security assessments and reviews conducted for a specific vendor.",
-  parameters: ListVendorSecurityReviewsInput,
+    "Access vendor compliance data including documents, findings, and security reviews. Specify complianceType to get the specific type of compliance information for a vendor. Use this to explore vendor compliance documentation, security findings, and assessment history.",
+  parameters: VendorComplianceInput,
 };
 
 export const GetVendorSecurityReviewTool: Tool<
@@ -118,32 +105,31 @@ export async function vendors(
   return makeConsolidatedRequest("/v1/vendors", args, "vendorId");
 }
 
-export async function listVendorDocuments(
-  args: z.infer<typeof ListVendorDocumentsInput>,
+export async function vendorCompliance(
+  args: z.infer<typeof VendorComplianceInput>,
 ): Promise<CallToolResult> {
-  const { vendorId, ...params } = args;
-  const url = buildUrl(`/v1/vendors/${String(vendorId)}/documents`, params);
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+  const { vendorId, complianceType, ...params } = args;
 
-export async function listVendorFindings(
-  args: z.infer<typeof ListVendorFindingsInput>,
-): Promise<CallToolResult> {
-  const { vendorId, ...params } = args;
-  const url = buildUrl(`/v1/vendors/${String(vendorId)}/findings`, params);
-  const response = await makeAuthenticatedRequest(url);
-  return handleApiResponse(response);
-}
+  const endpoints = {
+    documents: `/v1/vendors/${String(vendorId)}/documents`,
+    findings: `/v1/vendors/${String(vendorId)}/findings`,
+    security_reviews: `/v1/vendors/${String(vendorId)}/security-reviews`,
+  };
 
-export async function listVendorSecurityReviews(
-  args: z.infer<typeof ListVendorSecurityReviewsInput>,
-): Promise<CallToolResult> {
-  const { vendorId, ...params } = args;
-  const url = buildUrl(
-    `/v1/vendors/${String(vendorId)}/security-reviews`,
-    params,
-  );
+  const endpoint = endpoints[complianceType];
+  if (!endpoint) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Error: Invalid complianceType '${complianceType}'. Must be one of: documents, findings, security_reviews`,
+        },
+      ],
+      isError: true,
+    };
+  }
+
+  const url = buildUrl(endpoint, params);
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }
@@ -174,9 +160,7 @@ export async function listVendorSecurityReviewDocuments(
 export default {
   tools: [
     { tool: VendorsTool, handler: vendors },
-    { tool: ListVendorDocumentsTool, handler: listVendorDocuments },
-    { tool: ListVendorFindingsTool, handler: listVendorFindings },
-    { tool: ListVendorSecurityReviewsTool, handler: listVendorSecurityReviews },
+    { tool: VendorComplianceTool, handler: vendorCompliance },
     { tool: GetVendorSecurityReviewTool, handler: getVendorSecurityReview },
     {
       tool: ListVendorSecurityReviewDocumentsTool,
