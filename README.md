@@ -47,12 +47,10 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 ### Vanta OAuth Credentials
 
 1. Create OAuth credentials from [Vanta's developer dashboard](https://developer.vanta.com/docs/api-access-setup)
-2. Save the `client_id` and `client_secret` to an env file:
-   ```json
-   {
-     "client_id": "your_client_id_here",
-     "client_secret": "your_client_secret_here"
-   }
+2. Set the credentials as environment variables:
+   ```bash
+   export VANTA_CLIENT_ID="your_client_id_here"
+   export VANTA_CLIENT_SECRET="your_client_secret_here"
    ```
 
 > **Note:** Vanta currently allows only a single active access_token per Application. [More info here](https://developer.vanta.com/docs/api-access-setup#authentication-and-token-retrieval)
@@ -68,7 +66,8 @@ Add the server to your `claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "@vantasdk/vanta-mcp-server"],
       "env": {
-        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env"
+        "VANTA_CLIENT_ID": "your_client_id_here",
+        "VANTA_CLIENT_SECRET": "your_client_secret_here"
       }
     }
   }
@@ -88,7 +87,8 @@ Add the server to your Cursor MCP settings:
       "command": "npx",
       "args": ["-y", "@vantasdk/vanta-mcp-server"],
       "env": {
-        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env"
+        "VANTA_CLIENT_ID": "your_client_id_here",
+        "VANTA_CLIENT_SECRET": "your_client_secret_here"
       }
     }
   }
@@ -97,7 +97,8 @@ Add the server to your Cursor MCP settings:
 
 ### Environment Variables
 
-- `VANTA_ENV_FILE` (required): Absolute path to the JSON file containing your OAuth credentials
+- `VANTA_CLIENT_ID` (required): Your Vanta OAuth client ID
+- `VANTA_CLIENT_SECRET` (required): Your Vanta OAuth client secret
 - `REGION` (optional): API region - `us`, `eu`, or `aus` (defaults to `us`)
 
 ## Installation
@@ -125,6 +126,118 @@ npm run build
 npm start
 ```
 
+## Running Modes
+
+The Vanta MCP Server supports two running modes:
+
+### STDIO Mode (Default)
+
+The server runs in STDIO mode by default, communicating through standard input/output. This is the traditional MCP mode used by Claude Desktop and Cursor.
+
+```bash
+npm start
+# or explicitly
+npm run start:stdio
+```
+
+### HTTP Mode
+
+The server can also run as an HTTP server with streamable HTTP transport, useful for web applications or when you need HTTP-based communication.
+
+```bash
+npm run start:http
+```
+
+The HTTP server will start on port 3000 (or the port specified by the `PORT` environment variable) and expose the MCP endpoint at `/mcp`.
+
+#### HTTP Mode Configuration
+
+For HTTP mode, you can configure the following environment variables:
+
+- `MCP_MODE=http` - Enables HTTP mode (default is `stdio`)
+- `PORT=3000` - Sets the HTTP server port (default is 3000)
+- `VANTA_CLIENT_ID` - Your Vanta OAuth client ID (required)
+- `VANTA_CLIENT_SECRET` - Your Vanta OAuth client secret (required)
+
+#### HTTP Mode Usage
+
+The HTTP server accepts POST requests to `/mcp` with JSON-RPC 2.0 formatted messages:
+
+```bash
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/list",
+    "params": {},
+    "id": 1
+  }'
+```
+
+**Note:** The HTTP mode uses stateless transport, creating a new server instance for each request to ensure complete isolation and prevent request ID collisions.
+
+## Docker Deployment
+
+The Vanta MCP Server can be deployed using Docker for containerized environments.
+
+### Building the Docker Image
+
+```bash
+docker build -t vanta-mcp-server .
+```
+
+### Running with Docker
+
+```bash
+# Run the container with your Vanta credentials
+docker run -d \
+  --name vanta-mcp-server \
+  -p 3000:3000 \
+  -e VANTA_CLIENT_ID="your_client_id_here" \
+  -e VANTA_CLIENT_SECRET="your_client_secret_here" \
+  vanta-mcp-server
+```
+
+### Using Docker Compose
+
+1. Update the environment variables in `docker-compose.yml` with your Vanta credentials:
+   ```yaml
+   environment:
+     - VANTA_CLIENT_ID=your_client_id_here
+     - VANTA_CLIENT_SECRET=your_client_secret_here
+   ```
+
+2. Start the service:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. Check the health:
+   ```bash
+   curl http://localhost:3000/health
+   ```
+
+### Docker Environment Variables
+
+- `MCP_MODE=http` - Runs in HTTP mode (set automatically in Docker)
+- `PORT=3000` - HTTP server port (default: 3000)
+- `VANTA_CLIENT_ID` - Your Vanta OAuth client ID (required)
+- `VANTA_CLIENT_SECRET` - Your Vanta OAuth client secret (required)
+- `REGION` - Vanta API region: `us`, `eu`, or `aus` (default: `us`)
+
+### Health Check
+
+The Docker container includes a health check endpoint at `/health` that returns:
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "mode": "http",
+  "service": "vanta-mcp-server"
+}
+```
+
 ## Build from Source
 
 To build from source:
@@ -148,7 +261,8 @@ Now you can configure Claude Desktop or Cursor to use the built executable:
       "command": "node",
       "args": ["/absolute/path/to/vanta-mcp-server/build/index.js"],
       "env": {
-        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env"
+        "VANTA_CLIENT_ID": "your_client_id_here",
+        "VANTA_CLIENT_SECRET": "your_client_secret_here"
       }
     }
   }
