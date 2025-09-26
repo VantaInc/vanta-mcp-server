@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  vanta-mcp-server:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MCP_MODE=http
+      - PORT=3000
+      - NODE_ENV=production
+      # Set your Vanta API credentials
+      - VANTA_CLIENT_ID=your_client_id_here
+      - VANTA_CLIENT_SECRET=your_client_secret_here
+      # Optional: Set region (us, eu, or aus)
+      - REGION=us
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - vanta-network
+
+networks:
+  vanta-network:
+    driver: bridge

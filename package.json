@@ -13,6 +13,8 @@
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
     "start": "yarn build && node build/index.js",
+    "start:http": "yarn build && MCP_MODE=http node build/index.js",
+    "start:stdio": "yarn build && MCP_MODE=stdio node build/index.js",
     "eval": "tsc && node build/eval/eval.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -53,7 +55,9 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.6.0",
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "@types/express": "^5.0.3",
+    "express": "^5.1.0",
     "zod": ">= 3"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
