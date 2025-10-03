@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerAllOperations } from "./registry.js";
 import { initializeToken } from "./auth.js";
+import { getEnabledToolNames, hasEnabledToolFilter } from "./config.js";
 
 const server = new McpServer({
   name: "vanta-mcp",
@@ -17,6 +18,13 @@ async function main() {
 
     // Register all tools automatically
     await registerAllOperations(server);
+
+    if (hasEnabledToolFilter) {
+      const enabledTools = getEnabledToolNames();
+      console.error(
+        `⚠️ Tools enabled via VANTA_MCP_ENABLED_TOOLS: ${enabledTools.join(", ")}`,
+      );
+    }
 
     // Connect to stdio transport
     const transport = new StdioServerTransport();

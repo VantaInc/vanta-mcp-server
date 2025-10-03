@@ -273,8 +273,7 @@ export default {
 ## Automated Registration
 
 - Each operations file exports a default object `{ tools: [...] }`.
-- `src/registry.ts` automatically imports every `src/operations/*.ts` module and registers the listed tools.
-- Adding a new operation only requires exporting the tool and handler, then listing them in the default export.
+- `src/registry.ts` automatically imports every `src/operations/*.ts` module and registers the listed tools (see Step 7 below).
 
 ## Adding or Updating Operations
 
@@ -284,6 +283,7 @@ export default {
 4. **Extend the default export** with the new tool/handler pair.
 5. **Update `src/operations/index.ts`** to re-export the module (if a new file is added).
 6. **Document new tools** in `README.md` (root) and update evaluation artifacts (below).
+7. **Enable the tool in `src/config.ts`**. Add the tool's name to the `enabledToolNames` array to make it available through the MCP server. Leaving the array empty enables _all_ tools.
 
 ## Evaluation Suite Updates
 
