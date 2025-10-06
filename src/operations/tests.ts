@@ -12,12 +12,30 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const TestsInput = createConsolidatedSchema({
-  paramName: "testId",
-  description:
-    "Test ID to retrieve, e.g. 'test-123' or specific test identifier",
-  resourceName: "test",
-});
+const TestsInput = createConsolidatedSchema(
+  {
+    paramName: "testId",
+    description:
+      "Test ID to retrieve, e.g. 'test-123' or specific test identifier. If provided, returns the specific test, and no other parameters may be provided. If omitted, lists all tests with optional filtering and pagination.",
+    resourceName: "test",
+  },
+  {
+    statusFilter: z
+      .string()
+      .describe(
+        "Filter tests by test status. Possible values: OK (Test passed), DEACTIVATED (Test is deactivated), NEEDS_ATTENTION (Test failed), IN_PROGRESS (Test is in progress), INVALID (Test is invalid), NOT_APPLICABLE (Test is not applicable)",
+      )
+      .optional(),
+    frameworkFilter: z
+      .string()
+      .describe("Filter tests by framework. Provide framework ID.")
+      .optional(),
+    integrationFilter: z
+      .string()
+      .describe("Filter tests by integration. Provide integration ID.")
+      .optional(),
+  },
+);
 
 const ListTestEntitiesInput = createIdWithPaginationSchema({
   paramName: "testId",
@@ -29,7 +47,7 @@ const ListTestEntitiesInput = createIdWithPaginationSchema({
 export const TestsTool: Tool<typeof TestsInput> = {
   name: "tests",
   description:
-    "Access security tests in your Vanta account. Provide testId to get a specific test, or omit to list all tests. Returns test IDs, names, types, schedules, current status, and detailed configuration for compliance monitoring.",
+    "Access continuous monitoring tests in your Vanta account. Provide testId to get a specific test, or omit to list all tests. Returns test IDs, names, types, schedules, current status, and detailed configuration for compliance monitoring.",
   parameters: TestsInput,
 };
 

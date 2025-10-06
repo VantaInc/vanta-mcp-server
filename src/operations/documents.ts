@@ -13,11 +13,27 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const DocumentsInput = createConsolidatedSchema({
-  paramName: "documentId",
-  description: DOCUMENT_ID_DESCRIPTION,
-  resourceName: "document",
-});
+const DocumentsInput = createConsolidatedSchema(
+  {
+    paramName: "documentId",
+    description: DOCUMENT_ID_DESCRIPTION,
+    resourceName: "document",
+  },
+  {
+    frameworkMatchesAny: z
+      .array(z.string())
+      .describe(
+        "Filter documents by framework IDs. Returns documents that belong to any of the specified frameworks, e.g. ['soc2', 'iso27001', 'hipaa']",
+      )
+      .optional(),
+    statusMatchesAny: z
+      .array(z.string())
+      .describe(
+        "Filter documents by status. Possible values: Needs document, Needs update, Not relevant, OK.",
+      )
+      .optional(),
+  },
+);
 
 const DocumentResourcesInput = z.object({
   documentId: z.string().describe(DOCUMENT_ID_DESCRIPTION),
@@ -48,7 +64,7 @@ export const DocumentsTool: Tool<typeof DocumentsInput> = {
 export const DocumentResourcesTool: Tool<typeof DocumentResourcesInput> = {
   name: "document_resources",
   description:
-    "Access document-related resources including controls, links, and uploads. Specify resourceType to get the specific type of resource associated with a document. Use this to explore what controls are linked to a document, what external references exist, or what files are attached.",
+    "Access document-related resources including controls, links (i.e. hyperlinks), and uploads. Specify resourceType to get the specific type of resource associated with a document. Use this to explore what controls are linked to a document, what external references exist, or what files are attached (including the download link for those files).",
   parameters: DocumentResourcesInput,
 };
 

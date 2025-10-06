@@ -29,7 +29,7 @@ const IntegrationResourcesInput = z.object({
   resourceKind: z
     .string()
     .describe(
-      "Resource kind to operate on, e.g. 'ec2-instances' or specific resource kind identifier (required for get_kind_details, list_resources, get_resource)",
+      "Resource kind to operate on, e.g. 'EC2Instance' or specific resource kind identifier (required for get_kind_details, list_resources, get_resource)",
     )
     .optional(),
   resourceId: z

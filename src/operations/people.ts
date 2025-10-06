@@ -8,12 +8,22 @@ import {
 } from "./common/imports.js";
 
 // 2. Input Schemas
-const PeopleInput = createConsolidatedSchema({
-  paramName: "personId",
-  description:
-    "Person ID to retrieve, e.g. 'person-123' or specific person identifier",
-  resourceName: "person",
-});
+const PeopleInput = createConsolidatedSchema(
+  {
+    paramName: "personId",
+    description:
+      "Person ID to retrieve, e.g. 'person-123' or specific person identifier. If provided, returns the specific person, and no other parameters may be provided. If omitted, lists all people with optional filtering and pagination. ",
+    resourceName: "person",
+  },
+  {
+    taskStatusMatchesAny: z
+      .array(z.string())
+      .describe(
+        "Filter people by task status. Possible values: COMPLETED (Task is completed), IN_PROGRESS (Task is in progress), FAILED (Task failed), NOT_STARTED (Task is not started)",
+      )
+      .optional(),
+  },
+);
 
 // 3. Tool Definitions
 export const PeopleTool: Tool<typeof PeopleInput> = {

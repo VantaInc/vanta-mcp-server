@@ -12,7 +12,7 @@ const RisksInput = createConsolidatedSchema(
   {
     paramName: "riskId",
     description:
-      "Risk scenario ID to retrieve, e.g. 'risk-scenario-123' or specific risk identifier",
+      "Risk scenario ID to retrieve, e.g. 'risk-scenario-123' or specific risk identifier. If provided, returns the specific risk scenario, and no other parameters may be provided. If omitted, lists all risk scenarios with optional filtering and pagination.",
     resourceName: "risk scenario",
   },
   {
@@ -20,8 +20,14 @@ const RisksInput = createConsolidatedSchema(
       .string()
       .optional()
       .describe(
-        "Filter by risk category. Example: Access Control, Cryptography, Privacy, etc.",
+        "Filter by risk category. Example: Access Control, Cryptography, Privacy, etc. Use 'Uncategorized' for risks that don't have a category.",
       ),
+    reviewStatusMatchesAny: z
+      .array(z.string())
+      .describe(
+        "Filter risk scenarios by review status. Possible values: PENDING, APPROVED, REJECTED",
+      )
+      .optional(),
   },
 );
 
@@ -29,7 +35,7 @@ const RisksInput = createConsolidatedSchema(
 export const RisksTool: Tool<typeof RisksInput> = {
   name: "risks",
   description:
-    "Access risk scenarios in your Vanta account. Provide riskId to get a specific risk scenario, or omit to list all risks with optional category filtering. Returns risk details, assessments, and mitigation strategies for compliance reporting.",
+    "Access risk scenarios in your Vanta account. Provide riskId to get a specific risk scenario, or omit to list all risks with optional filtering and pagination. Returns risk details, impact assessments, and mitigation strategies for compliance reporting.",
   parameters: RisksInput,
 };
 

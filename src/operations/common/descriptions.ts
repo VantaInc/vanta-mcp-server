@@ -2,7 +2,7 @@
 // This file provides centralized, consistent descriptions for commonly used parameters
 // across all operations files, ensuring uniformity and maintainability.
 
-export const PAGE_SIZE_DESCRIPTION = `Controls the maximum number of tests returned in a single response.
+export const PAGE_SIZE_DESCRIPTION = `Controls the maximum number of results returned in a single response.
 Allowed values: 1–100. Default is 10.`;
 
 export const PAGE_CURSOR_DESCRIPTION = `A marker or pointer telling the API where to start fetching items for the
