@@ -140,3 +140,9 @@ build/
 
 # Claude Code generated files
 CLAUDE.md
+
+# backup files
+*.bak*
+
+# Mac filesystem
+*.DS_store

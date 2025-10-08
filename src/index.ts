@@ -2,89 +2,48 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  getTestEntities,
-  GetTestEntitiesTool,
-  getTests,
-  GetTestsTool,
-} from "./operations/tests.js";
-import {
-  GetFrameworkControlsTool,
-  GetFrameworksTool,
-  getFrameworkControls,
-  getFrameworks,
-} from "./operations/frameworks.js";
-import {
-  GetControlsTool,
-  GetControlTestsTool,
-  getControls,
-  getControlTests,
-} from "./operations/controls.js";
+import { registerAllOperations } from "./registry.js";
 import { initializeToken } from "./auth.js";
+import { getEnabledToolNames, hasEnabledToolFilter } from "./config.js";
 
 const server = new McpServer({
   name: "vanta-mcp",
   version: "1.0.0",
-  description:
-    "Model Context Protocol server for Vanta's automated security compliance platform. Provides access to security tests, compliance frameworks, and security controls for SOC 2, ISO 27001, HIPAA, GDPR and other standards.",
 });
-
-server.tool(
-  GetTestsTool.name,
-  GetTestsTool.description,
-  GetTestsTool.parameters.shape,
-  getTests,
-);
-
-server.tool(
-  GetTestEntitiesTool.name,
-  GetTestEntitiesTool.description,
-  GetTestEntitiesTool.parameters.shape,
-  getTestEntities,
-);
-
-server.tool(
-  GetFrameworksTool.name,
-  GetFrameworksTool.description,
-  GetFrameworksTool.parameters.shape,
-  getFrameworks,
-);
-
-server.tool(
-  GetFrameworkControlsTool.name,
-  GetFrameworkControlsTool.description,
-  GetFrameworkControlsTool.parameters.shape,
-  getFrameworkControls,
-);
-
-server.tool(
-  GetControlsTool.name,
-  GetControlsTool.description,
-  GetControlsTool.parameters.shape,
-  getControls,
-);
-
-server.tool(
-  GetControlTestsTool.name,
-  GetControlTestsTool.description,
-  GetControlTestsTool.parameters.shape,
-  getControlTests,
-);
 
 async function main() {
   try {
     await initializeToken();
     console.error("Token initialized successfully");
+
+    // Register all tools automatically
+    await registerAllOperations(server);
+
+    if (hasEnabledToolFilter) {
+      const enabledTools = getEnabledToolNames();
+      console.error(
+        `⚠️ Tools enabled via VANTA_MCP_ENABLED_TOOLS: ${enabledTools.join(", ")}`,
+      );
+    }
+
+    // Connect to stdio transport
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+
+    console.error("🚀 Vanta MCP Server started successfully!");
   } catch (error) {
-    console.error("Failed to initialize token:", error);
+    console.error("Failed to start Vanta MCP Server:", error);
     process.exit(1);
   }
-
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
 }
 
+// Handle shutdown gracefully
+process.on("SIGINT", () => {
+  console.error("Shutting down Vanta MCP Server...");
+  process.exit(0);
+});
+
 main().catch(error => {
-  console.error("Fatal error in main():", error);
+  console.error("Fatal error:", error);
   process.exit(1);
 });
