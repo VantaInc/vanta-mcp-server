@@ -8,7 +8,7 @@ import { getEnabledToolNames, hasEnabledToolFilter } from "./config.js";
 
 const server = new McpServer({
   name: "vanta-mcp",
-  version: "1.0.0",
+  version: "1.1.0",
 });
 
 async function main() {
