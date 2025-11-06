@@ -29,9 +29,10 @@ const TokenResponseSchema = z.object({
  * @returns {OAuthCredentials} The loaded and validated credentials.
  */
 function loadCredentials(): OAuthCredentials {
-  const envFile = process.env.VANTA_ENV_FILE;
-  if (!envFile) {
-    throw new Error("VANTA_ENV_FILE environment variable is required");
+  const clientId = process.env.VANTA_CLIENT_ID;
+  const clientSecret = process.env.VANTA_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    throw new Error("VANTA_CLIENT_ID and VANTA_CLIENT_SECRET environment variables are required");
   }
 
   const CredentialsSchema = z.object({
@@ -39,15 +40,10 @@ function loadCredentials(): OAuthCredentials {
     client_secret: z.string(),
   });
 
-  try {
-    const data = fs.readFileSync(envFile, "utf8");
-    const parsed = CredentialsSchema.parse(JSON.parse(data));
-    return parsed;
-  } catch (error) {
-    throw new Error(
-      `Failed to load credentials from ${envFile}: ${String(error)}`,
-    );
-  }
+  return {
+    client_id: clientId,
+    client_secret: clientSecret,
+  };
 }
 
 /**

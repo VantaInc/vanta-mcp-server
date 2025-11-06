@@ -1,0 +1,114 @@
+{
+  "manifest_version": "0.2",
+  "name": "@vantasdk/vanta-mcp-server",
+  "display_name": "Vanta MCP Server",
+  "version": "1.1.0",
+  "description": "MCP server for Vanta's security compliance platform",
+  "author": {
+    "name": "Vanta Inc (https://www.vanta.com/)"
+  },
+  "homepage": "https://github.com/VantaInc/vanta-mcp-server",
+  "documentation": "https://github.com/VantaInc/vanta-mcp-server",
+  "icon": "vanta_security_logo.png",
+  "server": {
+    "type": "node",
+    "entry_point": "build/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/build/index.js"
+      ],
+      "env": {
+        "VANTA_CLIENT_ID": "${user_config.VANTA_CLIENT_ID}",
+        "VANTA_CLIENT_SECRET": "${user_config.VANTA_CLIENT_SECRET}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "tests",
+      "description": "Retrieves Vanta's automated security and compliance tests. It allows filtering by status, integration, or framework to quickly assess pass/fail posture."
+    },
+    {
+      "name": "list_test_entities",
+      "description": "Fetches resources monitored by a specific test, including any failing entities that require remediation."
+    },
+    {
+      "name": "controls",
+      "description": "Lists security controls within your Vanta account or retrieves details for a specific control using its ID, including framework mapping information."
+    },
+    {
+      "name": "list_control_tests",
+      "description": "Enumerates automated tests that validate a particular control, providing its status and details about failing entities."
+    },
+    {
+      "name": "list_control_documents",
+      "description": "Lists documents that are mapped to a control, helping to quickly locate supporting evidence."
+    },
+    {
+      "name": "documents",
+      "description": "Lists compliance documents or fetches detailed information for a specific document, including its metadata."
+    },
+    {
+      "name": "document_resources",
+      "description": "Retrieves resources (such as controls, links, or uploads) that are linked to a document, allowing the user to specify the desired resource type."
+    },
+    {
+      "name": "integrations",
+      "description": "Lists integrations connected to your Vanta account or provides details for a specific integration, including its resource kinds and connection status."
+    },
+    {
+      "name": "integration_resources",
+      "description": "Allows inspection of integration resource kinds, schema information, full resource lists, or a specific resource by selecting from supported operations."
+    },
+    {
+      "name": "frameworks",
+      "description": "Lists compliance frameworks, showing their completion status and progress metrics."
+    },
+    {
+      "name": "list_framework_controls",
+      "description": "Retrieves controls associated with a compliance framework, including their descriptions and implementation guidance."
+    },
+    {
+      "name": "people",
+      "description": "Lists individuals across your organization or allows looking up a specific person by ID, providing their role, email, and group membership metadata."
+    },
+    {
+      "name": "risks",
+      "description": "Lists risk scenarios currently under management or fetches details for a specific scenario to review its status, scoring, and treatment plans."
+    },
+    {
+      "name": "vulnerabilities",
+      "description": "Lists detected vulnerabilities or retrieves specific vulnerability items, including CVE metadata, severity, and impacted assets."
+    }
+  ],
+  "user_config": {
+    "VANTA_CLIENT_ID": {
+      "type": "string",
+      "title": "Vanta Client ID",
+      "description": "Your Vanta client ID",
+      "required": true,
+      "sensitive": true
+    },
+    "VANTA_CLIENT_SECRET": {
+      "type": "string",
+      "title": "Vanta Client Secret",
+      "description": "Your Vanta client secret",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "keywords": [
+    "vanta",
+    "compliance",
+    "security",
+    "mcp",
+    "soc2",
+    "iso27001"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VantaInc/vanta-mcp-server.git"
+  }
+}
