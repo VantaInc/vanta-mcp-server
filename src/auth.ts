@@ -23,31 +23,46 @@ const TokenResponseSchema = z.object({
 });
 
 /**
- * Loads OAuth credentials from the file specified by the VANTA_ENV_FILE environment variable.
- * Validates the file contents using a Zod schema.
- * @throws {Error} If the environment variable is missing, the file cannot be read, or validation fails.
+ * Loads OAuth credentials from environment variables or a credentials file.
+ *
+ * Credentials can be provided in two ways (checked in order):
+ * 1. Direct environment variables: VANTA_CLIENT_ID and VANTA_CLIENT_SECRET
+ * 2. File-based: A JSON file specified by VANTA_ENV_FILE containing client_id and client_secret
+ *
+ * @throws {Error} If no valid credentials are found or validation fails.
  * @returns {OAuthCredentials} The loaded and validated credentials.
  */
 function loadCredentials(): OAuthCredentials {
-  const envFile = process.env.VANTA_ENV_FILE;
-  if (!envFile) {
-    throw new Error("VANTA_ENV_FILE environment variable is required");
-  }
-
   const CredentialsSchema = z.object({
     client_id: z.string(),
     client_secret: z.string(),
   });
 
-  try {
-    const data = fs.readFileSync(envFile, "utf8");
-    const parsed = CredentialsSchema.parse(JSON.parse(data));
-    return parsed;
-  } catch (error) {
-    throw new Error(
-      `Failed to load credentials from ${envFile}: ${String(error)}`,
-    );
+  const clientId = process.env.VANTA_CLIENT_ID;
+  const clientSecret = process.env.VANTA_CLIENT_SECRET;
+
+  if (clientId && clientSecret) {
+    return CredentialsSchema.parse({
+      client_id: clientId,
+      client_secret: clientSecret,
+    });
   }
+  const envFile = process.env.VANTA_ENV_FILE;
+  if (envFile) {
+    try {
+      const data = fs.readFileSync(envFile, "utf8");
+      const parsed = CredentialsSchema.parse(JSON.parse(data));
+      return parsed;
+    } catch (error) {
+      throw new Error(
+        `Failed to load credentials from ${envFile}: ${String(error)}`,
+      );
+    }
+  }
+
+  throw new Error(
+    "Vanta credentials required. Provide either VANTA_CLIENT_ID and VANTA_CLIENT_SECRET environment variables, or set VANTA_ENV_FILE to a JSON file containing client_id and client_secret.",
+  );
 }
 
 /**
