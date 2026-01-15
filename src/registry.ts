@@ -6,6 +6,7 @@ import {
   hasEnabledToolFilter,
   isToolEnabled,
 } from "./config.js";
+import { requestContext } from "./server/request-context.js";
 
 // Tool definition interface (matches our Tool pattern)
 export interface ToolDefinition {
@@ -17,7 +18,8 @@ export interface ToolDefinition {
 // Tool registry interface for operations modules
 export interface ToolEntry {
   tool: ToolDefinition;
-  handler: (args: z.infer<z.ZodTypeAny>) => Promise<CallToolResult>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: (args: any) => Promise<CallToolResult>;
 }
 
 export interface OperationModule {
@@ -28,15 +30,26 @@ export interface OperationModule {
 export function registerTool(
   server: McpServer,
   tool: ToolDefinition,
-  handler: (args: z.infer<z.ZodTypeAny>) => Promise<CallToolResult>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: (args: any) => Promise<CallToolResult>,
+  vantaToken?: string,
 ): boolean {
   if (!isToolEnabled(tool.name)) {
     console.error(`⚪️ Skipping tool not in enabled list: ${tool.name}`);
     return false;
   }
 
+  // Wrap handler to run within request context if token is provided
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const wrappedHandler = vantaToken
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (args: any) => requestContext.run({ vantaToken }, () => handler(args))
+    : handler;
+
   const parameters = tool.parameters as z.ZodObject<z.ZodRawShape>;
-  server.tool(tool.name, tool.description, parameters.shape, handler);
+  // Cast to any to avoid type instantiation depth issues with new SDK
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+  (server.tool as any)(tool.name, tool.description, parameters.shape, wrappedHandler);
   return true;
 }
 
@@ -44,12 +57,13 @@ export function registerTool(
 export function registerOperationModule(
   server: McpServer,
   operationModule: OperationModule,
+  vantaToken?: string,
 ): { registered: number; skipped: number } {
   let registered = 0;
   let skipped = 0;
 
   operationModule.tools.forEach(({ tool, handler }) => {
-    const wasRegistered = registerTool(server, tool, handler);
+    const wasRegistered = registerTool(server, tool, handler, vantaToken);
     if (wasRegistered) {
       registered += 1;
     } else {
@@ -61,7 +75,10 @@ export function registerOperationModule(
 }
 
 // Auto-discovery and registration of all operations
-export async function registerAllOperations(server: McpServer): Promise<void> {
+export async function registerAllOperations(
+  server: McpServer,
+  vantaToken: string,
+): Promise<void> {
   // Import all operation modules
   const operations = [
     import("./operations/tests.js"),
@@ -93,19 +110,20 @@ export async function registerAllOperations(server: McpServer): Promise<void> {
     const { registered, skipped } = registerOperationModule(
       server,
       operationModule,
+      vantaToken,
     );
     totalTools += registered;
     skippedTools += skipped;
   });
 
   console.error(
-    `✅ Registered ${String(totalTools)} tools from ${String(modules.length)} operation modules successfully`,
+    `Registered ${String(totalTools)} tools from ${String(modules.length)} operation modules successfully`,
   );
 
   if (skippedTools > 0 && hasEnabledToolFilter) {
     const enabledList = getEnabledToolNames().join(", ");
     console.error(
-      `⚠️ Tools skipped because they are not enabled: ${String(skippedTools)} (enabled list: ${enabledList})`,
+      `Tools skipped because they are not enabled: ${String(skippedTools)} (enabled list: ${enabledList})`,
     );
   }
 }

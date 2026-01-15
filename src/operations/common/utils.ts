@@ -1,4 +1,3 @@
-import { getValidToken, refreshToken } from "../../auth.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { baseApiUrl } from "../../api.js";
@@ -6,24 +5,29 @@ import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
 } from "./descriptions.js";
+import { requestContext } from "../../server/request-context.js";
 
-export async function createAuthHeaders(): Promise<Record<string, string>> {
-  const token = await getValidToken();
+export function createAuthHeaders(): Record<string, string> {
+  const context = requestContext.getStore();
+  if (!context?.vantaToken) {
+    throw new Error("No authentication context available");
+  }
+
   return {
-    "Authorization": `Bearer ${token}`,
+    "Authorization": `Bearer ${context.vantaToken}`,
     "x-vanta-is-mcp": "true",
   };
 }
 
 /**
- * Makes an authenticated HTTP request using a bearer token from the Vanta MCP auth system.
- * If the request returns a 401 Unauthorized, it will refresh the token and retry once.
+ * Makes an authenticated HTTP request using a bearer token from the request context.
+ * Token refresh is handled by the MCP client, not the server.
  */
 export async function makeAuthenticatedRequest(
   url: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  const headers = await createAuthHeaders();
+  const headers = createAuthHeaders();
 
   const requestOptions: RequestInit = {
     ...options,
@@ -33,29 +37,7 @@ export async function makeAuthenticatedRequest(
     },
   };
 
-  // Try the request with the current token
-  let response = await fetch(url, requestOptions);
-
-  // If we get a 401, refresh the token and try again
-  if (response.status === 401) {
-    try {
-      await refreshToken();
-      const newHeaders = await createAuthHeaders();
-      const retryOptions: RequestInit = {
-        ...options,
-        headers: {
-          ...newHeaders,
-          ...options.headers,
-        },
-      };
-      response = await fetch(url, retryOptions);
-    } catch (refreshError) {
-      console.error("Failed to refresh token:", refreshError);
-      // Return the original 401 response
-    }
-  }
-
-  return response;
+  return fetch(url, requestOptions);
 }
 
 // ==========================================
