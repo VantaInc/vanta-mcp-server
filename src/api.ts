@@ -1,7 +1,8 @@
 type BaseApiUrl =
   | "https://api.vanta.com"
   | "https://api.eu.vanta.com"
-  | "https://api.aus.vanta.com";
+  | "https://api.aus.vanta.com"
+  | "http://127.0.0.1:10290";
 
 export function baseApiUrl(): BaseApiUrl {
   if (process.env.REGION) {
@@ -10,9 +11,9 @@ export function baseApiUrl(): BaseApiUrl {
     } else if (process.env.REGION === "aus") {
       return "https://api.aus.vanta.com";
     } else if (process.env.REGION === "us") {
-      return "https://api.vanta.com";
+      return "http://127.0.0.1:10290";
     }
     throw new Error(`Invalid region: ${process.env.REGION}`);
   }
-  return "https://api.vanta.com";
+  return "http://127.0.0.1:10290";
 }
