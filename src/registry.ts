@@ -36,7 +36,8 @@ export function registerTool(
   }
 
   const parameters = tool.parameters as z.ZodObject<z.ZodRawShape>;
-  server.tool(tool.name, tool.description, parameters.shape, handler);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-deprecated
+  (server.tool as any)(tool.name, tool.description, parameters.shape, handler);
   return true;
 }
 

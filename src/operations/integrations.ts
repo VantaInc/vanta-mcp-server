@@ -82,7 +82,7 @@ export async function integrationResources(
   switch (operation) {
     case "list_kinds": {
       return makePaginatedGetRequest(
-        `/v1/integrations/${String(integrationId)}/resource-kinds`,
+        `/v1/integrations/${integrationId}/resource-kinds`,
         params,
       );
     }
@@ -100,7 +100,7 @@ export async function integrationResources(
         };
       }
       const kindUrl = buildUrl(
-        `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}`,
+        `/v1/integrations/${integrationId}/resource-kinds/${resourceKind}`,
       );
       const kindResponse = await makeAuthenticatedRequest(kindUrl);
       return handleApiResponse(kindResponse);
@@ -119,7 +119,7 @@ export async function integrationResources(
         };
       }
       return makePaginatedGetRequest(
-        `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}/resources`,
+        `/v1/integrations/${integrationId}/resource-kinds/${resourceKind}/resources`,
         params,
       );
     }
@@ -137,7 +137,7 @@ export async function integrationResources(
         };
       }
       const resourceUrl = buildUrl(
-        `/v1/integrations/${String(integrationId)}/resource-kinds/${String(resourceKind)}/resources/${String(resourceId)}`,
+        `/v1/integrations/${integrationId}/resource-kinds/${resourceKind}/resources/${resourceId}`,
       );
       const resourceResponse = await makeAuthenticatedRequest(resourceUrl);
       return handleApiResponse(resourceResponse);

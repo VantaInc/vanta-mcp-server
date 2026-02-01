@@ -29,7 +29,7 @@ export async function makeAuthenticatedRequest(
     ...options,
     headers: {
       ...headers,
-      ...options.headers,
+      ...(options.headers as Record<string, string> | undefined),
     },
   };
 
@@ -45,7 +45,7 @@ export async function makeAuthenticatedRequest(
         ...options,
         headers: {
           ...newHeaders,
-          ...options.headers,
+          ...(options.headers as Record<string, string> | undefined),
         },
       };
       response = await fetch(url, retryOptions);
@@ -279,7 +279,7 @@ export async function makeGetByIdRequest(
   endpoint: string,
   id: string,
 ): Promise<CallToolResult> {
-  const url = buildUrl(`${endpoint}/${String(id)}`);
+  const url = buildUrl(`${endpoint}/${id}`);
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
 }

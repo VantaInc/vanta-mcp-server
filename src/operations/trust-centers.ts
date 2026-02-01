@@ -331,7 +331,7 @@ export async function getTrustCenterDocument(
   args: z.infer<typeof GetTrustCenterDocumentInput>,
 ): Promise<CallToolResult> {
   const url = buildUrl(
-    `/v1/trust-centers/${String(args.slugId)}/resources/${String(args.resourceId)}`,
+    `/v1/trust-centers/${args.slugId}/resources/${args.resourceId}`,
   );
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
@@ -341,7 +341,7 @@ export async function getTrustCenterResourceMedia(
   args: z.infer<typeof GetTrustCenterResourceMediaInput>,
 ): Promise<CallToolResult> {
   const url = buildUrl(
-    `/v1/trust-centers/${String(args.slugId)}/resources/${String(args.resourceId)}/media`,
+    `/v1/trust-centers/${args.slugId}/resources/${args.resourceId}/media`,
   );
   const response = await makeAuthenticatedRequest(url);
 
@@ -395,8 +395,8 @@ export async function getTrustCenterResourceMedia(
 - Content Type: ${contentType}
 - Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}
 - File Type: ${contentType.startsWith("image/") ? "Image" : contentType.startsWith("video/") ? "Video" : contentType.startsWith("audio/") ? "Audio" : contentType.startsWith("application/pdf") ? "PDF Document" : "Binary File"}
-- Resource ID: ${String(args.resourceId)}
-- Trust Center: ${String(args.slugId)}
+- Resource ID: ${args.resourceId}
+- Trust Center: ${args.slugId}
 
 Note: This is a binary file. Use appropriate tools to download and process the actual file content.`,
       },
@@ -441,7 +441,7 @@ export async function getTrustCenterSubscriber(
   args: z.infer<typeof GetTrustCenterSubscriberInput>,
 ): Promise<CallToolResult> {
   const url = buildUrl(
-    `/v1/trust-centers/${String(args.slugId)}/subscribers/${String(args.subscriberId)}`,
+    `/v1/trust-centers/${args.slugId}/subscribers/${args.subscriberId}`,
   );
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
