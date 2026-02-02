@@ -6,7 +6,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ["**/build/**", "**/node_modules/**"]
+    ignores: ["**/build/**", "**/node_modules/**", "**/src/eval/**"]
   },
   eslint.configs.recommended,
   {

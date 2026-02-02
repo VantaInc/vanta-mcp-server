@@ -89,9 +89,9 @@ export async function documentResources(
   const { documentId, resourceType, ...params } = args;
 
   const endpoints = {
-    controls: `/v1/documents/${String(documentId)}/controls`,
-    links: `/v1/documents/${String(documentId)}/links`,
-    uploads: `/v1/documents/${String(documentId)}/uploads`,
+    controls: `/v1/documents/${documentId}/controls`,
+    links: `/v1/documents/${documentId}/links`,
+    uploads: `/v1/documents/${documentId}/uploads`,
   };
 
   const endpoint = endpoints[resourceType];
@@ -115,9 +115,7 @@ export async function documentResources(
 export async function downloadDocumentFile(
   args: z.infer<typeof DownloadDocumentFileInput>,
 ): Promise<CallToolResult> {
-  const url = buildUrl(
-    `/v1/document-uploads/${String(args.uploadedFileId)}/download`,
-  );
+  const url = buildUrl(`/v1/document-uploads/${args.uploadedFileId}/download`);
   const response = await makeAuthenticatedRequest(url);
 
   if (!response.ok) {
@@ -170,7 +168,7 @@ export async function downloadDocumentFile(
 - Content Type: ${contentType}
 - Content Length: ${contentLength ? `${contentLength} bytes` : "Unknown"}
 - File Type: ${contentType.startsWith("image/") ? "Image" : contentType.startsWith("video/") ? "Video" : contentType.startsWith("audio/") ? "Audio" : contentType.startsWith("application/pdf") ? "PDF Document" : "Binary File"}
-- Upload ID: ${String(args.uploadedFileId)}
+- Upload ID: ${args.uploadedFileId}
 
 Note: This is a binary file. Use appropriate tools to download and process the actual file content.`,
       },

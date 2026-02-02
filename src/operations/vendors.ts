@@ -111,9 +111,9 @@ export async function vendorCompliance(
   const { vendorId, complianceType, ...params } = args;
 
   const endpoints = {
-    documents: `/v1/vendors/${String(vendorId)}/documents`,
-    findings: `/v1/vendors/${String(vendorId)}/findings`,
-    security_reviews: `/v1/vendors/${String(vendorId)}/security-reviews`,
+    documents: `/v1/vendors/${vendorId}/documents`,
+    findings: `/v1/vendors/${vendorId}/findings`,
+    security_reviews: `/v1/vendors/${vendorId}/security-reviews`,
   };
 
   const endpoint = endpoints[complianceType];
@@ -138,7 +138,7 @@ export async function getVendorSecurityReview(
   args: z.infer<typeof GetVendorSecurityReviewInput>,
 ): Promise<CallToolResult> {
   const url = buildUrl(
-    `/v1/vendors/${String(args.vendorId)}/security-reviews/${String(args.securityReviewId)}`,
+    `/v1/vendors/${args.vendorId}/security-reviews/${args.securityReviewId}`,
   );
   const response = await makeAuthenticatedRequest(url);
   return handleApiResponse(response);
@@ -149,7 +149,7 @@ export async function listVendorSecurityReviewDocuments(
 ): Promise<CallToolResult> {
   const { vendorId, securityReviewId, ...params } = args;
   const url = buildUrl(
-    `/v1/vendors/${String(vendorId)}/security-reviews/${String(securityReviewId)}/documents`,
+    `/v1/vendors/${vendorId}/security-reviews/${securityReviewId}/documents`,
     params,
   );
   const response = await makeAuthenticatedRequest(url);
