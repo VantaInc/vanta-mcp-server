@@ -110,8 +110,8 @@ export async function handleApiResponse(
  * Creates a standard pagination schema
  */
 export function createPaginationSchema(
-  customFields: Record<string, z.ZodTypeAny> = {},
-): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  customFields: Record<string, z.ZodType> = {},
+): z.ZodObject<Record<string, z.ZodType>> {
   return z.object({
     pageSize: z
       .number()
@@ -128,8 +128,8 @@ export function createPaginationSchema(
  * Creates a filter schema with pagination base
  */
 export function createFilterSchema(
-  customFields: Record<string, z.ZodTypeAny> = {},
-): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  customFields: Record<string, z.ZodType> = {},
+): z.ZodObject<Record<string, z.ZodType>> {
   return z.object({
     pageSize: z
       .number()
@@ -148,7 +148,7 @@ export function createFilterSchema(
 export function createIdWithPaginationSchema(params: {
   paramName: string;
   description: string;
-}): z.ZodObject<Record<string, z.ZodTypeAny>> {
+}): z.ZodObject<Record<string, z.ZodType>> {
   return z.object({
     [params.paramName]: z.string().describe(params.description),
     pageSize: z
@@ -167,7 +167,7 @@ export function createIdWithPaginationSchema(params: {
 export function createIdSchema(params: {
   paramName: string;
   description: string;
-}): z.ZodObject<Record<string, z.ZodTypeAny>> {
+}): z.ZodObject<Record<string, z.ZodType>> {
   return z.object({
     [params.paramName]: z.string().describe(params.description),
   });
@@ -182,8 +182,8 @@ export function createConsolidatedSchema(
     description: string;
     resourceName: string;
   },
-  additionalFields: Record<string, z.ZodTypeAny> = {},
-): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  additionalFields: Record<string, z.ZodType> = {},
+): z.ZodObject<Record<string, z.ZodType>> {
   const idDescription = `Optional ${params.resourceName} ID. If provided, returns the specific ${params.resourceName}. If omitted, lists all ${params.resourceName}s with optional filtering and pagination.`;
 
   return z.object({
@@ -202,8 +202,8 @@ export function createTrustCenterConsolidatedSchema(
     description: string;
     resourceName: string;
   },
-  additionalFields: Record<string, z.ZodTypeAny> = {},
-): z.ZodObject<Record<string, z.ZodTypeAny>> {
+  additionalFields: Record<string, z.ZodType> = {},
+): z.ZodObject<Record<string, z.ZodType>> {
   const idDescription = `Optional ${params.resourceName} ID. If provided, returns the specific ${params.resourceName}. If omitted, lists all ${params.resourceName}s with optional filtering and pagination.`;
 
   return z.object({
@@ -222,22 +222,22 @@ export function createTrustCenterConsolidatedSchema(
 // URL CONSTRUCTION UTILITIES
 // ==========================================
 
+// Type for URL parameters - accepts unknown for Zod v4 compatibility
+type UrlParams = Record<string, unknown>;
+
 /**
  * Builds a URL with query parameters
  */
-export function buildUrl(
-  basePath: string,
-  params: Record<string, string | number | boolean | string[] | undefined> = {},
-): string {
+export function buildUrl(basePath: string, params: UrlParams = {}): string {
   const url = new URL(basePath, baseApiUrl());
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined) {
+    if (value !== undefined && value !== null) {
       if (Array.isArray(value)) {
         // Handle arrays by joining with commas
-        url.searchParams.set(key, value.join(","));
+        url.searchParams.set(key, (value as string[]).join(","));
       } else {
-        url.searchParams.set(key, String(value));
+        url.searchParams.set(key, String(value as string | number | boolean));
       }
     }
   }
@@ -265,7 +265,7 @@ export async function makeSimpleGetRequest(
  */
 export async function makePaginatedGetRequest(
   endpoint: string,
-  params: Record<string, string | number | boolean | string[] | undefined> = {},
+  params: UrlParams = {},
 ): Promise<CallToolResult> {
   const url = buildUrl(endpoint, params);
   const response = await makeAuthenticatedRequest(url);
@@ -289,14 +289,14 @@ export async function makeGetByIdRequest(
  */
 export async function makeConsolidatedRequest(
   endpoint: string,
-  params: Record<string, string | number | boolean | string[] | undefined>,
+  params: UrlParams,
   idParamName: string,
 ): Promise<CallToolResult> {
   const id = params[idParamName];
 
   if (id) {
     // Single resource request
-    return makeGetByIdRequest(endpoint, String(id));
+    return makeGetByIdRequest(endpoint, id as string);
   } else {
     // List request - remove the ID param from the parameters
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -310,7 +310,7 @@ export async function makeConsolidatedRequest(
  */
 export async function makeTrustCenterConsolidatedRequest(
   baseEndpoint: string,
-  params: Record<string, string | number | boolean | string[] | undefined>,
+  params: UrlParams,
   idParamName: string,
   resourcePath: string,
 ): Promise<CallToolResult> {
@@ -319,14 +319,14 @@ export async function makeTrustCenterConsolidatedRequest(
   if (resourceId) {
     // Single resource request: /v1/trust-centers/{slugId}/{resourcePath}/{resourceId}
     const url = buildUrl(
-      `${baseEndpoint}/${String(slugId)}/${resourcePath}/${String(resourceId)}`,
+      `${baseEndpoint}/${slugId as string}/${resourcePath}/${resourceId as string}`,
     );
     const response = await makeAuthenticatedRequest(url);
     return handleApiResponse(response);
   } else {
     // List request: /v1/trust-centers/{slugId}/{resourcePath}
     const url = buildUrl(
-      `${baseEndpoint}/${String(slugId)}/${resourcePath}`,
+      `${baseEndpoint}/${slugId as string}/${resourcePath}`,
       otherParams,
     );
     const response = await makeAuthenticatedRequest(url);

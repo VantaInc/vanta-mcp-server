@@ -1,6 +1,6 @@
-import { AnyZodObject } from "zod";
+import { z } from "zod";
 
-export interface Tool<T extends AnyZodObject> {
+export interface Tool<T extends z.ZodType> {
   name: string;
   description: string;
   parameters: T;

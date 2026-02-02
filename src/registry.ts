@@ -11,13 +11,14 @@ import {
 export interface ToolDefinition {
   name: string;
   description: string;
-  parameters: z.ZodTypeAny;
+  parameters: z.ZodType;
 }
 
 // Tool registry interface for operations modules
 export interface ToolEntry {
   tool: ToolDefinition;
-  handler: (args: z.infer<z.ZodTypeAny>) => Promise<CallToolResult>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: (args: any) => Promise<CallToolResult>;
 }
 
 export interface OperationModule {
@@ -28,7 +29,8 @@ export interface OperationModule {
 export function registerTool(
   server: McpServer,
   tool: ToolDefinition,
-  handler: (args: z.infer<z.ZodTypeAny>) => Promise<CallToolResult>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: (args: any) => Promise<CallToolResult>,
 ): boolean {
   if (!isToolEnabled(tool.name)) {
     console.error(`⚪️ Skipping tool not in enabled list: ${tool.name}`);
