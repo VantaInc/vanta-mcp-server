@@ -82,11 +82,6 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`vulnerabilities`](https://developer.vanta.com/reference/listvulnerabilities) | List vulnerabilities detected across your infrastructure or retrieve a specific vulnerability by ID with CVE details, severity, and impacted asset information. |
 
-### Multi-Region Support
-
-- US, EU, and AUS regions with region-specific API endpoints
-- Global compliance support for distributed organizations
-
 ## Tools
 
 | Tool Name                                                                                  | Description                                                                                                                                     |
@@ -162,7 +157,6 @@ Add the server to your Cursor MCP settings:
 ### Environment Variables
 
 - `VANTA_ENV_FILE` (required): Absolute path to the JSON file containing your OAuth credentials
-- `REGION` (optional): API region - `us`, `eu`, or `aus` (defaults to `us`)
 
 ## Installation
 
