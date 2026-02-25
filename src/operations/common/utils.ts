@@ -1,7 +1,7 @@
 import { getValidToken, refreshToken } from "../../auth.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { baseApiUrl } from "../../api.js";
+import { BASE_API_URL } from "../../api.js";
 import {
   PAGE_SIZE_DESCRIPTION,
   PAGE_CURSOR_DESCRIPTION,
@@ -229,7 +229,7 @@ export function buildUrl(
   basePath: string,
   params: Record<string, string | number | boolean | string[] | undefined> = {},
 ): string {
-  const url = new URL(basePath, baseApiUrl());
+  const url = new URL(basePath, BASE_API_URL);
 
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined) {
