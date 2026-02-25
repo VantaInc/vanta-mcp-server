@@ -1,1 +1,1 @@
-export const BASE_API_URL = "https://api.staging.vanta.com";
+export const BASE_API_URL = "https://api.vanta.com";
