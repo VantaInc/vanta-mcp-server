@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { baseApiUrl } from "./api.js";
+import { BASE_API_URL } from "./api.js";
 import { z } from "zod";
 
 const VANTA_API_SCOPE = "vanta-api.all:read";
@@ -59,7 +59,7 @@ function loadCredentials(): OAuthCredentials {
 async function fetchNewToken(): Promise<TokenInfo> {
   const credentials = loadCredentials();
 
-  const response = await fetch(`${baseApiUrl()}/oauth/token`, {
+  const response = await fetch(`${BASE_API_URL}/oauth/token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
