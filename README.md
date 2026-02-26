@@ -257,18 +257,6 @@ vanta-mcp-server/
 └── README.md                   # This file
 ```
 
-### Architecture Highlights
-
-- **Consolidated Tool Pattern**: Single tools intelligently handle both list and get operations with optional ID parameters
-- **Reduced Complexity**: 43 tools (down from 53) through smart consolidation while maintaining full functionality
-- **Clean Organization**: Operations files are cleanly separated from infrastructure code
-- **Common Subdirectory**: All shared utilities, imports, and descriptions are organized in `operations/common/`
-- **Automated Registry**: New tools are automatically discovered and registered without manual configuration
-- **DRY Principles**: Extensive code reuse through centralized utilities and schema factories
-- **Type Safety**: Full TypeScript coverage with comprehensive type definitions
-
-For detailed architecture documentation, see [`src/operations/README.md`](src/operations/README.md).
-
 ## Debugging
 
 You can use the MCP Inspector to debug the server:
