@@ -21,9 +21,9 @@ async function main() {
 
     if (hasEnabledToolFilter) {
       const enabledTools = getEnabledToolNames();
-      console.error(
-        `⚠️ Tools enabled via VANTA_MCP_ENABLED_TOOLS: ${enabledTools.join(", ")}`,
-      );
+      console.error(`ℹ️ Enabled tools: ${enabledTools.join(", ")}`);
+    } else {
+      console.error("ℹ️ All tools enabled");
     }
 
     // Connect to stdio transport

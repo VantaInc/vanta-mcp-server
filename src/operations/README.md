@@ -283,7 +283,7 @@ export default {
 4. **Extend the default export** with the new tool/handler pair.
 5. **Update `src/operations/index.ts`** to re-export the module (if a new file is added).
 6. **Document new tools** in `README.md` (root) and update evaluation artifacts (below).
-7. **Enable the tool in `src/config.ts`**. Add the tool's name to the `enabledToolNames` array to make it available through the MCP server. Leaving the array empty enables _all_ tools.
+7. **Enable the tool**. Either add the tool's name to the `defaultToolNames` array in `src/config.ts`, or instruct users to include it in the `VANTA_MCP_ENABLED_TOOLS` environment variable (comma-separated). Setting `VANTA_MCP_ENABLED_TOOLS=*` enables every tool.
 
 ## Evaluation Suite Updates
 

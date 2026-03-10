@@ -127,7 +127,8 @@ Add the server to your `claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "@vantasdk/vanta-mcp-server"],
       "env": {
-        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env"
+        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env",
+        "VANTA_MCP_ENABLED_TOOLS": "vendors,list_discovered_vendors"
       }
     }
   }
@@ -147,7 +148,8 @@ Add the server to your Cursor MCP settings:
       "command": "npx",
       "args": ["-y", "@vantasdk/vanta-mcp-server"],
       "env": {
-        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env"
+        "VANTA_ENV_FILE": "/absolute/path/to/your/vanta-credentials.env",
+        "VANTA_MCP_ENABLED_TOOLS": "vendors,list_discovered_vendors"
       }
     }
   }
@@ -157,6 +159,7 @@ Add the server to your Cursor MCP settings:
 ### Environment Variables
 
 - `VANTA_ENV_FILE` (required): Absolute path to the JSON file containing your OAuth credentials
+- `VANTA_MCP_ENABLED_TOOLS` (optional): Comma-separated list of additional tool names to enable beyond the defaults (e.g. `"vendors,list_discovered_vendors"`). Set to `*` to enable every tool.
 
 ## Installation
 
