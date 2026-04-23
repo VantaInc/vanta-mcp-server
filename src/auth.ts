@@ -23,15 +23,37 @@ const TokenResponseSchema = z.object({
 });
 
 /**
- * Loads OAuth credentials from the file specified by the VANTA_ENV_FILE environment variable.
- * Validates the file contents using a Zod schema.
- * @throws {Error} If the environment variable is missing, the file cannot be read, or validation fails.
+ * Loads OAuth credentials, preferring environment variables over a credentials file.
+ *
+ * Resolution order:
+ * 1. VANTA_MCP_CLIENT_ID + VANTA_MCP_CLIENT_SECRET environment variables (both required)
+ * 2. Credentials file at the path specified by VANTA_ENV_FILE
+ *
+ * @throws {Error} If no credentials can be resolved, the file cannot be read, or validation fails.
  * @returns {OAuthCredentials} The loaded and validated credentials.
  */
 function loadCredentials(): OAuthCredentials {
+  const clientIdFromEnv = process.env.VANTA_MCP_CLIENT_ID;
+  const clientSecretFromEnv = process.env.VANTA_MCP_CLIENT_SECRET;
+
+  if (clientIdFromEnv && clientSecretFromEnv) {
+    return {
+      client_id: clientIdFromEnv,
+      client_secret: clientSecretFromEnv,
+    };
+  }
+
+  if (clientIdFromEnv !== undefined || clientSecretFromEnv !== undefined) {
+    console.error(
+      "Warning: Only one of VANTA_MCP_CLIENT_ID or VANTA_MCP_CLIENT_SECRET is set. Both are required to use environment variable credentials. Falling back to file-based credentials.",
+    );
+  }
+
   const envFile = process.env.VANTA_ENV_FILE;
   if (!envFile) {
-    throw new Error("VANTA_ENV_FILE environment variable is required");
+    throw new Error(
+      "No credentials configured. Either set both VANTA_MCP_CLIENT_ID and VANTA_MCP_CLIENT_SECRET environment variables, or set VANTA_ENV_FILE to point to a credentials file.",
+    );
   }
 
   const CredentialsSchema = z.object({

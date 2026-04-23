@@ -105,20 +105,49 @@ A [Model Context Protocol](https://modelcontextprotocol.com/) server that provid
 
 ### Vanta OAuth Credentials
 
-1. Create OAuth credentials from [Vanta's developer dashboard](https://developer.vanta.com/docs/api-access-setup)
-2. Save the `client_id` and `client_secret` to an env file:
-   ```json
-   {
-     "client_id": "your_client_id_here",
-     "client_secret": "your_client_secret_here"
-   }
-   ```
+Create OAuth credentials from [Vanta's developer dashboard](https://developer.vanta.com/docs/api-access-setup).
+
+You can provide the resulting `client_id` and `client_secret` to the server in one of two ways:
+
+#### Option 1: Environment variables (recommended)
+
+Set `VANTA_MCP_CLIENT_ID` and `VANTA_MCP_CLIENT_SECRET` directly. This works well with secret management systems (1Password, Vault, AWS Secrets Manager, etc.) and avoids writing credentials to disk.
+
+#### Option 2: Credentials file
+
+Save the `client_id` and `client_secret` to a JSON file and point `VANTA_ENV_FILE` at its absolute path:
+
+```json
+{
+  "client_id": "your_client_id_here",
+  "client_secret": "your_client_secret_here"
+}
+```
+
+If both `VANTA_MCP_CLIENT_ID` and `VANTA_MCP_CLIENT_SECRET` are set, they take precedence over `VANTA_ENV_FILE`.
 
 > **Note:** Vanta currently allows only a single active access_token per Application. [More info here](https://developer.vanta.com/docs/api-access-setup#authentication-and-token-retrieval)
 
 ### Usage with Claude Desktop
 
-Add the server to your `claude_desktop_config.json`:
+Add the server to your `claude_desktop_config.json`. Using environment variables:
+
+```json
+{
+  "mcpServers": {
+    "vanta": {
+      "command": "npx",
+      "args": ["-y", "@vantasdk/vanta-mcp-server"],
+      "env": {
+        "VANTA_MCP_CLIENT_ID": "your_client_id_here",
+        "VANTA_MCP_CLIENT_SECRET": "your_client_secret_here"
+      }
+    }
+  }
+}
+```
+
+Or using a credentials file:
 
 ```json
 {
@@ -138,7 +167,24 @@ If you are unfamiliar with setting up MCP servers in Claude Desktop, [here is an
 
 ### Usage with Cursor
 
-Add the server to your Cursor MCP settings:
+Add the server to your Cursor MCP settings. Using environment variables:
+
+```json
+{
+  "mcpServers": {
+    "Vanta": {
+      "command": "npx",
+      "args": ["-y", "@vantasdk/vanta-mcp-server"],
+      "env": {
+        "VANTA_MCP_CLIENT_ID": "your_client_id_here",
+        "VANTA_MCP_CLIENT_SECRET": "your_client_secret_here"
+      }
+    }
+  }
+}
+```
+
+Or using a credentials file:
 
 ```json
 {
@@ -156,7 +202,10 @@ Add the server to your Cursor MCP settings:
 
 ### Environment Variables
 
-- `VANTA_ENV_FILE` (required): Absolute path to the JSON file containing your OAuth credentials
+You must provide OAuth credentials using one of the following options:
+
+- **Preferred:** `VANTA_MCP_CLIENT_ID` and `VANTA_MCP_CLIENT_SECRET` — your OAuth client ID and secret. Both must be set to use this option.
+- **Fallback:** `VANTA_ENV_FILE` — absolute path to a JSON file containing your OAuth credentials. Used only when `VANTA_MCP_CLIENT_ID` and `VANTA_MCP_CLIENT_SECRET` are not both set.
 
 ## Installation
 
